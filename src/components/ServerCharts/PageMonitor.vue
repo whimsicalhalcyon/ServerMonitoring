@@ -1,9 +1,11 @@
-<script setup>
+<script>
+export default {
 
+}
 </script>
 
 <template>
-  $END$
+  <h1 class="text-3xl text-green-50">Мониторинг</h1>
 </template>
 
 <style scoped>
