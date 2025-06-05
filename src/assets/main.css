@@ -4,10 +4,11 @@
 @tailwind utilities;
 
 #app {
-  max-width: 1280px;
+  max-width: 1700px;
   margin: 0 auto;
   font-weight: normal;
   font-family: "Segoe UI";
+  font-size: 16px;
 }
 
 body {
