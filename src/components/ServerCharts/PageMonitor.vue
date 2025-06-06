@@ -9,6 +9,9 @@ export default {
   components: {
     UIInput, UiSelect, inputDate, MainButton
   },
+  props: {
+
+  },
   data() {
     return {
       openPanel: true
