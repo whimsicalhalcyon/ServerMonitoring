@@ -4,22 +4,25 @@ import UIInput from "@/components/UIInput.vue";
 import UiSelect from "@/components/UiSelect.vue";
 import inputDate from "@/components/InputDate.vue";
 import MainButton from "@/components/MainButton.vue";
+import ModalWindow from "@/components/ServerCharts/Components/ModalWindow.vue";
 
 export default {
   components: {
-    UIInput, UiSelect, inputDate, MainButton
+    UIInput, UiSelect, inputDate, MainButton, ModalWindow
   },
-  props: {
 
-  },
   data() {
     return {
-      openPanel: true
+      openPanel: true,
+      modalWindow: false
     }
   },
   methods: {
     togglePanel() {
       this.openPanel = !this.openPanel
+    },
+    toggleWindow() {
+      this.modalWindow = !this.modalWindow
     }
   }
 }
@@ -34,7 +37,7 @@ export default {
         <i class="fa-solid fa-chevron-up text-zinc-300 hover:text-zinc-500 cursor-pointer duration-300" :class="openPanel ? 'fa-chevron-down' : 'fa-chevron-up'" @click="togglePanel"></i>
       </div>
     </div>
-    <section class="section-menu w-[1780px] bg-white rounded-xl px-5 py-5 text-neutral-500" v-if="openPanel">
+    <section class="section-menu w-[1760px] bg-white rounded-xl px-5 py-5 text-neutral-500" v-if="openPanel">
       <div class="container-menu  flex flex-row mb-4">
         <u-i-input class="w-135 mr-5"></u-i-input>
         <ui-select class="w-90 mr-5"></ui-select>
@@ -95,9 +98,10 @@ export default {
       <div class="container-date flex">
         <ui-select class="mr-2"></ui-select>
         <main-button>Выгрузить</main-button>
+        <main-button @click="toggleWindow">Модальное окно</main-button>
       </div>
     </section>
-
+    <modal-window v-model:openDialog="modalWindow"></modal-window>
   </div>
 
 
