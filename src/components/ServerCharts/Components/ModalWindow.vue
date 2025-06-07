@@ -21,7 +21,7 @@ export default {
 </script>
 
 <template>
-  <div v-if="openDialog" class="fixed inset-0 bg-black !bg-opacity-50 flex items-center justify-center z-50" @click.stop="hideWindow">
+  <div v-if="openDialog" class="fixed inset-0  flex items-center justify-center z-50" @click.stop="hideWindow">
     <div class="bg-white rounded-lg w-[1200px] p-6 h-190 text-neutral-500 " @click.stop>
       <h2 class="text-2xl text-neutral-800 mb-5">Редактировать виджет</h2>
       <div class="container-info flex flex-row justify-between items-center">
