@@ -16,7 +16,7 @@ export default {
   data() {
     return {
       openPanel: true,
-      modalWindow: false
+      modalWindow: false,
     }
   },
   methods: {
@@ -106,7 +106,7 @@ export default {
       <div
           v-for="n in 70"
           :key="n"
-          class="graphic flex flex-col w-[880px] h-g p-[15px] bg-[#FAFAFA] rounded-xl"
+          class="graphic flex flex-col w-[425px] h-g p-[15px] bg-[#FAFAFA] rounded-xl"
       >
         <div class="flex justify-between items-center mb-3 px-2">
           <span class="color-[#212121] text-xl">Имя сервера</span>
