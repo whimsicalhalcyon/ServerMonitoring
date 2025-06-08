@@ -46,8 +46,7 @@ export default {
           </div>
         </div>
         <div
-            class="graphic flex flex-col w-[730px] h-g p-[15px] bg-[#FAFAFA] rounded-xl"
-        >
+            class="graphic flex flex-col w-[730px] h-g p-[15px] bg-[#FAFAFA] rounded-xl">
           <div class="flex justify-between items-center mb-3 px-2">
             <p class="color-[#212121] text-xl">Имя сервера</p>
             <button
