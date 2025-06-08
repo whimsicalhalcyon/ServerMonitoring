@@ -3,9 +3,10 @@ import UiSelect from "@/components/UiSelect.vue";
 import InputRange from "@/components/ServerCharts/Components/InputRange.vue";
 import UIInput from "@/components/UIInput.vue";
 import MainButton from "@/components/MainButton.vue";
+import Graphic from "@/components/ServerCharts/Components/Graphic.vue";
 
 export default {
-  components: {MainButton, UIInput, UiSelect, InputRange},
+  components: {Graphic, MainButton, UIInput, UiSelect, InputRange},
    props : {
      openDialog: {
        type: Boolean,
@@ -21,7 +22,7 @@ export default {
 </script>
 
 <template>
-  <div v-if="openDialog" class="fixed inset-0  flex items-center justify-center z-50" @click.stop="hideWindow">
+  <div v-if="openDialog" class="fixed inset-0  flex items-center justify-center z-50" @click.stop="hideWindow" style="background-color: rgba(0, 0, 0, 0.7);">
     <div class="bg-white rounded-lg w-[1200px] p-6 h-190 text-neutral-500 " @click.stop>
       <h2 class="text-2xl text-neutral-800 mb-5">Редактировать виджет</h2>
       <div class="container-info flex flex-row justify-between items-center">
@@ -40,7 +41,7 @@ export default {
           </div>
         </div>
         <div class="chart bg-blue-400 w-[55%] h-100">
-
+          <graphic class="flex-grow"></graphic>
         </div>
       </div>
 

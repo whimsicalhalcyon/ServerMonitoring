@@ -33,8 +33,8 @@ export default {
 
 <template>
   <div class="container-page flex flex-row">
-    <menu-page @open-monitor="openMonitorWindow" :open-monitor="openMonitor"></menu-page>
-    <page-monitor v-if="openMonitor"></page-monitor>
+    <menu-page @open-monitor="openMonitorWindow" :open-monitor="openMonitor"  class="fixed z-50"></menu-page>
+    <page-monitor v-if="openMonitor" class="fixed top-0 left-[95px]"></page-monitor>
   </div>
 
 </template>
