@@ -19,11 +19,11 @@ export default {
 
 <template>
   <div class="container w-425 m-5 mt-5 relative">
-    <div class="container-title flex items-center">
-      <h1 class="text-4xl text-green-70">Узлы сети</h1>
-    </div>
-    <div class="fix flex items-center sticky top-0 z-30 w-[1780px] bg-[#f5f5f5] rounded-xl px-5 py-5">
-      <section class="section-menu sticky top-0 z-30 w-[1780px] h-[190px] bg-white rounded-xl px-5 py-5 text-neutral-500">
+    <div class="fix flex flex-col sticky top-0 z-30 w-[1780px] bg-[#f5f5f5] rounded-xl pb-5">
+      <div class="container-title flex items-center">
+        <h1 class="text-4xl text-green-70 mb-5 mt-5">Узлы сети</h1>
+      </div>
+      <section class="section-menu w-[1780px] h-[190px] bg-white rounded-xl px-5 py-5 text-neutral-500">
         <div class="up">
           <div class="left">
             <ui-input class="w-[350px] max-w-full mr-[20px]"></ui-input>
