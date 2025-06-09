@@ -23,12 +23,12 @@ export default {
       <div class="container-scroll flex flex-end justify-end ml-5">
       </div>
     </div>
-    <section class="section-menu w-[1780px] h-[190px] bg-white rounded-xl px-5 py-5 text-neutral-500 relative">
+    <section class="section-menu sticky top-0 z-30 w-[1780px] h-[190px] bg-white rounded-xl px-5 py-5 text-neutral-500">
       <div class="up">
         <div class="left">
           <ui-input class="w-[350px] max-w-full mr-[20px]"></ui-input>
-          <main-button class="bg-sky-600 mr-[20px]">Добавить узел</main-button>
-          <main-button class="bg-sky-900">Выгрузить таблицу</main-button>
+          <main-button class="mr-[20px]">Добавить узел</main-button>
+          <main-button class="w-[40px]"><i class="fa-solid fa-file-excel"></i></main-button>
         </div>
         <div class="right-visible">
           <div class="edit-del border rounded-lg border-neutral-400 px-3 py-1 h-10 w-[410px]">
