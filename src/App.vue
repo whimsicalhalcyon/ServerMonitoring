@@ -8,14 +8,49 @@ export default {
   },
   data() {
     return {
-      openMonitor: false
+      openMonitor: false,
+      themeLight: {
+        background: '#f5f5f5',
+        backgroundComponent: '#ffffff',
+        backgroundFilter: '#E0E0E0',
+        backgroundButton:'#4FC3F7',
+        textColor: '#212121',
+        textFilter: '#ffffff',
+        textButton: '#ffffff',
+        borderColor: '#A0A0A0',
+        clear: 'rgba(33, 33, 33, 0)',
+        grid: 'rgba(117,117,117,0.5)',
+        panelButton: '#E0E0E0',
+        panelBorder: '#757575'
+
+      },
+      themeDark: {
+        background: '#2D2D30',
+        backgroundComponent: '#1E1E1E',
+        backgroundFilter: '#3F3F46',
+        backgroundButton:'#007ACC',
+        textColor: '#E0E0E0',
+        textFilter: '#ffffff',
+        textButton: '#ffffff',
+        borderColor: '#E0E0E0',
+        clear: 'rgba(33, 33, 33, 0)',
+        grid: 'rgba(117,117,117,0.5)',
+        panelButton: '#2D2D30',
+        panelBorder: '#9C9C9C'
+      },
+      themeStatusLight: true
     }
   },
   methods : {
     openMonitorWindow() {
       this.openMonitor = true
-    }
+    },
+    changeToTheme(status) {
+      this.themeStatusLight = status
+    },
   },
+
+
   created() {
     // добавление страницы в локал сторадж, чтобы она при перезагрузке не пропадала
     const page_state = localStorage.getItem('monitorState');
@@ -23,6 +58,7 @@ export default {
       this.openMonitor = JSON.parse(page_state)
     }
   },
+
   watch: {
     openMonitor(newValue) {
       localStorage.setItem('monitorState', JSON.stringify(newValue));
@@ -32,13 +68,18 @@ export default {
 </script>
 
 <template>
-  <div class="container-page flex flex-row">
-    <menu-page @open-monitor="openMonitorWindow" :open-monitor="openMonitor"  class="fixed z-50"></menu-page>
-    <page-monitor v-if="openMonitor" class="fixed top-0 left-[95px]"></page-monitor>
+  <div class="page" :style="themeStatusLight ? {background: this.themeLight.background}: {background: this.themeDark.background}">
+    <menu-page @open-monitor="openMonitorWindow" :open-monitor="openMonitor" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark" @changeTheme="changeToTheme"></menu-page>
+    <page-monitor v-if="openMonitor" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark"></page-monitor>
   </div>
 
 </template>
 
 <style scoped>
+.page {
+  display: flex;
+  gap: 20px;
 
+  padding-right: 20px;
+}
 </style>

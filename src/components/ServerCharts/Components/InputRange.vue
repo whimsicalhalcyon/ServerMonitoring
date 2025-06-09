@@ -5,7 +5,7 @@
 </script>
 
 <template>
-  <input type="range" min="0" max="50" step="5" name="1" id="1" class="w-90 appearance-none h-2 bg-stone-300 rounded-full [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-stone-300">
+  <input type="range">
 </template>
 
 <style scoped>
