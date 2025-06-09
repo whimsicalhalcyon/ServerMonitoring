@@ -31,7 +31,7 @@
         <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
         <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
         <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
+          <div class="error bg-neutral-400" title="Это подсказка при наведении">1</div>
           <div class="error bg-sky-400">3</div>
           <div class="error bg-yellow-400">7</div>
           <div class="error bg-orange-400">1</div>
