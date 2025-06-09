@@ -40,7 +40,7 @@ export default {
            :class="openPanel ? 'fa-chevron-down' : 'fa-chevron-up'" @click="togglePanel"></i>
       </div>
     </div>
-    <section class="section-menu w-[1780px] h-[140px] bg-white rounded-xl px-5 py-5 flex justify-between text-neutral-500 relative z-30 relative" v-if="openPanel">
+    <section class="section-menu w-[1780px] h-[140px] bg-white rounded-xl px-5 py-5 flex justify-between text-neutral-500 0 sticky top-0 " v-if="openPanel">
       <div class="left flex flex-col gap-[20px]">
         <div class="top flex gap-[12px]">
           <u-i-input class="w-[584px] "></u-i-input>
