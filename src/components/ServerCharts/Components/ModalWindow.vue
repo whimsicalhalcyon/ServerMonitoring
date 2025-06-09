@@ -11,10 +11,6 @@ export default {
      openDialog: {
        type: Boolean,
        default:false
-     },
-     graph: {
-       type: Object,
-       default: () => ({})
      }
    },
   methods : {
@@ -50,8 +46,7 @@ export default {
           </div>
         </div>
         <div
-            class="graphic flex flex-col w-[730px] h-100 p-[15px] bg-neutral-100 rounded-xl ml-5 mt-5"
-        >
+            class="graphic flex flex-col w-[730px] h-g p-[15px] bg-[#FAFAFA] rounded-xl">
           <div class="flex justify-between items-center mb-3 px-2">
             <p class="color-[#212121] text-xl">Имя сервера</p>
             <button
