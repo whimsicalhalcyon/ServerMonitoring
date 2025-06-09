@@ -11,7 +11,8 @@ export default {
     UiSelect, UiInput, MainButton, UiCheckbox, DisabledButton, Table,
   },
   data() {
-    return {}
+    return {
+    }
   },
 }
 </script>
@@ -20,22 +21,22 @@ export default {
   <div class="container w-425 m-5 mt-5 relative">
     <div class="container-title flex items-center mb-5">
       <h1 class="text-4xl text-green-70">Узлы сети</h1>
-      <div class="container-scroll flex flex-end justify-end ml-5">
-      </div>
     </div>
     <section class="section-menu sticky top-0 z-30 w-[1780px] h-[190px] bg-white rounded-xl px-5 py-5 text-neutral-500">
       <div class="up">
         <div class="left">
           <ui-input class="w-[350px] max-w-full mr-[20px]"></ui-input>
-          <main-button class="mr-[20px]">Добавить узел</main-button>
+          <main-button class="mr-[20px]" @click="$emit('open-modal')">Добавить узел</main-button>
           <main-button class="w-[40px]"><i class="fa-solid fa-file-excel"></i></main-button>
         </div>
         <div class="right-visible">
           <div class="edit-del border rounded-lg border-neutral-400 px-3 py-1 h-10 w-[410px]">
             <p>Выбранный узел:</p>
             <div class="button-edit-del">
-              <button class="svg cursor-pointer bg-sky-400 hover:bg-sky-700 duration-300"><i class="fa-solid fa-pen-to-square"></i></button>
-              <button class="svg cursor-pointer ml-3 bg-red-500 hover:bg-red-800 duration-300"><i class="fa-solid fa-trash"></i></button>
+              <button class="svg cursor-pointer bg-sky-400 hover:bg-sky-700 duration-300"><i
+                  class="fa-solid fa-pen-to-square"></i></button>
+              <button class="svg cursor-pointer ml-3 bg-red-500 hover:bg-red-800 duration-300"><i
+                  class="fa-solid fa-trash"></i></button>
             </div>
           </div>
         </div>
@@ -77,17 +78,19 @@ export default {
 </template>
 
 <style scoped>
-.up{
+.up {
   display: flex;
   justify-content: space-between;
 }
+
 .edit-del {
   display: flex;
   flex-direction: row;
-justify-content: space-between;
+  justify-content: space-between;
   align-items: center;
 }
-.svg{
+
+.svg {
   width: 30px;
   height: 30px;
   border-radius: 2px;
