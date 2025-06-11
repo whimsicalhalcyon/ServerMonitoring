@@ -1,10 +1,10 @@
 import { defineConfig } from 'vite';
 import path from 'path';
 import vue from '@vitejs/plugin-vue';
-import tailwindcss from '@tailwindcss/vite'
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  plugins: [vue(),  tailwindcss()],
+  plugins: [vue(), tailwindcss()],
   base: '/ServerMonitoring/',
   resolve: {
     alias: {
@@ -12,7 +12,16 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: './docs',
+    outDir: 'dist',
+    assetsDir: './',
+    emptyOutDir: true,
+    manifest: true,
+    rollupOptions: {
+      output: {
+        entryFileNames: `assets/[name].js`,
+        chunkFileNames: `assets/[name].js`,
+        assetFileNames: `assets/[name].[ext]`
+      }
+    }
   }
 });
-
