@@ -1,14 +1,11 @@
 @import "tailwindcss";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 #app {
   max-width: 1920px;
   margin: 0 auto;
   font-weight: normal;
-  font-family: "Segoe UI";
-  font-size: 16px;
+  font-family: "Segoe UI", sans-serif;
+  font-size: 1rem;
 }
 
 body {
