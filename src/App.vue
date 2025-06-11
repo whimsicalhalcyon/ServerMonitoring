@@ -1,8 +1,8 @@
 <script>
 import PageMistakes from "@/components/ServerCharts/PageMonitor.vue";
 import MenuPage from "@/components/MenuPage.vue";
-import PageInteraction from "@/components/PageInteraction.vue";
-import ModalWindow from "@/components/ModalWindow.vue";
+import PageInteraction from "@/assets/components/PageInteraction.vue";
+import ModalWindow from "@/assets/components/ModalWindow.vue";
 
 
 export default {
