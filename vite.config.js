@@ -5,9 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [vue(),  tailwindcss()],
-  base: process.env.NODE_ENV === process.env.NODE_ENV === 'production'
-      ? '/ServerMonitoring/'
-      : '/',
+  base: '/ServerMonitoring/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
