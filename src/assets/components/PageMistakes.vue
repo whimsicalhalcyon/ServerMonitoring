@@ -4,13 +4,21 @@ import UiSelect from "./UiSelect.vue";
 import Table from "./Table.vue";
 import MainButton from "./MainButton.vue";
 import DisabledButton from "./DisabledButton.vue";
+import ScrollButton from "./ScrollButton.vue";
 
 export default {
   components: {
-    UiRadio, UiSelect, Table, MainButton, DisabledButton
+    UiRadio, UiSelect, Table, MainButton, DisabledButton, ScrollButton,
   },
   data() {
-    return {}
+    return {
+      openPanel: true,
+    }
+  },
+  methods: {
+    togglePanel() {
+      this.openPanel = !this.openPanel
+    },
   }
 }
 </script>
@@ -20,6 +28,10 @@ export default {
     <div class="fix flex flex-col sticky top-0 z-30 w-[1780px] bg-[#f5f5f5] rounded-b-xl pb-5">
       <div class="container-title flex items-center">
         <h1 class="text-4xl text-green-70 mb-5 mt-5">Ошибки</h1>
+      </div>
+      <div class="container-scroll flex flex-end justify-end ml-5">
+        <i class="fa-solid fa-chevron-up text-zinc-300 hover:text-zinc-500 cursor-pointer duration-300"
+           :class="openPanel ? 'fa-chevron-down' : 'fa-chevron-up'" @click="togglePanel"></i>
       </div>
 
       <!-- Панель фильтрации -->
@@ -57,6 +69,7 @@ export default {
       <Table />
     </section>
   </div>
+  <scroll-button></scroll-button>
 </template>
 
 
