@@ -1,20 +1,23 @@
 <script >
-import pageMonitor from "@/components/ServerCharts/PageMonitor.vue";
-import menuPage from "@/components/MenuPage.vue";
+import MenuPage from "@/components/ServerCharts/PageMonitor.vue";
+import PageMistakes from "@/components/MenuPage.vue";
 
 export default {
   components: {
-    pageMonitor, menuPage
+    MenuPage, PageMistakes
   },
   data() {
     return {
       openMonitor: false
     }
   },
-  methods : {
+  methods: {
     openMonitorWindow() {
       this.openMonitor = true
-    }
+    },
+    openModal() {
+      this.modalVisible = true;
+    },
   },
   created() {
     // добавление страницы в локал сторадж, чтобы она при перезагрузке не пропадала
@@ -33,10 +36,9 @@ export default {
 
 <template>
   <div class="container-page flex flex-row">
-    <menu-page @open-monitor="openMonitorWindow" :open-monitor="openMonitor"  class="fixed z-50"></menu-page>
-    <page-monitor v-if="openMonitor" class="fixed top-0 left-[95px]"></page-monitor>
+    <menu-page @open-monitor="openMonitorWindow" :open-monitor="openMonitor"></menu-page>
+    <page-mistakes v-if="openMonitor" @open-modal="openModal"></page-mistakes>
   </div>
-
 </template>
 
 <style scoped>
