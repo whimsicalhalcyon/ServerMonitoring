@@ -6,11 +6,12 @@ import inputDate from "@/components/InputDate.vue";
 import MainButton from "@/components/MainButton.vue";
 import ModalWindow from "@/components/ServerCharts/Components/ModalWindow.vue";
 import Graphic from "@/components/ServerCharts/Components/Graphic.vue";
+import ScrollButton from "@/components/ScrollButton.vue";
 
 export default {
   components: {
     Graphic,
-    UIInput, UiSelect, inputDate, MainButton, ModalWindow
+    UIInput, UiSelect, inputDate, MainButton, ModalWindow, ScrollButton
   },
 
   data() {
@@ -33,8 +34,8 @@ export default {
 
 <template>
   <div class="container w-425 mt-5 relative">
-    <div class="container-title flex items-center mb-5">
-      <h1 class="text-4xl text-green-70">Мониторинг</h1>
+    <div class="container-title flex items-center mb-5 0 sticky top-0">
+      <h1 class="text-4xl text-green-70" v-if="openPanel">Мониторинг</h1>
       <div class="container-scroll flex flex-end justify-end ml-5">
         <i class="fa-solid fa-chevron-up text-zinc-300 hover:text-zinc-500 cursor-pointer duration-300"
            :class="openPanel ? 'fa-chevron-down' : 'fa-chevron-up'" @click="togglePanel"></i>
@@ -119,6 +120,7 @@ export default {
     </div>
 
     <modal-window v-model:openDialog="modalWindow"></modal-window>
+    <scroll-button></scroll-button>
   </div>
 </template>
 
