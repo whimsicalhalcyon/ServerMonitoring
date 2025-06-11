@@ -1,10 +1,14 @@
 <script>
-import MenuPage from "./assets/components/MenuPage.vue";
-import PageInteraction from "./assets/components/PageInteraction.vue";
-import ModalWindow from "./assets/components/ModalWindow.vue";
+import PageMistakes from "@/components/ServerCharts/PageMonitor.vue";
+import MenuPage from "@/components/MenuPage.vue";
+import PageInteraction from "@/assets/components/PageInteraction.vue";
+import ModalWindow from "@/assets/components/ModalWindow.vue";
+
 
 export default {
-  components: {PageInteraction, MenuPage, ModalWindow},
+  components: {
+    MenuPage, PageMistakes, ModalWindow, PageInteraction,
+  },
   data() {
     return {
       openMonitor: false,
@@ -18,19 +22,32 @@ export default {
     closeMonitorWindow() {
       this.openMonitor = false;
     },
-    openModal() {
-      this.modalVisible = true;
-    },
     closeModal() {
       this.modalVisible = false;
     },
+    openModal() {
+      this.modalVisible = true;
+    },
   },
+  created() {
+    // добавление страницы в локал сторадж, чтобы она при перезагрузке не пропадала
+    const page_state = localStorage.getItem('monitorState');
+    if (page_state) {
+      this.openMonitor = JSON.parse(page_state)
+    }
+  },
+  watch: {
+    openMonitor(newValue) {
+      localStorage.setItem('monitorState', JSON.stringify(newValue));
+    }
+  }
 }
 </script>
 
 <template>
   <div class="container-page flex flex-row">
     <menu-page @open-monitor="openMonitorWindow" :open-monitor="openMonitor"></menu-page>
+    <page-mistakes v-if="openMonitor" @open-modal="openModal"></page-mistakes>
     <page-interaction v-if="openMonitor" @open-modal="openModal"></page-interaction>
     <modal-window :visible="modalVisible" @close="closeModal"></modal-window>
   </div>
