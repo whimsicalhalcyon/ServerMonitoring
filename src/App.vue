@@ -1,6 +1,6 @@
-<script >
-import MenuPage from "@/components/ServerCharts/PageMonitor.vue";
-import PageMistakes from "@/components/MenuPage.vue";
+<script>
+import PageMistakes from "@/components/ServerCharts/PageMonitor.vue";
+import MenuPage from "@/components/MenuPage.vue";
 
 export default {
   components: {
@@ -22,7 +22,7 @@ export default {
   created() {
     // добавление страницы в локал сторадж, чтобы она при перезагрузке не пропадала
     const page_state = localStorage.getItem('monitorState');
-    if(page_state) {
+    if (page_state) {
       this.openMonitor = JSON.parse(page_state)
     }
   },
