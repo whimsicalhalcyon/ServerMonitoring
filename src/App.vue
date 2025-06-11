@@ -1,19 +1,29 @@
 <script>
 import PageMistakes from "@/components/ServerCharts/PageMonitor.vue";
 import MenuPage from "@/components/MenuPage.vue";
+import PageInteraction from "@/components/PageInteraction.vue";
+import ModalWindow from "@/components/ModalWindow.vue";
+
 
 export default {
   components: {
-    MenuPage, PageMistakes
+    MenuPage, PageMistakes, ModalWindow, PageInteraction,
   },
   data() {
     return {
-      openMonitor: false
+      openMonitor: false,
+      modalVisible: false,
     }
   },
   methods: {
     openMonitorWindow() {
       this.openMonitor = true
+    },
+    closeMonitorWindow() {
+      this.openMonitor = false;
+    },
+    closeModal() {
+      this.modalVisible = false;
     },
     openModal() {
       this.modalVisible = true;
@@ -38,6 +48,8 @@ export default {
   <div class="container-page flex flex-row">
     <menu-page @open-monitor="openMonitorWindow" :open-monitor="openMonitor"></menu-page>
     <page-mistakes v-if="openMonitor" @open-modal="openModal"></page-mistakes>
+    <page-interaction v-if="openMonitor" @open-modal="openModal"></page-interaction>
+    <modal-window :visible="modalVisible" @close="closeModal"></modal-window>
   </div>
 </template>
 
