@@ -5,7 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [vue(), tailwindcss()],
-  base: '/ServerMonitoring/',
+  base: process.env.NODE_ENV === 'production' ? './' : '/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -13,14 +13,12 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    assetsDir: './',
-    emptyOutDir: true,
-    manifest: true,
+    assetsDir: 'assets',
     rollupOptions: {
       output: {
-        entryFileNames: `assets/[name].js`,
-        chunkFileNames: `assets/[name].js`,
-        assetFileNames: `assets/[name].[ext]`
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name].[ext]'
       }
     }
   }
