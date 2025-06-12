@@ -1,31 +1,46 @@
 <script>
 
-import UiInput from "@/components/UiInput.vue";
-import UiSelect from "@/components/UiSelect.vue";
-import MainButton from "@/components/MainButton.vue";
-import UiCheckbox from  "@/components/Interaction/UiCheckbox.vue"
-import DisabledButton from "@/components/Interaction/DisabledButton.vue"
-import Table from "@/components/Table.vue";
 
 export default {
-  components: {
-    UiSelect,
-    UiInput,
-    MainButton,
-    UiCheckbox,
-    DisabledButton,
-    Table
+  props: {
+    themeLight: {
+      type: Object,
+      required: true
+    },
+    themeDark: {
+      type: Object,
+      required: true
+    },
+    themeStatus: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {
-      panelVisible: true
+      openPanel: true,
     }
+  },
+  methods: {
+    togglePanel() {
+      this.openPanel = !this.openPanel
+    },
   }
+  // data() {
+  //   return {
+  //     panelVisible: true
+  //   }
+  // }
 }
 </script>
 
 <template>
-  <div>jdsikfjdsjfkdsjflkdsjf;ls</div>
+  <div class="main">
+    <div class="panel" v-if="openPanel" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
+    </div>
+    <div class="table"></div>
+  </div>
+
 <!--  <div class="flex flex-col w-full px-4 xl:px-8 2xl:px-16">-->
 <!--    &lt;!&ndash; Заголовок + панель &ndash;&gt;-->
 <!--    <div class="sticky top-0 z-30 w-full bg-[#f5f5f5] rounded-b-xl pb-5 shadow-sm">-->
@@ -107,11 +122,20 @@ export default {
 </template>
 
 <style scoped>
-
-
-div {
-  color: red;
-  width: 50%;
-  height: 50%;
-}
+  .main {
+    width: 100%;
+  }
+  .main .panel {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: fit-content;
+    padding: 20px;
+    border-radius: 12px;
+    gap: 14px;
+    margin-top: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
 </style>

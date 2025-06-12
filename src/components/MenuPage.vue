@@ -56,15 +56,15 @@ export default {
 <template>
   <div class="panel" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
     <div class="buttons">
-      <button class="button">
-        <i class="fa-solid fa-database" @click="$emit('open-mistakes')"></i>
+      <button class="button" @click="$emit('open-mistakes', true)">
+        <i class="fa-solid fa-database"></i>
      </button>
 
-      <button class="button">
-        <i class="fa-solid fa-database" @click="$emit('open-interaction', true)"></i>
+      <button class="button"  @click="$emit('open-interaction', true)">
+        <i class="fa-solid fa-database"></i>
       </button>
 
-      <button class="button check" :style="themeStatus ? {background: themeLight.panelButton}: {background: themeDark.panelButton}" @click="$emit('open-monitor')">
+      <button class="button check" :style="themeStatus ? {background: themeLight.panelButton}: {background: themeDark.panelButton}" @click="$emit('open-monitor', true)">
         <i class="fa-solid fa-database"></i>
       </button>
 
