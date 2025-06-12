@@ -18,11 +18,12 @@ export default {
     themeStatus: {
       type: Boolean,
       default: true
-    }
+    },
   },
   data() {
     return {
       openPanel: true,
+      isSelected: null,
     }
   },
   methods: {
@@ -47,6 +48,8 @@ export default {
           :theme-light="themeLight"
           :theme-dark="themeDark"
           :theme-status="themeStatus"
+          :is-selected="isSelected"
+          @update:isSelected="isSelected=$event"
       />
     </div>
   </div>

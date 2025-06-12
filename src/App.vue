@@ -10,6 +10,7 @@ export default {
   },
   data() {
     return {
+      isSelected: null,
       openMonitor: false,
       openMistakes: false,
       openInteraction: false,
@@ -89,7 +90,7 @@ export default {
   <div class="page" :style="themeStatusLight ? {background: this.themeLight.background}: {background: this.themeDark.background}">
     <menu-page @open-monitor="openMonitorWindow" @open-mistakes="openMistakesWindow" @open-interaction="openInteractionWindow" :open-interaction="openInteraction" :open-mistakes="openMistakes" :open-monitor="openMonitor" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark" @changeTheme="changeToTheme"></menu-page>
     <page-monitor v-if="openMonitor" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark"></page-monitor>
-    <page-interaction v-if="openInteraction" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark"></page-interaction>
+    <page-interaction v-if="openInteraction" :isSelected="isSelected" @update:isSelected="isSelected=$event" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark"></page-interaction>
     <page-mistakes v-if="openMistakes" ></page-mistakes>
   </div>
 

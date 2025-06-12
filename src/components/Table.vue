@@ -12,20 +12,30 @@ export default {
     themeStatus: {
       type: Boolean,
       default: true
+    },
+    isSelected:{
+      type: Number,
+    },
+
+  },
+  methods: {
+    toggleSelect(index) {
+      this.$emit('update:isSelected', this.isSelected === index ? null : index);
     }
   },
   computed: {
-    currentTheme() {
+    currTheme() {
       return this.themeStatus ? this.themeLight : this.themeDark;
     },
     cellStyle() {
       return {
-        background: this.currentTheme.backgroundComponent,
-        color: this.currentTheme.textColor,
-        border: `1px solid ${this.currentTheme.borderColor}`
+        background: this.currTheme.backgroundComponent,
+        color: this.currTheme.textColor,
+        border: `1px solid ${this.currTheme.borderColor}`
       };
     }
   }
+
 }
 </script>
 
@@ -34,39 +44,40 @@ export default {
   <div
       class="table-container"
       :style="{
-      background: currentTheme.backgroundComponent,
-      color: currentTheme.textColor,
-      borderColor:currentTheme.borderColor
+      background: currTheme.backgroundComponent,
+      color: currTheme.textColor,
+      borderColor:currTheme.borderColor
     }"
   >
     <table class="custom-table">
-      <thead :style="{ background: currentTheme.backgroundFilter }">
+      <thead :style="{ background: currTheme.backgroundFilter }">
       <tr>
-        <th class="rounded-tl" :style="cellStyle"> </th>
+        <th class="rounded-tl" :style="cellStyle"></th>
         <th :style="cellStyle">DNS-имя</th>
         <th :style="cellStyle">IP-адрес</th>
         <th :style="cellStyle">Состояние</th>
-        <th :style="Object.assign({ width: '280px' }, cellStyle)">Ошибки</th>
+        <th :style="cellStyle">Ошибки</th>
         <th :style="cellStyle">Группа</th>
         <th class="rounded-tr" :style="cellStyle">Графики</th>
       </tr>
       </thead>
       <tbody>
-      <tr v-for="i in 2" :key="i">
+      <tr v-for="i in 70" key="i">
         <td :style="cellStyle">
           <button
               class="select-btn"
               :style="{
-                borderColor: currentTheme.borderColor,
-                color: currentTheme.borderColor
+                borderColor: currTheme.borderColor,
+                color: currTheme.borderColor
               }"
+              @click="toggleSelect(i)"
           >
-            <!-- Галочка -->
+            <i class="fa-solid fa-check" v-if="isSelected===i"></i>
           </button>
         </td>
         <td :style="cellStyle">server1.local</td>
         <td :style="cellStyle">192.168.0.1</td>
-        <td :style="Object.assign({}, cellStyle, { color: 'green' })">Активировано</td>
+        <td :style="cellStyle">Активировано</td>
         <td :style="cellStyle" class="error-container">
           <div class="error" style="background-color: #BDBDBD;" title="Это подсказка">1</div>
           <div class="error" style="background-color: #4FC3F7;">3</div>
@@ -76,7 +87,7 @@ export default {
           <div class="error" style="background-color: #B71C1C;">6</div>
         </td>
         <td :style="cellStyle">APP</td>
-        <td :style="cellStyle">Открыть</td>
+        <td :style="cellStyle"><a>Открыть</a></td>
       </tr>
       </tbody>
     </table>
@@ -85,6 +96,7 @@ export default {
 
 
 <style scoped>
+
 .table-container {
   border-radius: 12px;
   overflow: hidden;
