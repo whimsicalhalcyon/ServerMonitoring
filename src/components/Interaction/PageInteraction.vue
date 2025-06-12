@@ -4,7 +4,7 @@ import UiInput from './UiInput.vue'
 import MainButton from './MainButton.vue'
 import UiCheckbox from './UiCheckbox.vue'
 import DisabledButton from './DisabledButton.vue'
-import Table from './Table.vue'
+import Table from '../Table.vue'
 
 export default {
   components: {

@@ -21,7 +21,8 @@ export default {
         clear: 'rgba(33, 33, 33, 0)',
         grid: 'rgba(117,117,117,0.5)',
         panelButton: '#E0E0E0',
-        panelBorder: '#757575'
+        panelBorder: '#757575',
+        radioBorder: '#ffffff',
 
       },
       themeDark: {
@@ -36,7 +37,8 @@ export default {
         clear: 'rgba(33, 33, 33, 0)',
         grid: 'rgba(117,117,117,0.5)',
         panelButton: '#2D2D30',
-        panelBorder: '#9C9C9C'
+        panelBorder: '#9C9C9C',
+        radioBorder: '#000000',
       },
       themeStatusLight: true
     }

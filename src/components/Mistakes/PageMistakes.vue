@@ -1,10 +1,10 @@
 <script>
 import UiRadio from "./UiRadio.vue";
 import UiSelect from "./UiSelect.vue";
-import Table from "./Table.vue";
+import Table from "../Table.vue";
 import MainButton from "./MainButton.vue";
-import DisabledButton from "./DisabledButton.vue";
-import ScrollButton from "./ScrollButton.vue";
+import DisabledButton from "../Interaction/DisabledButton.vue";
+import ScrollButton from "../Interaction/ScrollButton.vue";
 
 export default {
   components: {
