@@ -1,8 +1,5 @@
 <script>
 export default {
-  components: {
-    Radio
-  },
   props: {
     themeLight: {
       type: Object,
@@ -22,7 +19,6 @@ export default {
 
 <template>
   <select :style="themeStatus ? {background: themeLight.backgroundFilter, color: themeLight.textColor}: {background: themeDark.backgroundFilter, color: themeDark.textColor}"><slot></slot></select>
-
 </template>
 
 <style scoped>

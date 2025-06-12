@@ -1,14 +1,18 @@
 <script >
 import pageMonitor from "@/components/ServerCharts/PageMonitor.vue";
 import menuPage from "@/components/MenuPage.vue";
+import pageMistakes from "@/components/Mistakes/PageMistakes.vue";
+import pageInteraction from "@/components/Interaction/PageInteraction.vue";
 
 export default {
   components: {
-    pageMonitor, menuPage
+    pageMonitor, menuPage, pageMistakes, pageInteraction
   },
   data() {
     return {
       openMonitor: false,
+      openMistakes: true,
+      openInteraction:false,
       themeLight: {
         background: '#f5f5f5',
         backgroundComponent: '#ffffff',
@@ -45,7 +49,19 @@ export default {
   },
   methods : {
     openMonitorWindow() {
-      this.openMonitor = true
+      this.openMonitor = true;
+      this.openMistakes = false;
+      this.openInteraction = false
+    },
+    openMistakesWindow() {
+      this.openMonitor = false;
+      this.openMistakes = true;
+      this.openInteraction = false
+    },
+    openInteractionWindow(status) {
+      this.openMonitor = false;
+      this.openMistakes = false;
+      this.openInteraction = status
     },
     changeToTheme(status) {
       this.themeStatusLight = status
@@ -71,8 +87,10 @@ export default {
 
 <template>
   <div class="page" :style="themeStatusLight ? {background: this.themeLight.background}: {background: this.themeDark.background}">
-    <menu-page @open-monitor="openMonitorWindow" :open-monitor="openMonitor" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark" @changeTheme="changeToTheme"></menu-page>
+    <menu-page @open-monitor="openMonitorWindow" @open-mistakes="openMistakesWindow" @open-inteaction="openInteractionWindow" :open-interaction="openInteraction" :open-mistakes="openMistakes" :open-monitor="openMonitor" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark" @changeTheme="changeToTheme"></menu-page>
     <page-monitor v-if="openMonitor" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark"></page-monitor>
+    <page-interaction v-if="openInteraction" ></page-interaction>
+    <page-mistakes v-if="openMistakes" ></page-mistakes>
   </div>
 
 </template>
