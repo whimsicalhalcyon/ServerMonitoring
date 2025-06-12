@@ -18,18 +18,16 @@ export default {
 </script>
 
 <template>
-  <button :style="themeStatus ? {background: themeLight.backgroundButton, color: themeLight.textButton}: {background: themeDark.backgroundButton, color: themeDark.textButton}"><slot></slot></button>
+  <input type="text" placeholder="Поиск по имени сервера" :style="themeStatus ? {borderColor: themeLight.borderColor}: {borderColor: themeDark.borderColor}">
 </template>
 
 <style scoped>
-button {
-  width: 17%;
-  height: 40px;
+input {
+  background: rgba(33, 33, 33, 0);
   border-radius: 8px;
-  cursor: pointer;
-}
-button:hover {
-  transition: .2s;
-
+  width: 31%;
+  height: 40px;
+  border: 1px solid;
+  padding: 0 14px 0 14px;
 }
 </style>
