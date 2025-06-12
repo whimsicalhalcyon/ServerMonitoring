@@ -1,629 +1,117 @@
 <script>
-
+export default {
+  props: {
+    themeLight: {
+      type: Object,
+      required: true
+    },
+    themeDark: {
+      type: Object,
+      required: true
+    },
+    themeStatus: {
+      type: Boolean,
+      default: true
+    }
+  },
+  computed: {
+    currentTheme() {
+      return this.themeStatus ? this.themeLight : this.themeDark;
+    },
+    cellStyle() {
+      return {
+        background: this.currentTheme.backgroundComponent,
+        color: this.currentTheme.textColor,
+        border: `1px solid ${this.currentTheme.borderColor}`
+      };
+    }
+  }
+}
 </script>
 
+
 <template>
-  <div class="rounded-[12px] overflow-hidden">
-    <table class="table-auto border-separate border-spacing-0 w-full text-left">
-      <thead class="bg-neutral-50">
-      <tr class="bg-neutral-300">
-        <th class="px-4 py-2 border border-neutral-400 rounded-tl-[12px]"></th>
-        <th class="px-4 py-2 border border-neutral-400">DNS-имя</th>
-        <th class="px-4 py-2 border border-neutral-400">IP-адрес</th>
-        <th class="px-4 py-2 border border-neutral-400">Состояние</th>
-        <th class="px-4 py-2 border border-neutral-400 w-[280px]">Ошибки</th>
-        <th class="px-4 py-2 border border-neutral-400">Группа</th>
-        <th class="px-4 py-2 border border-neutral-400 rounded-tr-[12px]">Графики</th>
+  <div
+      class="table-container"
+      :style="{
+      background: currentTheme.backgroundComponent,
+      color: currentTheme.textColor,
+      borderColor:currentTheme.borderColor
+    }"
+  >
+    <table class="custom-table">
+      <thead :style="{ background: currentTheme.backgroundFilter }">
+      <tr>
+        <th class="rounded-tl" :style="cellStyle"> </th>
+        <th :style="cellStyle">DNS-имя</th>
+        <th :style="cellStyle">IP-адрес</th>
+        <th :style="cellStyle">Состояние</th>
+        <th :style="Object.assign({ width: '280px' }, cellStyle)">Ошибки</th>
+        <th :style="cellStyle">Группа</th>
+        <th class="rounded-tr" :style="cellStyle">Графики</th>
       </tr>
       </thead>
       <tbody>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
+      <tr v-for="i in 2" :key="i">
+        <td :style="cellStyle">
           <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
+              class="select-btn"
+              :style="{
+                borderColor: currentTheme.borderColor,
+                color: currentTheme.borderColor
+              }"
           >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
+            <!-- Галочка -->
           </button>
         </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400" title="Это подсказка при наведении">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
+        <td :style="cellStyle">server1.local</td>
+        <td :style="cellStyle">192.168.0.1</td>
+        <td :style="Object.assign({}, cellStyle, { color: 'green' })">Активировано</td>
+        <td :style="cellStyle" class="error-container">
+          <div class="error" style="background-color: #BDBDBD;" title="Это подсказка">1</div>
+          <div class="error" style="background-color: #4FC3F7;">3</div>
+          <div class="error" style="background-color: #FFEB3B; color: black;">7</div>
+          <div class="error" style="background-color: #FF9800;">1</div>
+          <div class="error" style="background-color: #F44336;">4</div>
+          <div class="error" style="background-color: #B71C1C;">6</div>
         </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
-      </tr>
-      <tr>
-        <td class="px-4 py-2 border border-neutral-400">
-          <button
-              type="button"
-              class="w-6 h-6 rounded-sm border-2 border-neutral-400 text-neutral-400 hover:border-sky-600 hover:text-sky-600 transition-colors flex items-center justify-center"
-              aria-label="Выбрать строку"
-          >
-            <!-- Иконка "галочка" для выбранного состояния, пока просто пусто -->
-          </button>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">server1.local</td>
-        <td class="px-4 py-2 border border-neutral-400">192.168.0.1</td>
-        <td class="px-4 py-2 border border-neutral-400 text-green-500">Активировано</td>
-        <td class="px-4 py-2 border border-neutral-400 flex justify-between max-w-[280px]">
-          <div class="error bg-neutral-400">1</div>
-          <div class="error bg-sky-400">3</div>
-          <div class="error bg-yellow-400">7</div>
-          <div class="error bg-orange-400">1</div>
-          <div class="error bg-red-500">4</div>
-          <div class="error bg-red-800">6</div>
-        </td>
-        <td class="px-4 py-2 border border-neutral-400">APP</td>
-        <td class="px-4 py-2 border border-neutral-400">Открыть</td>
+        <td :style="cellStyle">APP</td>
+        <td :style="cellStyle">Открыть</td>
       </tr>
       </tbody>
-
     </table>
   </div>
 </template>
 
+
 <style scoped>
+.table-container {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: separate; /* это важно для границ */
+  border-spacing: 0;
+  text-align: left;
+}
+
+th,
+td {
+  padding: 12px;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+th.rounded-tl {
+  border-top-left-radius: 12px;
+}
+
+th.rounded-tr {
+  border-top-right-radius: 12px;
+}
+
 tbody tr:last-child td:first-child {
   border-bottom-left-radius: 12px;
 }
@@ -631,11 +119,37 @@ tbody tr:last-child td:first-child {
 tbody tr:last-child td:last-child {
   border-bottom-right-radius: 12px;
 }
-.error{
+
+.select-btn {
+  width: 24px;
+  height: 24px;
+  border: 2px solid;
+  border-radius: 4px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.select-btn:hover {
+  border-color: #4FC3F7;
+  color: #4FC3F7;
+}
+
+.error-container {
+  display: flex;
+  gap: 4px;
+}
+
+.error {
   width: 25px;
   height: 25px;
   border-radius: 3px;
   text-align: center;
+  line-height: 25px;
+  font-size: 14px;
   color: white;
 }
 </style>
