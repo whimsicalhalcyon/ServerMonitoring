@@ -47,55 +47,63 @@ export default {
 
 <template>
   <div class="main">
-    <div class="text">
-      <p :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}">Мониторинг</p>
-      <div class="">
-        <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-           :class="openPanel ? 'fa-chevron-down' : 'fa-chevron-up'" @click="togglePanel"></i>
+    <div class="main-top" :style="themeStatus ? {background: themeLight.background}: {background: themeDark.background}">
+      <div class="text">
+        <p :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}">Мониторинг</p>
+        <div class="">
+          <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+             :class="openPanel ? 'fa-chevron-down' : 'fa-chevron-up'" @click="togglePanel"></i>
+        </div>
+        <div class="themes" v-on:click="$emit('changeTheme', !themeStatus)">
+          <i class="fa-solid fa-sun" :class="themeStatus ? 'fa-moon': 'fa-sun'"
+             :style="themeStatus ? {color: themeDark.backgroundComponent}: {color: themeLight.backgroundComponent}"></i>
+        </div>
+
+      </div>
+      <div class="panel" v-if="openPanel" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
+        <div class="top">
+          <ui-input :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
+          <ui-select :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+            <option>Выбрать сервера</option>
+            <option>Все</option>
+            <option>web</option>
+            <option>app</option>
+          </ui-select>
+          <ui-select :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+            <option>Сортировка по имени</option>
+            <option>Без сортировки</option>
+            <option>По возрастанию</option>
+            <option>По убыванию</option>
+          </ui-select>
+          <ui-select :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+            <option>Выбрать интервал</option>
+            <option>Последние 5 минут</option>
+            <option>Последние 15 минут</option>
+            <option>Последние 30 минут</option>
+            <option>Последний час</option>
+            <option>Последние 12 часов</option>
+            <option>Последний день</option>
+            <option>Последние 12 дней</option>
+
+          </ui-select>
+        </div>
+        <div class="bottom">
+          <ui-input class="date" placeholder="дд.мм.гггг 00:00"  :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+
+          </ui-input>
+          <ui-input class="date" placeholder="дд.мм.гггг 00:00" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
+          <main-button class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Найти</main-button>
+          <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" :style="themeStatus ? {borderColor: themeLight.borderColor, background: themeLight.backgroundComponent}: {borderColor: themeDark.borderColor, background: themeDark.backgroundComponent}">
+            <option>Выбрать формат</option>
+            <option>PDF</option>
+            <option>PNG</option>
+            <option>DOCX</option>
+          </ui-select>
+          <main-button class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Выгрузить</main-button>
+        </div>
       </div>
     </div>
-    <div class="panel" v-if="openPanel" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
-      <div class="top">
-        <ui-input :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
-        <ui-select :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-          <option>Выбрать сервера</option>
-          <option>Все</option>
-          <option>web</option>
-          <option>app</option>
-        </ui-select>
-        <ui-select :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-          <option>Сортировка по имени</option>
-          <option>Без сортировки</option>
-          <option>По возрастанию</option>
-          <option>По убыванию</option>
-        </ui-select>
-        <ui-select :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-          <option>Выбрать интервал</option>
-          <option>Последние 5 минут</option>
-          <option>Последние 15 минут</option>
-          <option>Последние 30 минут</option>
-          <option>Последний час</option>
-          <option>Последние 12 часов</option>
-          <option>Последний день</option>
-          <option>Последние 12 дней</option>
 
-        </ui-select>
-      </div>
-      <div class="bottom">
-        <ui-input class="date" placeholder="дд.мм.гггг 00:00"  :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-
-        </ui-input>
-        <ui-input class="date" placeholder="дд.мм.гггг 00:00" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
-        <main-button class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Найти</main-button>
-        <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" :style="themeStatus ? {borderColor: themeLight.borderColor, background: themeLight.clear}: {borderColor: themeDark.borderColor, background: themeLight.clear}">
-          <option>Выбрать формат</option>
-          <option>PDF</option>
-          <option>PNG</option>
-          <option>DOCX</option>
-        </ui-select>
-        <main-button class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Выгрузить</main-button>
-      </div>
-    </div>
     <div class="graphics">
       <div class="graphic" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}" v-for="n in 70" :key="n">
         <div class="top">
@@ -120,7 +128,22 @@ export default {
 
 <style scoped>
 
-.main .panel {
+.themes {
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  margin-left: auto;
+}
+.main .main-top {
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding-bottom: 1.1%;
+  border-radius: 0 0 12px 12px;
+}
+.main .main-top .panel {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -129,26 +152,24 @@ export default {
   border-radius: 12px;
   gap: 14px;
   margin-top: 20px;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+
 }
-.main .panel .top {
+.main .main-top .panel .top {
   display: flex;
   gap: 1.1%
 }
-.main .panel .bottom {
+.main .main-top .panel .bottom {
   display: flex;
   gap: 1.1%
 }
 
-.main .panel .bottom .date {
+.main .main-top .panel .bottom .date {
   width: 14.95%;
 }
-.main .panel .bottom .btn {
+.main .main-top .panel .bottom .btn {
   width: 10%;
 }
-.main .panel .bottom .select {
+.main .main-top .panel .bottom .select {
   width: 10.8%;
   border: 1px solid;
   margin-left: auto;
@@ -161,11 +182,11 @@ export default {
 
 }
 .main .graphics .graphic {
-  margin-top: 1.1%;
   width: 32.6%;
   height: 28%;
   border-radius: 12px;
   padding: 14px;
+  margin-bottom: 1.1%;
 }
 .main .graphics .graphic .top {
   display: flex;
@@ -176,16 +197,17 @@ export default {
 .main .graphics .graphic .top p {
   font-size: 18px;
 }
-.main .text {
+.main .main-top .text {
   display: flex;
   gap: 8px;
   padding-top: 20px;
   align-items: center;
+
 }
-.main .text p {
+.main .main-top .text p {
   font-size: 28px;
 }
-.main .text i {
+.main .main-top .text i {
   margin-top: 4px;
   font-size: 18px;
 }
