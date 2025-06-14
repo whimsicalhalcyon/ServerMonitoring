@@ -44,7 +44,8 @@ export default {
         panelBorder: '#9C9C9C',
         radioBorder: '#000000',
       },
-      themeStatusLight: true
+      themeStatusLight: true,
+      checkButton: 1,
     }
   },
   methods : {
@@ -52,20 +53,24 @@ export default {
       this.openMonitor = status;
       this.openMistakes = false;
       this.openInteraction = false
+      this.checkButton = 3;
     },
     openMistakesWindow(status) {
       this.openMonitor = false;
       this.openMistakes = status;
       this.openInteraction = false
+      this.checkButton = 1;
     },
     openInteractionWindow(status) {
       this.openMonitor = false;
       this.openMistakes = false;
       this.openInteraction = status
+      this.checkButton = 2;
     },
     changeToTheme(status) {
       this.themeStatusLight = status
     },
+
   },
 
 
@@ -80,15 +85,16 @@ export default {
   watch: {
     openMonitor(newValue) {
       localStorage.setItem('monitorState', JSON.stringify(newValue));
-    }
+    },
+
   }
 }
 </script>
 
 <template>
   <div class="page" :style="themeStatusLight ? {background: this.themeLight.background}: {background: this.themeDark.background}">
-    <menu-page @open-monitor="openMonitorWindow" @open-mistakes="openMistakesWindow" @open-interaction="openInteractionWindow" :open-interaction="openInteraction" :open-mistakes="openMistakes" :open-monitor="openMonitor" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark" @changeTheme="changeToTheme"></menu-page>
-    <page-monitor v-if="openMonitor" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark"></page-monitor>
+    <menu-page :checkButton="checkButton" @open-monitor="openMonitorWindow" @open-mistakes="openMistakesWindow" @open-interaction="openInteractionWindow" :open-interaction="openInteraction" :open-mistakes="openMistakes" :open-monitor="openMonitor" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark"></menu-page>
+    <page-monitor v-if="openMonitor" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark" @changeTheme="changeToTheme"></page-monitor>
     <page-interaction v-if="openInteraction" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark"></page-interaction>
     <page-mistakes v-if="openMistakes" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark"></page-mistakes>
   </div>

@@ -18,7 +18,7 @@ export default {
 </script>
 
 <template>
-  <input type="text" placeholder="Поиск по имени сервера" :style="themeStatus ? {borderColor: themeLight.borderColor}: {borderColor: themeDark.borderColor}">
+  <input type="text" placeholder="Поиск по имени сервера" :style="themeStatus ? {borderColor: themeLight.borderColor, color: themeLight.textColor}: {borderColor: themeDark.borderColor, color: themeDark.textColor}">
 </template>
 
 <style scoped>
