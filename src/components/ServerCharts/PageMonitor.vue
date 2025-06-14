@@ -141,7 +141,7 @@ export default {
   top: 0;
   z-index: 1000;
   padding-bottom: 1.1%;
-  border-radius: 0 0 12px 12px;
+
 }
 .main .main-top .panel {
   display: flex;
