@@ -1,91 +1,100 @@
 <script>
 import UiSelect from "@/components/UiSelect.vue";
 import InputRange from "@/components/ServerCharts/Components/InputRange.vue";
-import UIInput from "@/components/UIInput.vue";
+import UiInput from "@/components/UiInput.vue";
 import MainButton from "@/components/MainButton.vue";
 import Graphic from "@/components/ServerCharts/Components/Graphic.vue";
 
 export default {
-  components: {Graphic, MainButton, UIInput, UiSelect, InputRange},
-   props : {
-     openDialog: {
-       type: Boolean,
-       default:false
-     }
-   },
-  methods : {
+  components: { Graphic, MainButton, UiInput, UiSelect, InputRange },
+  props: {
+    openDialog: {
+      type: Boolean,
+      default: false
+    },
+    themeStatus: {
+      type: Boolean,
+      default: true
+    },
+    themeLight: {
+      type: Object,
+      required: true
+    },
+    themeDark: {
+      type: Object,
+      required: true
+    },
+  },
+  methods: {
     hideWindow() {
-      this.$emit('update:openDialog', false)
+      this.$emit("update:openDialog", false);
     }
   }
-}
+};
 </script>
 
 <template>
   <div
       v-if="openDialog"
-      class="fixed inset-0 flex items-center justify-center z-50"
+      class="modal-overlay"
       @click.stop="hideWindow"
-      style="background-color: rgba(0, 0, 0, 0.7);"
   >
-    <div class="bg-white rounded-lg w-[1200px] p-6 h-190 text-neutral-500 " @click.stop>
-      <h2 class="text-2xl text-neutral-800 mb-5">Редактировать виджет</h2>
-      <div class="container-info flex flex-row justify-between items-center">
-        <div class="container-date w-[40%] text-lg">
-          <div class="container-select flex flex-col h-50">
-            <span class="mb-1">Имя графика</span>
-            <ui-select class="mb-5"></ui-select>
-            <span class="mb-1">Интервал обновления</span>
-            <ui-select class="mb-5"></ui-select>
+    <div class="modal-content" @click.stop>
+      <h2 class="modal-title">Редактировать виджет</h2>
+      <div class="container-info">
+        <div class="container-date">
+          <div class="container-select">
+            <span>Имя графика</span>
+            <ui-select :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" class="select-element"></ui-select>
+            <span>Интервал обновления</span>
+            <ui-select :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" class="select-element"></ui-select>
           </div>
-          <div class="select-param flex flex-col rounded-lg bg-neutral-100 mt-2 p-5">
-            <span class="mb-1">Набор данных</span>
-            <ui-select class="mb-5"></ui-select>
-            <span class="mb-1">Шаблон данных</span>
-            <ui-select class="mb-1"></ui-select>
+          <div class="select-param">
+            <span>Набор данных</span>
+            <ui-select :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" class="select-element"></ui-select>
+            <span>Шаблон данных</span>
+            <ui-select :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" class="select-element"></ui-select>
           </div>
         </div>
-        <div
-            class="graphic flex flex-col w-[730px] h-g p-[15px] ml-5 mt-2 bg-neutral-100 rounded-xl">
-          <div class="flex justify-between items-center mb-3 px-2">
-            <p class="color-[#212121] text-xl">Имя сервера</p>
+        <div class="graphic">
+          <div class="graphic-header">
+            <p class="server-name">Имя сервера</p>
             <button
-                class="settings-button cursor-pointer"
+                class="settings-button"
                 @click="toggleWindow"
                 aria-label="Открыть настройки графика"
-                style="background: transparent; border: none; padding: 0;"
-            >
-            </button>
+            ></button>
           </div>
-          <graphic class="flex-grow"></graphic>
+          <graphic :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" class="graphic-body"></graphic>
         </div>
       </div>
 
-      <div class="container-range flex flex-row justify-between w-[100%] rounded-lg bg-neutral-100 mt-5 p-5 text-lg">
-        <div class="container-range-param flex flex-col">
-          <span class="mb-2">Ширина</span>
-          <input-range class="mb-5"></input-range>
-          <span class="mb-2">Размер точек</span>
-          <input-range class="mb-5"></input-range>
-        </div>
-        <div class="container-range-param flex flex-col">
-          <span class="mb-2">Прозрачность</span>
-          <input-range class="mb-5"></input-range>
-          <span class="mb-2">Заполнение</span>
-          <input-range class="mb-5"></input-range>
+      <div class="container-range">
+        <div class="container-range-param">
+          <span>Ширина</span>
+          <input-range class="range-input"></input-range>
+          <span>Размер точек</span>
+          <input-range class="range-input"></input-range>
         </div>
         <div class="container-range-param">
-          <span class="mb-2">Цвет</span>
-          <div class="colors flex flex-row">
-            <input type="color" class="w-30 h-20">
+          <span>Прозрачность</span>
+          <input-range class="range-input"></input-range>
+          <span>Заполнение</span>
+          <input-range class="range-input"></input-range>
+        </div>
+        <div class="container-range-param">
+          <span>Цвет</span>
+          <div class="colors">
+            <input type="color" class="color-picker">
           </div>
         </div>
       </div>
-      <div class="container-button mt-5 flex justify-between">
-        <main-button class="!bg-white !text-sky-400 !border !border-sky-400 hover:!bg-sky-400 hover:!text-white">Добавить набор данных</main-button>
+
+      <div class="container-button">
+        <main-button :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" class="button-add">Добавить набор данных</main-button>
         <div class="save-close">
-          <main-button class="mr-5 bg-zinc-600 hover:bg-zinc-800" @click="hideWindow">Отмена</main-button>
-          <main-button>Сохранить</main-button>
+          <main-button :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" class="button-cancel" @click="hideWindow">Отмена</main-button>
+          <main-button :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Сохранить</main-button>
         </div>
       </div>
     </div>
@@ -93,5 +102,145 @@ export default {
 </template>
 
 <style scoped>
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999999;
+  background-color: rgba(0, 0, 0, 0.7);
+}
 
+.modal-content {
+  background-color: white;
+  border-radius: 12px;
+  width: 1200px;
+  padding: 24px;
+  height: auto;
+  color: #737373;
+}
+
+.modal-title {
+  font-size: 24px;
+  color: #262626;
+  margin-bottom: 20px;
+}
+
+.container-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.container-date {
+  width: 40%;
+  font-size: 18px;
+}
+
+.container-select {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+}
+
+.select-element {
+  margin-bottom: 20px;
+}
+
+.select-param {
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  margin-top: 8px;
+  padding: 20px;
+}
+
+.graphic {
+  display: flex;
+  flex-direction: column;
+  width: 730px;
+  padding: 15px;
+  background-color: #fafafa;
+  border-radius: 16px;
+}
+
+.graphic-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 0 8px;
+}
+
+.server-name {
+  color: #212121;
+  font-size: 20px;
+}
+
+.settings-button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.container-range {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  background-color: #f5f5f5;
+  border-radius: 12px;
+  margin-top: 20px;
+  padding: 20px;
+  font-size: 18px;
+}
+
+.container-range-param {
+  display: flex;
+  flex-direction: column;
+}
+
+.range-input {
+  margin-bottom: 20px;
+}
+
+.colors {
+  display: flex;
+  flex-direction: row;
+}
+
+.color-picker {
+  width: 30px;
+  height: 20px;
+}
+
+.container-button {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.button-add {
+  background-color: white !important;
+  color: #38bdf8 !important;
+  border: 1px solid #38bdf8 !important;
+}
+
+.button-add:hover {
+  background-color: #38bdf8 !important;
+  color: white !important;
+}
+
+.button-cancel {
+  margin-right: 20px;
+  background-color: #525252;
+}
+
+.button-cancel:hover {
+  background-color: #262626;
+}
 </style>
