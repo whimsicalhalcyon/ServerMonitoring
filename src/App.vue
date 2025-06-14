@@ -10,70 +10,86 @@ export default {
   },
   data() {
     return {
-      openMonitor: false,
-      openMistakes: false,
-      openInteraction: false,
-      themeLight: {
-        background: '#f5f5f5',
-        backgroundComponent: '#ffffff',
-        backgroundFilter: '#E0E0E0',
-        backgroundButton:'#4FC3F7',
-        textColor: '#212121',
-        textFilter: '#ffffff',
-        textButton: '#ffffff',
-        borderColor: '#A0A0A0',
-        clear: 'rgba(33, 33, 33, 0)',
-        grid: 'rgba(117,117,117,0.5)',
-        panelButton: '#E0E0E0',
-        panelBorder: '#757575',
-        radioBorder: '#ffffff',
+        isSelected: null,
+        openMonitor: false,
+        openMistakes: false,
+        openInteraction: false,
+        themeLight: {
+          background: '#f5f5f5',
+          backgroundComponent: '#ffffff',
+          backgroundFilter: '#E0E0E0',
+          backgroundButton:'#4FC3F7',
+          textColor: '#212121',
+          textFilter: '#ffffff',
+          textButton: '#ffffff',
+          textCheckbox: '#3E3E40',
+          borderColor: '#A0A0A0',
+          clear: 'rgba(33, 33, 33, 0)',
+          grid: 'rgba(117,117,117,0.5)',
+          panelButton: '#E0E0E0',
+          panelBorder: '#757575',
+          radioBorder: '#ffffff',
 
-      },
-      themeDark: {
-        background: '#2D2D30',
-        backgroundComponent: '#1E1E1E',
-        backgroundFilter: '#3F3F46',
-        backgroundButton:'#007ACC',
-        textColor: '#E0E0E0',
-        textFilter: '#ffffff',
-        textButton: '#ffffff',
-        borderColor: '#E0E0E0',
-        clear: 'rgba(33, 33, 33, 0)',
-        grid: 'rgba(117,117,117,0.5)',
-        panelButton: '#2D2D30',
-        panelBorder: '#9C9C9C',
-        radioBorder: '#000000',
-      },
-      themeStatusLight: true
-    }
+        },
+        themeDark: {
+          background: '#2D2D30',
+          backgroundComponent: '#1E1E1E',
+          backgroundFilter: '#3F3F46',
+          backgroundButton:'#007ACC',
+          textColor: '#E0E0E0',
+          textFilter: '#ffffff',
+          textButton: '#ffffff',
+          textCheckbox: '#A0A0A0',
+          borderColor: '#E0E0E0',
+          clear: 'rgba(33, 33, 33, 0)',
+          grid: 'rgba(117,117,117,0.5)',
+          panelButton: '#2D2D30',
+          panelBorder: '#9C9C9C',
+          radioBorder: '#000000',
+        },
+        themeStatusLight: true
+      }
   },
   methods : {
     openMonitorWindow(status) {
       this.openMonitor = status;
       this.openMistakes = false;
       this.openInteraction = false
+      this.savePage()
     },
     openMistakesWindow(status) {
       this.openMonitor = false;
       this.openMistakes = status;
       this.openInteraction = false
+      this.savePage()
     },
     openInteractionWindow(status) {
       this.openMonitor = false;
       this.openMistakes = false;
       this.openInteraction = status
+      this.savePage()
     },
     changeToTheme(status) {
       this.themeStatusLight = status
     },
+    savePage() {
+      localStorage.setItem('pageState', JSON.stringify({
+        openMonitor: this.openMonitor,
+        openMistakes: this.openMistakes,
+        openInteraction: this.openInteraction
+      }));
+    }
   },
 
 
   created() {
     // добавление страницы в локал сторадж, чтобы она при перезагрузке не пропадала
-    const page_state = localStorage.getItem('monitorState');
-    if(page_state) {
-      this.openMonitor = JSON.parse(page_state)
+    const pageState = localStorage.getItem('pageState');
+    if (pageState) {
+      const { openMonitor, openMistakes, openInteraction } = JSON.parse(pageState);
+      this.openMonitor = openMonitor;
+      this.openMistakes = openMistakes;
+      this.openInteraction = openInteraction;
     }
   },
 
@@ -96,10 +112,13 @@ export default {
 </template>
 
 <style scoped>
+
+* {
+  font-family: "Segoe UI", sans-serif;
+}
 .page {
   display: flex;
   gap: 20px;
-
   padding-right: 20px;
 }
 </style>
