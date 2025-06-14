@@ -1,11 +1,13 @@
 <script>
-import UiInput from "@/components/UiInput.vue";
+
 import UiSelect from "@/components/UiSelect.vue";
+import UiInput from "@/components/UiInput.vue";
 import MainButton from "@/components/MainButton.vue";
+import UiCheckbox from "@/components/UiCheckbox.vue";
 
 export default {
   components: {
-    UiSelect, MainButton, UiInput
+    UiSelect, MainButton, UiInput, UiCheckbox
   },
   props: {
     themeLight: {
