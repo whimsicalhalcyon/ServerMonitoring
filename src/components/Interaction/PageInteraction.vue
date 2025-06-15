@@ -6,6 +6,9 @@ import mainButton from "@/components/MainButton.vue";
 import UiCheckbox from "@/components/UiCheckbox.vue";
 
 export default {
+  components: {
+    Table, UiSelect, uiInput, mainButton, UiCheckbox
+  },
   props: {
     themeLight: {
       type: Object,
@@ -18,17 +21,26 @@ export default {
     themeStatus: {
       type: Boolean,
       default: true
-    }
+    },
   },
   data() {
     return {
       openPanel: true,
+      isSelected: null,
     }
   },
   methods: {
     togglePanel() {
       this.openPanel = !this.openPanel
     },
+    confirmDelete() {
+      let confirmed = window.confirm("Вы точно хотите удалить?");
+      if (confirmed) {
+        alert('удалилось');
+      } else {
+        alert('отмена');
+      }
+    }
   }
   // data() {
   //   return {
@@ -40,106 +52,201 @@ export default {
 
 <template>
   <div class="main">
-    <div class="panel" v-if="openPanel" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
+    <div class="fix" :style="themeStatus ? {background: themeLight.background}: {background: themeDark.background}">
+      <div class="text">
+        <p :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}">Узлы сети</p>
+        <div class="">
+          <i class="fa-solid fa-chevron-up " style="cursor: pointer;"
+             :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+             :class="openPanel ? 'fa-chevron-down' : 'fa-chevron-up'" @click="togglePanel"></i>
+        </div>
+      </div>
+      <div class="panel" v-if="openPanel"
+           :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
+        <div class="top">
+          <div class="top-left">
+            <ui-input class="input-search" placeholder="Поиск по DNS и IP" :themeStatus="themeStatus"
+                      :themeLight="themeLight" :themeDark="themeDark"></ui-input>
+            <main-button class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Добавить
+              узел
+            </main-button>
+          </div>
+          <div class="top-right"
+               :style="themeStatus ? {borderColor: themeLight.borderColor}: {borderColor: themeDark.borderColor}"
+               v-if="isSelected">
+            <div class="intoVisible">
+              <p :style="themeStatus?{color:themeLight.textColor}:{color:themeDark.textColor}"
+                 style="padding-left: 14px;">Выбранный сервер:</p>
+              <div class="buttons">
+                <button class="btnVisible" style="background: #4FC3F7"><i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="btnVisible" style="margin-right: 10px; background: #F44336" @click="confirmDelete"><i
+                    class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="line"
+             :style="themeStatus?{borderColor:themeLight.borderColor}:{borderColor:themeDark.borderColor}"></div>
+        <div class="bottom">
+          <div class="one">
+            <p style="margin-bottom: 10px"
+               :style="themeStatus?{color:themeLight.textCheckbox}:{color:themeDark.textCheckbox}">Тип
+              ошибки:</p>
+            <ui-checkbox :themeStatus="themeStatus"
+                         :themeLight="themeLight" :themeDark="themeDark"></ui-checkbox>
+          </div>
+          <ui-select class="first-select" :themeStatus="themeStatus"
+                     :themeLight="themeLight" :themeDark="themeDark">
+            <option disabled selected>Выбрать состояние</option>
+            <option>Все</option>
+            <option>Активировано</option>
+            <option>Деактивировано</option>
+          </ui-select>
+          <ui-select class="second-select" :themeStatus="themeStatus"
+                     :themeLight="themeLight" :themeDark="themeDark">
+            <option disabled selected>Выбрать группу</option>
+            <option>Все</option>
+            <option>APP</option>
+            <option>Еще какаят</option>
+            <option>И еще например</option>
+          </ui-select>
+          <main-button class="drop" :themeStatus="themeStatus"
+                       :themeLight="themeLight" :themeDark="themeDark">Сбросить
+          </main-button>
+          <main-button :themeStatus="themeStatus"
+                       :themeLight="themeLight" :themeDark="themeDark">Сохранить
+          </main-button>
+        </div>
+      </div>
     </div>
-    <div class="table"></div>
+    <div class="table">
+      <Table
+          :theme-light="themeLight"
+          :theme-dark="themeDark"
+          :theme-status="themeStatus"
+          :is-selected="isSelected"
+          @update:isSelected="isSelected=$event"
+      />
+    </div>
   </div>
-
-<!--  <div class="flex flex-col w-full px-4 xl:px-8 2xl:px-16">-->
-<!--    &lt;!&ndash; Заголовок + панель &ndash;&gt;-->
-<!--    <div class="sticky top-0 z-30 w-full bg-[#f5f5f5] rounded-b-xl pb-5 shadow-sm">-->
-<!--      <div class="flex items-center gap-[15px] py-5">-->
-<!--        <h1 class="text-4xl text-black-700">Узлы сети</h1>-->
-<!--        <button-->
-<!--            @click="panelVisible = !panelVisible"-->
-<!--            class="text-black-700 hover:text-black-900 transition text-xl"-->
-<!--            title="Свернуть/развернуть"-->
-<!--        >-->
-<!--          <i :class="panelVisible ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'"></i>-->
-<!--        </button>-->
-<!--      </div>-->
-
-<!--      &lt;!&ndash; Панель управления &ndash;&gt;-->
-<!--      <transition name="fade">-->
-<!--        <section-->
-<!--            v-if="panelVisible"-->
-<!--            class="w-full bg-white rounded-xl px-5 py-5 text-neutral-500 shadow"-->
-<!--        >-->
-<!--          &lt;!&ndash; Верхняя часть &ndash;&gt;-->
-<!--          <div class="flex flex-wrap justify-between items-center gap-4">-->
-<!--            <div class="flex flex-wrap gap-4">-->
-<!--              <UiInput class="w-[280px] max-w-full" />-->
-<!--              <MainButton @click="$emit('open-modal')">Добавить узел</MainButton>-->
-<!--              <MainButton class="w-10"><i class="fa-solid fa-file-excel"></i></MainButton>-->
-<!--            </div>-->
-
-<!--            <div class="flex items-center gap-3 border rounded-lg border-neutral-400 px-3 py-2 h-12 min-w-[280px]">-->
-<!--              <p class="text-sm">Выбранный узел:</p>-->
-<!--              <div class="flex gap-3">-->
-<!--                <button class="svg bg-sky-400 hover:bg-sky-700">-->
-<!--                  <i class="fa-solid fa-pen-to-square"></i>-->
-<!--                </button>-->
-<!--                <button class="svg bg-red-500 hover:bg-red-800">-->
-<!--                  <i class="fa-solid fa-trash"></i>-->
-<!--                </button>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-
-<!--          <div class="my-5 h-px bg-neutral-400 w-full"></div>-->
-
-<!--          &lt;!&ndash; Нижняя часть &ndash;&gt;-->
-<!--          <div class="flex flex-wrap justify-between gap-5">-->
-<!--            <div class="flex flex-col gap-2">-->
-<!--              <p class="text-xl text-neutral-800">Тип ошибки:</p>-->
-<!--              <div class="flex flex-wrap gap-3">-->
-<!--                <UiCheckbox v-for="i in 6" :key="i" />-->
-<!--              </div>-->
-<!--            </div>-->
-
-<!--            <div class="flex flex-col gap-2">-->
-<!--              <p class="text-xl text-neutral-800">Состояние:</p>-->
-<!--              <UiSelect />-->
-<!--            </div>-->
-
-<!--            <div class="flex flex-col gap-2">-->
-<!--              <p class="text-xl text-neutral-800">Группа:</p>-->
-<!--              <UiSelect />-->
-<!--            </div>-->
-
-<!--            <div class="flex items-end">-->
-<!--              <div class="flex gap-3">-->
-<!--                <DisabledButton class="bg-neutral-400">Сбросить</DisabledButton>-->
-<!--                <MainButton>Применить</MainButton>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </section>-->
-<!--      </transition>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; Таблица &ndash;&gt;-->
-<!--    <section class="mt-6 w-full">-->
-<!--      <Table />-->
-<!--    </section>-->
-<!--  </div>-->
 </template>
 
 <style scoped>
-  .main {
-    width: 100%;
-  }
-  .main .panel {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: fit-content;
-    padding: 20px;
-    border-radius: 12px;
-    gap: 14px;
-    margin-top: 20px;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-  }
+.main {
+  width: 100%;
+}
+
+.main .fix {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding-bottom: 20px;
+}
+
+.main .panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: fit-content;
+  padding: 20px;
+  border-radius: 12px;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.top .top-left .input-search {
+  width: 18.87%;
+}
+
+.btn {
+  width: 11.80%;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+}
+
+.top-left {
+  display: flex;
+  gap: 1.18%;
+  width: 74.62%;
+}
+
+.intoVisible {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 7px;
+}
+
+.top-right {
+  border: 1px solid;
+  width: 24.20%;
+  border-radius: 8px;
+  height: 40px;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btnVisible {
+  width: 25px;
+  height: 25px;
+  border-radius: 2px;
+  color: white;
+  cursor: pointer;
+}
+
+.line {
+  border-bottom: 1px solid;
+}
+
+
+.drop {
+  background: #757575 !important;
+}
+
+.main .text {
+  display: flex;
+  gap: 8px;
+  padding-top: 20px;
+  align-items: center;
+}
+
+.main .text p {
+  font-size: 28px;
+}
+
+.main .text i {
+  margin-top: 4px;
+  font-size: 18px;
+}
+
+.bottom {
+  display: flex;
+  align-items: center;
+
+}
+
+.bottom select {
+  width: 16%;
+}
+
+.bottom button {
+  width: 13.5%;
+}
+.drop{
+  margin-right: 1%;
+}
+.second-select{
+  margin-right: 2%;
+  margin-left: 1%;
+}
+.one{
+  margin-right: 2%;
+  width: 50%;
+}
 </style>

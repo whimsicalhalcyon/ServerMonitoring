@@ -12,41 +12,33 @@ export default {
     themeStatus: {
       type: Boolean,
       default: true
-    }
+    },
   },
-  computed: {
-    textColor() {
-      return this.themeStatus ? this.themeLight.textCheckbox : this.themeDark.textCheckbox;
-    }
-  }
 }
 </script>
 
 <template>
   <div class="errorGroup">
-    <input type="checkbox" :id="'error' + i">
-    <label :for="'error' + i" :style="themeStatus?{color:themeLight.textCheckbox}:{color:themeDark.textCheckbox}"></label><span class="slot-content" :style="{ color: textColor }">
-      <slot></slot>
-    </span>
+    <div class="errorBlock" v-for="i in 6" :key="i">
+      <input type="checkbox" :id="'error' + i">
+      <label :for="'error' + i" :style="themeStatus?{color:themeLight.textCheckbox}:{color:themeDark.textCheckbox}">Тип
+        ошибки {{ i }}</label>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .errorGroup {
+  width: 48.96%;
   display: flex;
-  gap: 1.18%;
-  justify-content: space-between;
-  align-items: center;
+  gap:2%;
+  width: 100%;
 }
 
 .errorBlock {
   display: flex;
   align-items: center;
   width: 15.68%;
-}
-
-label {
-  margin-left: 10px;
 }
 
 .errorBlock input[type="checkbox"] {
