@@ -42,11 +42,6 @@ export default {
       }
     }
   }
-  // data() {
-  //   return {
-  //     panelVisible: true
-  //   }
-  // }
 }
 </script>
 
@@ -59,6 +54,10 @@ export default {
           <i class="fa-solid fa-chevron-up " style="cursor: pointer;"
              :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
              :class="openPanel ? 'fa-chevron-down' : 'fa-chevron-up'" @click="togglePanel"></i>
+        </div>
+        <div class="themes" v-on:click="$emit('changeTheme', !themeStatus)">
+          <i class="fa-solid fa-sun" :class="themeStatus ? 'fa-moon': 'fa-sun'"
+             :style="themeStatus ? {color: themeDark.backgroundComponent}: {color: themeLight.backgroundComponent}"></i>
         </div>
       </div>
       <div class="panel" v-if="openPanel"
@@ -136,7 +135,12 @@ export default {
 .main {
   width: 100%;
 }
-
+.themes{
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  margin-left: auto;
+}
 .main .fix {
   position: sticky;
   top: 0;
@@ -238,14 +242,17 @@ export default {
 .bottom button {
   width: 13.5%;
 }
-.drop{
+
+.drop {
   margin-right: 1%;
 }
-.second-select{
+
+.second-select {
   margin-right: 2%;
   margin-left: 1%;
 }
-.one{
+
+.one {
   margin-right: 2%;
   width: 50%;
 }
