@@ -89,8 +89,34 @@ export default {
         <div class="line"
              :style="themeStatus?{borderColor:themeLight.borderColor}:{borderColor:themeDark.borderColor}"></div>
         <div class="bottom">
-          <ui-checkbox :themeStatus="themeStatus"
-                       :themeLight="themeLight" :themeDark="themeDark"></ui-checkbox>
+          <div class="one">
+            <p style="margin-bottom: 10px"
+               :style="themeStatus?{color:themeLight.textCheckbox}:{color:themeDark.textCheckbox}">Тип
+              ошибки:</p>
+            <ui-checkbox :themeStatus="themeStatus"
+                         :themeLight="themeLight" :themeDark="themeDark"></ui-checkbox>
+          </div>
+          <ui-select class="first-select" :themeStatus="themeStatus"
+                     :themeLight="themeLight" :themeDark="themeDark">
+            <option disabled selected>Выбрать состояние</option>
+            <option>Все</option>
+            <option>Активировано</option>
+            <option>Деактивировано</option>
+          </ui-select>
+          <ui-select class="second-select" :themeStatus="themeStatus"
+                     :themeLight="themeLight" :themeDark="themeDark">
+            <option disabled selected>Выбрать группу</option>
+            <option>Все</option>
+            <option>APP</option>
+            <option>Еще какаят</option>
+            <option>И еще например</option>
+          </ui-select>
+          <main-button class="drop" :themeStatus="themeStatus"
+                       :themeLight="themeLight" :themeDark="themeDark">Сбросить
+          </main-button>
+          <main-button :themeStatus="themeStatus"
+                       :themeLight="themeLight" :themeDark="themeDark">Сохранить
+          </main-button>
         </div>
       </div>
     </div>
@@ -179,6 +205,10 @@ export default {
 }
 
 
+.drop {
+  background: #757575 !important;
+}
+
 .main .text {
   display: flex;
   gap: 8px;
@@ -193,5 +223,30 @@ export default {
 .main .text i {
   margin-top: 4px;
   font-size: 18px;
+}
+
+.bottom {
+  display: flex;
+  align-items: center;
+
+}
+
+.bottom select {
+  width: 16%;
+}
+
+.bottom button {
+  width: 13.5%;
+}
+.drop{
+  margin-right: 1%;
+}
+.second-select{
+  margin-right: 2%;
+  margin-left: 1%;
+}
+.one{
+  margin-right: 2%;
+  width: 50%;
 }
 </style>

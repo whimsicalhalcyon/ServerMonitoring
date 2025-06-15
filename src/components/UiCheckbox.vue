@@ -29,20 +29,19 @@ export default {
 
 <style scoped>
 .errorGroup {
-  width: 48.96%;
   display: flex;
-  gap: 1.18%;
-  justify-content: space-between;
+  gap:2%;
+  width: 100%;
 }
 
 .errorBlock {
   display: flex;
   align-items: center;
-  width: 15.68%;
+  width: 15.33%;
 }
 
 .errorBlock input[type="checkbox"] {
-  margin-right: 10%;
+  margin-right: 5%;
   transform: scale(1.1);
 }
 

@@ -31,7 +31,7 @@ export default {
       return {
         background: this.currTheme.backgroundComponent,
         color: this.currTheme.textColor,
-        border: `1px solid ${this.currTheme.borderColor}`
+        border: `1px solid ${this.themeLight.borderColor}`
       };
     }
   }
