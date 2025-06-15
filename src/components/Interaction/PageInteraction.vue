@@ -72,7 +72,8 @@ export default {
           <div class="top-left">
             <ui-input class="input-search" placeholder="Поиск по DNS и IP" :themeStatus="themeStatus"
                       :themeLight="themeLight" :themeDark="themeDark"></ui-input>
-            <main-button @click="toggleWindow" class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Добавить
+            <main-button @click="toggleWindow" class="btn" :themeStatus="themeStatus" :themeLight="themeLight"
+                         :themeDark="themeDark">Добавить
               узел
             </main-button>
           </div>
@@ -117,7 +118,7 @@ export default {
             <option>И еще например</option>
           </ui-select>
           <main-button :themeStatus="themeStatus"
-                       :themeLight="themeLight" :themeDark="themeDark" :style="{background:themeLight.backgroundButtonDrop}" style="margin-right: 1%">Сбросить
+                       :themeLight="themeLight" :themeDark="themeDark" class="drop">Сбросить
           </main-button>
           <main-button :themeStatus="themeStatus"
                        :themeLight="themeLight" :themeDark="themeDark">Сохранить
@@ -135,19 +136,22 @@ export default {
       />
     </div>
   </div>
-  <modal-window :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" v-model:openDialog="modalWindow"></modal-window>
+  <modal-window :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"
+                v-model:openDialog="modalWindow"></modal-window>
 </template>
 
 <style scoped>
 .main {
   width: 100%;
 }
+
 .themes {
   cursor: pointer;
   width: 30px;
   height: 30px;
   margin-left: auto;
 }
+
 .main .fix {
   position: sticky;
   top: 0;
@@ -216,7 +220,6 @@ export default {
 }
 
 
-
 .main .text {
   display: flex;
   gap: 8px;
@@ -246,14 +249,18 @@ export default {
 .bottom button {
   width: 13.5%;
 }
-.drop{
+
+.drop {
   margin-right: 1%;
+  background: #757575 !important;
 }
-.second-select{
+
+.second-select {
   margin-right: 2%;
   margin-left: 1%;
 }
-.one{
+
+.one {
   margin-right: 2%;
   width: 50%;
 }
