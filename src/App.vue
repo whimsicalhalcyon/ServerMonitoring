@@ -1,41 +1,97 @@
-<script>
-import PageMistakes from "@/components/ServerCharts/PageMonitor.vue";
-import MenuPage from "@/components/MenuPage.vue";
-import PageInteraction from "@/assets/components/PageInteraction.vue";
-import ModalWindow from "@/assets/components/ModalWindow.vue";
-
+<script >
+import pageMonitor from "@/components/ServerCharts/PageMonitor.vue";
+import menuPage from "@/components/MenuPage.vue";
+import pageMistakes from "@/components/Mistakes/PageMistakes.vue";
+import pageInteraction from "@/components/Interaction/PageInteraction.vue";
 
 export default {
   components: {
-    MenuPage, PageMistakes, ModalWindow, PageInteraction,
+    pageMonitor, menuPage, pageMistakes, pageInteraction
   },
   data() {
     return {
-      openMonitor: false,
-      modalVisible: false,
+        isSelected: null,
+        openMonitor: false,
+        openMistakes: false,
+        openInteraction: false,
+        themeLight: {
+          background: '#f5f5f5',
+          backgroundComponent: '#ffffff',
+          backgroundFilter: '#E0E0E0',
+          backgroundButton:'#4FC3F7',
+          textColor: '#212121',
+          textFilter: '#ffffff',
+          textButton: '#ffffff',
+          textCheckbox: '#3E3E40',
+          borderColor: '#A0A0A0',
+          clear: 'rgba(33, 33, 33, 0)',
+          grid: 'rgba(117,117,117,0.5)',
+          panelButton: '#E0E0E0',
+          panelBorder: '#757575',
+          radioBorder: '#ffffff',
+        },
+        themeDark: {
+          background: '#2D2D30',
+          backgroundComponent: '#1E1E1E',
+          backgroundFilter: '#3F3F46',
+          backgroundButton:'#007ACC',
+          textColor: '#E0E0E0',
+          textFilter: '#ffffff',
+          textButton: '#ffffff',
+          textCheckbox: '#A0A0A0',
+          borderColor: '#E0E0E0',
+          clear: 'rgba(33, 33, 33, 0)',
+          grid: 'rgba(117,117,117,0.5)',
+          panelButton: '#2D2D30',
+          panelBorder: '#9C9C9C',
+          radioBorder: '#000000',
+        },
+        themeStatusLight: true
+      }
+  },
+  methods : {
+    openMonitorWindow(status) {
+      this.openMonitor = status;
+      this.openMistakes = false;
+      this.openInteraction = false
+      this.savePage()
+    },
+    openMistakesWindow(status) {
+      this.openMonitor = false;
+      this.openMistakes = status;
+      this.openInteraction = false
+      this.savePage()
+    },
+    openInteractionWindow(status) {
+      this.openMonitor = false;
+      this.openMistakes = false;
+      this.openInteraction = status
+      this.savePage()
+    },
+    changeToTheme(status) {
+      this.themeStatusLight = status
+    },
+    savePage() {
+      localStorage.setItem('pageState', JSON.stringify({
+        openMonitor: this.openMonitor,
+        openMistakes: this.openMistakes,
+        openInteraction: this.openInteraction
+      }));
     }
   },
-  methods: {
-    openMonitorWindow() {
-      this.openMonitor = true
-    },
-    closeMonitorWindow() {
-      this.openMonitor = false;
-    },
-    closeModal() {
-      this.modalVisible = false;
-    },
-    openModal() {
-      this.modalVisible = true;
-    },
-  },
+
+
   created() {
     // добавление страницы в локал сторадж, чтобы она при перезагрузке не пропадала
-    const page_state = localStorage.getItem('monitorState');
-    if (page_state) {
-      this.openMonitor = JSON.parse(page_state)
+    const pageState = localStorage.getItem('pageState');
+    if (pageState) {
+      const { openMonitor, openMistakes, openInteraction } = JSON.parse(pageState);
+      this.openMonitor = openMonitor;
+      this.openMistakes = openMistakes;
+      this.openInteraction = openInteraction;
     }
   },
+
   watch: {
     openMonitor(newValue) {
       localStorage.setItem('monitorState', JSON.stringify(newValue));
@@ -45,14 +101,23 @@ export default {
 </script>
 
 <template>
-  <div class="container-page flex flex-row">
-    <menu-page @open-monitor="openMonitorWindow" :open-monitor="openMonitor"></menu-page>
-    <page-mistakes v-if="openMonitor" @open-modal="openModal"></page-mistakes>
-    <page-interaction v-if="openMonitor" @open-modal="openModal"></page-interaction>
-    <modal-window :visible="modalVisible" @close="closeModal"></modal-window>
+  <div class="page" :style="themeStatusLight ? {background: this.themeLight.background}: {background: this.themeDark.background}">
+    <menu-page @open-monitor="openMonitorWindow" @open-mistakes="openMistakesWindow" @open-interaction="openInteractionWindow" :open-interaction="openInteraction" :open-mistakes="openMistakes" :open-monitor="openMonitor" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark" @changeTheme="changeToTheme"></menu-page>
+    <page-monitor v-if="openMonitor" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark"></page-monitor>
+    <page-interaction v-if="openInteraction" :isSelected="isSelected" @update:isSelected="isSelected=$event" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark"></page-interaction>
+    <page-mistakes v-if="openMistakes" :isSelected="isSelected" @update:isSelected="isSelected=$event" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark"></page-mistakes>
   </div>
+
 </template>
 
 <style scoped>
 
+* {
+  font-family: "Segoe UI", sans-serif;
+}
+.page {
+  display: flex;
+  gap: 20px;
+  padding-right: 20px;
+}
 </style>
