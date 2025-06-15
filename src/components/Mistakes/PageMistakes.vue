@@ -102,6 +102,7 @@ export default {
   position: sticky;
   top: 0;
   z-index: 1000;
+  //box-shadow: 0px 5px 5px 0px rgba(34, 60, 80, 0.2);
 }
 .main .panel .top {
   display: flex;

@@ -25,7 +25,9 @@ export default {
 <template>
   <div class="errorGroup">
     <input type="checkbox" :id="'error' + i">
-    <label :for="'error' + i" :style="themeStatus?{color:themeLight.textCheckbox}:{color:themeDark.textCheckbox}"></label><slot></slot>
+    <label :for="'error' + i" :style="themeStatus?{color:themeLight.textCheckbox}:{color:themeDark.textCheckbox}"></label><span class="slot-content" :style="{ color: textColor }">
+      <slot></slot>
+    </span>
   </div>
 </template>
 

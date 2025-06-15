@@ -29,7 +29,6 @@ export default {
           panelButton: '#E0E0E0',
           panelBorder: '#757575',
           radioBorder: '#ffffff',
-
         },
         themeDark: {
           background: '#2D2D30',

@@ -33,7 +33,8 @@ export default {
     },
     cellStyle() {
       return {
-        color: this.currTheme.textColor
+        color: this.currTheme.textColor,
+        // borderColor: this.currTheme.borderColor
       };
     },
     tableData() {
@@ -44,7 +45,7 @@ export default {
       return Array.from({length: 70}, (_, i) => ({
         id: i + 1,
         time: Date.now(),
-        importance: statuses[Math.floor(Math.random() * statuses.length)],
+        importance: statuses[0],
         recoveryTime: Date.now(),
         state: states[Math.floor(Math.random() * states.length)],
         serverName: 'server-name',
@@ -135,13 +136,14 @@ export default {
 th {
   font-weight: normal;
   padding: 12px 16px;
+  //border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 td {
   padding: 12px 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   color: v-bind('currTheme.textColor');
   background: v-bind('currTheme.backgroundComponent');
+  //border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 tbody tr:nth-child(even) td {
