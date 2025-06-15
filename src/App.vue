@@ -19,6 +19,7 @@ export default {
         backgroundComponent: '#ffffff',
         backgroundFilter: '#E0E0E0',
         backgroundButton:'#4FC3F7',
+        backgroundButtonDrop: '#757575',
         textColor: '#212121',
         textFilter: '#ffffff',
         textButton: '#ffffff',

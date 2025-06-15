@@ -4,10 +4,11 @@ import UiSelect from "@/components/UiSelect.vue";
 import uiInput from "@/components/UiInput.vue";
 import mainButton from "@/components/MainButton.vue";
 import UiCheckbox from "@/components/UiCheckbox.vue";
+import ModalWindow from "@/components/Interaction/ModalWindow.vue";
 
 export default {
   components: {
-    Table, UiSelect, uiInput, mainButton, UiCheckbox
+    Table, UiSelect, uiInput, mainButton, UiCheckbox, ModalWindow
   },
   props: {
     themeLight: {
@@ -27,11 +28,15 @@ export default {
     return {
       openPanel: true,
       isSelected: null,
+      modalWindow: false,
     }
   },
   methods: {
     togglePanel() {
       this.openPanel = !this.openPanel
+    },
+    toggleWindow() {
+      this.modalWindow = !this.modalWindow
     },
     confirmDelete() {
       let confirmed = window.confirm("Вы точно хотите удалить?");
@@ -67,7 +72,7 @@ export default {
           <div class="top-left">
             <ui-input class="input-search" placeholder="Поиск по DNS и IP" :themeStatus="themeStatus"
                       :themeLight="themeLight" :themeDark="themeDark"></ui-input>
-            <main-button class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Добавить
+            <main-button @click="toggleWindow" class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Добавить
               узел
             </main-button>
           </div>
@@ -111,8 +116,8 @@ export default {
             <option>Еще какаят</option>
             <option>И еще например</option>
           </ui-select>
-          <main-button class="drop" :themeStatus="themeStatus"
-                       :themeLight="themeLight" :themeDark="themeDark">Сбросить
+          <main-button :themeStatus="themeStatus"
+                       :themeLight="themeLight" :themeDark="themeDark" :style="{background:themeLight.backgroundButtonDrop}" style="margin-right: 1%">Сбросить
           </main-button>
           <main-button :themeStatus="themeStatus"
                        :themeLight="themeLight" :themeDark="themeDark">Сохранить
@@ -130,6 +135,7 @@ export default {
       />
     </div>
   </div>
+  <modal-window :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" v-model:openDialog="modalWindow"></modal-window>
 </template>
 
 <style scoped>
@@ -160,7 +166,7 @@ export default {
 }
 
 .btn {
-  width: 11.80%;
+  width: 15.568%;
 }
 
 .top {
@@ -205,9 +211,6 @@ export default {
 }
 
 
-.drop {
-  background: #757575 !important;
-}
 
 .main .text {
   display: flex;
