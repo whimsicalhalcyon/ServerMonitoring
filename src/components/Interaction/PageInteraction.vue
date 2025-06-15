@@ -47,11 +47,6 @@ export default {
       }
     }
   }
-  // data() {
-  //   return {
-  //     panelVisible: true
-  //   }
-  // }
 }
 </script>
 
