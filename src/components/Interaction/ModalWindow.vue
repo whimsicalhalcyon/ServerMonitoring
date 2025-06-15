@@ -1,72 +1,185 @@
 <script>
-import UiInput from './UiInput.vue';
-import UiSelect from './UiSelect.vue';
-import MainButton from './MainButton.vue';
-import DisabledButton from "./DisabledButton.vue";
+import UiInput from '@/components/UiInput.vue';
+import UiSelect from '@/components/UiSelect.vue';
+import MainButton from '@/components/MainButton.vue';
 
 export default {
   components: {
-    UiInput, MainButton, UiSelect, DisabledButton
+    UiInput, MainButton, UiSelect
   },
   props: {
-    visible: {
+    openDialog: {
       type: Boolean,
       default: false
+    },
+    themeStatus: {
+      type: Boolean,
+      default: true
+    },
+    themeLight: {
+      type: Object,
+      required: true
+    },
+    themeDark: {
+      type: Object,
+      required: true
+    },
+  },
+  methods: {
+    hideWindow() {
+      this.$emit("update:openDialog", false);
     }
   }
 }
 </script>
 
 <template>
-  <div v-if="visible" class="overlay">
-    <div class="content-dialog flex flex-col gap-[20px]">
-      <h1 class="text-2xl text-green-70 text-center">Добавление узла</h1>
-      <div class="inputs flex flex-col gap-[20px]">
-        <div class="flex flex-col">
-          <label class="mb-[7px]" for="ip">IP-адрес:</label>
-          <ui-input id="ip"></ui-input>
+  <div v-if="openDialog" class="dialog-overlay">
+    <div
+        class="dialog-content"
+        :style="themeStatus
+        ? { background: themeLight.backgroundComponent, color: themeLight.textColor }
+        : { background: themeDark.backgroundComponent, color: themeDark.textColor }"
+    >
+      <h1 class="dialog-title" :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }">
+        Добавление узла
+      </h1>
+
+      <div class="dialog-inputs">
+        <div class="dialog-field">
+          <label class="dialog-label" for="ip"
+                 :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
+          >IP-адрес:</label>
+          <ui-input
+              id="ip"
+              :themeStatus="themeStatus"
+              :themeLight="themeLight"
+              :themeDark="themeDark"
+          />
         </div>
-        <div class="flex flex-col">
-          <label class="mb-[7px]" for="dns">Доменное имя:</label>
-          <ui-input id="dns"></ui-input>
+
+        <div class="dialog-field">
+          <label class="dialog-label" for="dns"
+                 :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
+          >Доменное имя:</label>
+          <ui-input
+              id="dns"
+              :themeStatus="themeStatus"
+              :themeLight="themeLight"
+              :themeDark="themeDark"
+          />
         </div>
-        <div class="flex flex-col">
-          <label class="mb-[7px]" for="group">Группа:</label>
-          <ui-select id="group"></ui-select>
+
+        <div class="dialog-field">
+          <label class="dialog-label" for="group"
+                 :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
+          >Группа:</label>
+          <ui-select
+              id="group"
+              :themeStatus="themeStatus"
+              :themeLight="themeLight"
+              :themeDark="themeDark"
+          >
+            <option>APP</option>
+            <option>Еще какаят</option>
+            <option>И еще например</option>
+          </ui-select>
         </div>
       </div>
-      <div class="buttons mt-[10px] flex items-center justify-between">
-        <main-button>Сохранить</main-button>
-        <disabled-button @click="$emit('close')">Отмена</disabled-button>
+
+      <div class="dialog-buttons">
+        <main-button
+            :themeStatus="themeStatus"
+            :themeLight="themeLight"
+            :themeDark="themeDark"
+        >Сохранить</main-button>
+
+        <main-button
+            :themeStatus="themeStatus"
+            :themeLight="themeLight"
+            :themeDark="themeDark"
+            @click.stop="hideWindow"
+            :style="{
+            background: themeStatus
+              ? themeLight.backgroundButtonDrop
+              : themeDark.panelButton,
+            color: themeStatus
+              ? themeLight.textButton
+              : themeDark.textButton
+          }"
+        >
+          Отмена
+        </main-button>
       </div>
     </div>
   </div>
 </template>
 
+
 <style scoped>
-.overlay {
+.dialog-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-
-  background-color: rgba(0, 0, 0, 0.5); /* затемнённый фон */
-
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-
-  z-index: 10000; /* очень высокий z-index, чтобы перекрыть всё */
+  z-index: 10000;
 }
 
-.content-dialog {
-  background: white;
+.dialog-content {
+  background-color: #ffffff;
   border-radius: 12px;
   min-width: 470px;
   min-height: 430px;
   padding: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   z-index: 10001;
+}
+
+.dialog-title {
+  font-size: 28px;
+  color: #212121;
+  text-align: center;
+  font-family:"Segoe UI Semibold";
+}
+
+.dialog-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dialog-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-label {
+  margin-bottom: 7px;
+  font-size: 14px;
+  color: #333;
+}
+
+.dialog-buttons {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+input{
+  width: 100%;
+}
+select{
+  width: 100%;
+}
+button{
+  width: 48%;
 }
 </style>
