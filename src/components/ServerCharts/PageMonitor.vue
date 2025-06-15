@@ -47,43 +47,37 @@ export default {
 
 <template>
   <div class="main">
-    <div class="main-top" :style="themeStatus ? {background: themeLight.background}: {background: themeDark.background}">
-      <div class="text">
-        <p :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}">Мониторинг</p>
-        <div class="">
-          <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-             :class="openPanel ? 'fa-chevron-down' : 'fa-chevron-up'" @click="togglePanel"></i>
-        </div>
-        <div class="themes" v-on:click="$emit('changeTheme', !themeStatus)">
-          <i class="fa-solid fa-sun" :class="themeStatus ? 'fa-moon': 'fa-sun'"
-             :style="themeStatus ? {color: themeDark.backgroundComponent}: {color: themeLight.backgroundComponent}"></i>
-        </div>
-
+    <div class="text">
+      <p :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}">Мониторинг</p>
+      <div class="">
+        <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+           :class="openPanel ? 'fa-chevron-down' : 'fa-chevron-up'" @click="togglePanel"></i>
       </div>
-      <div class="panel" v-if="openPanel" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
-        <div class="top">
-          <ui-input :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
-          <ui-select :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-            <option>Выбрать сервера</option>
-            <option>Все</option>
-            <option>web</option>
-            <option>app</option>
-          </ui-select>
-          <ui-select :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-            <option>Сортировка по имени</option>
-            <option>Без сортировки</option>
-            <option>По возрастанию</option>
-            <option>По убыванию</option>
-          </ui-select>
-          <ui-select :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-            <option>Выбрать интервал</option>
-            <option>Последние 5 минут</option>
-            <option>Последние 15 минут</option>
-            <option>Последние 30 минут</option>
-            <option>Последний час</option>
-            <option>Последние 12 часов</option>
-            <option>Последний день</option>
-            <option>Последние 12 дней</option>
+    </div>
+    <div class="panel" v-if="openPanel" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
+      <div class="top">
+        <ui-input :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
+        <ui-select :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+          <option>Выбрать сервера</option>
+          <option>Все</option>
+          <option>web</option>
+          <option>app</option>
+        </ui-select>
+        <ui-select :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+          <option>Сортировка по имени</option>
+          <option>Без сортировки</option>
+          <option>По возрастанию</option>
+          <option>По убыванию</option>
+        </ui-select>
+        <ui-select :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+          <option>Выбрать интервал</option>
+          <option>Последние 5 минут</option>
+          <option>Последние 15 минут</option>
+          <option>Последние 30 минут</option>
+          <option>Последний час</option>
+          <option>Последние 12 часов</option>
+          <option>Последний день</option>
+          <option>Последние 12 дней</option>
 
           </ui-select>
         </div>
@@ -103,7 +97,6 @@ export default {
         </div>
       </div>
     </div>
-
     <div class="graphics">
       <div class="graphic" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}" v-for="n in 70" :key="n">
         <div class="top">
@@ -128,22 +121,7 @@ export default {
 
 <style scoped>
 
-.themes {
-  cursor: pointer;
-  width: 30px;
-  height: 30px;
-  margin-left: auto;
-}
-.main .main-top {
-  display: flex;
-  flex-direction: column;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  padding-bottom: 1.1%;
-
-}
-.main .main-top .panel {
+.main .panel {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -152,24 +130,26 @@ export default {
   border-radius: 12px;
   gap: 14px;
   margin-top: 20px;
-
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
-.main .main-top .panel .top {
+.main .panel .top {
   display: flex;
   gap: 1.1%
 }
-.main .main-top .panel .bottom {
+.main .panel .bottom {
   display: flex;
   gap: 1.1%
 }
 
-.main .main-top .panel .bottom .date {
+.main .panel .bottom .date {
   width: 14.95%;
 }
-.main .main-top .panel .bottom .btn {
+.main .panel .bottom .btn {
   width: 10%;
 }
-.main .main-top .panel .bottom .select {
+.main .panel .bottom .select {
   width: 10.8%;
   border: 1px solid;
   margin-left: auto;
@@ -182,11 +162,11 @@ export default {
 
 }
 .main .graphics .graphic {
+  margin-top: 1.1%;
   width: 32.6%;
   height: 28%;
   border-radius: 12px;
   padding: 14px;
-  margin-bottom: 1.1%;
 }
 .main .graphics .graphic .top {
   display: flex;
@@ -197,17 +177,16 @@ export default {
 .main .graphics .graphic .top p {
   font-size: 18px;
 }
-.main .main-top .text {
+.main .text {
   display: flex;
   gap: 8px;
   padding-top: 20px;
   align-items: center;
-
 }
-.main .main-top .text p {
+.main .text p {
   font-size: 28px;
 }
-.main .main-top .text i {
+.main .text i {
   margin-top: 4px;
   font-size: 18px;
 }

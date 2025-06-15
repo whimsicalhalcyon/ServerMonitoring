@@ -1,4 +1,9 @@
 <script>
+import Table from '@/components/Table.vue';
+import UiSelect from "@/components/UiSelect.vue";
+import uiInput from "@/components/UiInput.vue";
+import mainButton from "@/components/MainButton.vue";
+import UiCheckbox from "@/components/UiCheckbox.vue";
 
 export default {
   props: {
