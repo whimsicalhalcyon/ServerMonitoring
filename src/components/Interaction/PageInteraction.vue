@@ -76,13 +76,15 @@ export default {
                          :themeDark="themeDark">Добавить
               узел
             </main-button>
+            <main-button :themeStatus="themeStatus" :themeLight="themeLight"
+                         :themeDark="themeDark" style="width: 5%;"><i class="fa-solid fa-file-excel"></i></main-button>
           </div>
           <div class="top-right"
                :style="themeStatus ? {borderColor: themeLight.borderColor}: {borderColor: themeDark.borderColor}"
                v-if="isSelected">
             <div class="intoVisible">
               <p :style="themeStatus?{color:themeLight.textColor}:{color:themeDark.textColor}"
-                 style="padding-left: 14px;">Выбранный сервер:</p>
+                 style="padding-left: 14px;">{{isSelected.dns}}</p>
               <div class="buttons">
                 <button class="btnVisible" style="background: #4FC3F7"><i class="fa-solid fa-pen-to-square"></i>
                 </button>
@@ -114,8 +116,8 @@ export default {
             <option disabled selected>Выбрать группу</option>
             <option>Все</option>
             <option>APP</option>
-            <option>Еще какаят</option>
-            <option>И еще например</option>
+            <option>APP2006</option>
+            <option>IvanZolo2004</option>
           </ui-select>
           <main-button :themeStatus="themeStatus"
                        :themeLight="themeLight" :themeDark="themeDark" class="drop">Сбросить

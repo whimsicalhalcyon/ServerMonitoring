@@ -13,14 +13,14 @@ export default {
       type: Boolean,
       default: true
     },
-    isSelected:{
+    isSelected: {
       type: Number,
     },
 
   },
   methods: {
-    toggleSelect(index) {
-      this.$emit('update:isSelected', this.isSelected === index ? null : index);
+    toggleSelect(item) {
+      this.$emit('update:isSelected', this.isSelected?.id === item.id ? null : item);
     }
   },
   computed: {
@@ -29,11 +29,19 @@ export default {
     },
     cellStyle() {
       return {
-        background: this.currTheme.backgroundComponent,
         color: this.currTheme.textColor,
-        border: `1px solid ${this.themeLight.borderColor}`
       };
-    }
+    },
+    tableData() {
+      const condition = ['Активировано', 'Деактивировано'];
+      const group = ['APP', 'APP2006','IvanZolo2004'];
+      return Array.from({length: 70}, (_, i) => ({
+        id: i + 1,
+        dns: `server${i+1}.local`,
+        groups: group[Math.floor(Math.random() * group.length)],
+        conditions: condition[Math.floor(Math.random() * condition.length)],
+      }))
+    },
   }
 
 }
@@ -62,7 +70,7 @@ export default {
       </tr>
       </thead>
       <tbody>
-      <tr v-for="i in 70" key="i">
+      <tr v-for="item in tableData" key="item.id">
         <td :style="cellStyle">
           <button
               class="select-btn"
@@ -70,24 +78,24 @@ export default {
                 borderColor: currTheme.borderColor,
                 color: currTheme.borderColor
               }"
-              @click="toggleSelect(i)"
+              @click="toggleSelect(item)"
           >
-            <i class="fa-solid fa-check" v-if="isSelected===i"></i>
+            <i class="fa-solid fa-check" v-if="isSelected?.id===item.id"></i>
           </button>
         </td>
-        <td :style="cellStyle">server1.local</td>
-        <td :style="cellStyle">192.168.0.1</td>
-        <td :style="cellStyle">Активировано</td>
+        <td :style="cellStyle">{{ item.dns }}</td>
+        <td :style="cellStyle">192.168.0.{{item.id}}</td>
+        <td :style="{...cellStyle, color:item.conditions==='Активировано'?'#4CAF50':'#9E271E'}">{{ item.conditions }}</td>
         <td :style="cellStyle" class="error-container">
-          <div class="error" style="background-color: #BDBDBD;" title="Это подсказка">1</div>
-          <div class="error" style="background-color: #4FC3F7;">3</div>
-          <div class="error" style="background-color: #FFEB3B; color: black;">7</div>
-          <div class="error" style="background-color: #FF9800;">1</div>
-          <div class="error" style="background-color: #F44336;">4</div>
-          <div class="error" style="background-color: #B71C1C;">6</div>
+          <div class="error" style="background-color: #BDBDBD;" title="Не классифицирована">1</div>
+          <div class="error" style="background-color: #4FC3F7;" title="Информация">2</div>
+          <div class="error" style="background-color: #FFEB3B; color: black;" title="Предупреждение">4</div>
+          <div class="error" style="background-color: #FF9800;" title="Средняя">6</div>
+          <div class="error" style="background-color: #F44336;" title="Высокая">8</div>
+          <div class="error" style="background-color: #B71C1C;" title="Критическая">2</div>
         </td>
-        <td :style="cellStyle">APP</td>
-        <td :style="cellStyle"><a>Открыть</a></td>
+        <td :style="cellStyle">{{ item.groups }}</td>
+        <td :style="cellStyle"><a :style="{color:currTheme.backgroundButton}" href="" class="link">Открыть</a></td>
       </tr>
       </tbody>
     </table>
@@ -98,29 +106,44 @@ export default {
 <style scoped>
 
 .table-container {
-  border-radius: 12px;
+  font-size: 15px;
   overflow: hidden;
+  border-radius: 8px;
+  background: v-bind('currTheme.backgroundComponent');
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .custom-table {
   width: 100%;
-  border-collapse: separate; /* это важно для границ */
+  border-collapse: separate;
   border-spacing: 0;
   text-align: left;
 }
 
-th,
-td {
-  padding: 12px;
-  vertical-align: middle;
-  box-sizing: border-box;
+th {
+  font-weight: normal;
+  padding: 12px 16px;
 }
 
-th.rounded-tl {
+td {
+  padding: 12px 16px;
+  color: v-bind('currTheme.textColor');
+  background: v-bind('currTheme.backgroundComponent');
+}
+
+tbody tr:nth-child(even) td {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+th:first-child {
   border-top-left-radius: 12px;
 }
 
-th.rounded-tr {
+th:last-child {
   border-top-right-radius: 12px;
 }
 
@@ -130,6 +153,15 @@ tbody tr:last-child td:first-child {
 
 tbody tr:last-child td:last-child {
   border-bottom-right-radius: 12px;
+}
+
+tbody tr:hover td {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+th:not(:last-child),
+td:not(:last-child) {
+  border-right: none;
 }
 
 .select-btn {
@@ -152,7 +184,7 @@ tbody tr:last-child td:last-child {
 
 .error-container {
   display: flex;
-  gap: 4px;
+  gap: 5px;
 }
 
 .error {
