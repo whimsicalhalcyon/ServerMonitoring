@@ -99,14 +99,7 @@ export default {
             :themeLight="themeLight"
             :themeDark="themeDark"
             @click.stop="hideWindow"
-            :style="{
-            background: themeStatus
-              ? themeLight.backgroundButtonDrop
-              : themeDark.panelButton,
-            color: themeStatus
-              ? themeLight.textButton
-              : themeDark.textButton
-          }"
+            class="drop"
         >
           Отмена
         </main-button>
@@ -129,7 +122,9 @@ export default {
   align-items: center;
   z-index: 10000;
 }
-
+.drop{
+  background: #757575 !important;
+}
 .dialog-content {
   background-color: #ffffff;
   border-radius: 12px;
