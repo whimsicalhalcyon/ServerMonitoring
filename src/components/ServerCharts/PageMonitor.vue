@@ -64,19 +64,19 @@ export default {
         <div class="top">
           <ui-input :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
           <ui-select :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-            <option>Выбрать сервера</option>
+            <option disabled selected>Выбрать сервера</option>
             <option>Все</option>
             <option>web</option>
             <option>app</option>
           </ui-select>
           <ui-select :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-            <option>Сортировка по имени</option>
+            <option disabled selected>Сортировка по имени</option>
             <option>Без сортировки</option>
             <option>По возрастанию</option>
             <option>По убыванию</option>
           </ui-select>
           <ui-select :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-            <option>Выбрать интервал</option>
+            <option disabled selected>Выбрать интервал</option>
             <option>Последние 5 минут</option>
             <option>Последние 15 минут</option>
             <option>Последние 30 минут</option>
@@ -94,7 +94,7 @@ export default {
           <ui-input class="date" placeholder="дд.мм.гггг 00:00" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
           <main-button class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Найти</main-button>
           <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" :style="themeStatus ? {borderColor: themeLight.borderColor, background: themeLight.backgroundComponent}: {borderColor: themeDark.borderColor, background: themeDark.backgroundComponent}">
-            <option>Выбрать формат</option>
+            <option disabled selected>Выбрать формат</option>
             <option>PDF</option>
             <option>PNG</option>
             <option>DOCX</option>
