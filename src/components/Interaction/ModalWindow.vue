@@ -81,8 +81,8 @@ export default {
               :themeDark="themeDark"
           >
             <option>APP</option>
-            <option>Еще какаят</option>
-            <option>И еще например</option>
+            <option>APP2006</option>
+            <option>IvanZolo2004</option>
           </ui-select>
         </div>
       </div>
@@ -92,6 +92,7 @@ export default {
             :themeStatus="themeStatus"
             :themeLight="themeLight"
             :themeDark="themeDark"
+            @click="hideWindow"
         >Сохранить</main-button>
 
         <main-button

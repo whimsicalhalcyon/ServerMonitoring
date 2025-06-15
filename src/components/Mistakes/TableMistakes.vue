@@ -1,9 +1,9 @@
 <script>
 
-import uiCheckbox from "@/components/UiCheckbox.vue";
+import UiCheckboxInteraction from "@/components/UiCheckboxInteraction.vue";
 export default {
   components: {
-    uiCheckbox
+    uiCheckbox: UiCheckboxInteraction
   },
   props: {
     themeLight: {

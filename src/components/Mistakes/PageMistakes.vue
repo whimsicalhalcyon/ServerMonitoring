@@ -3,12 +3,12 @@
 import UiSelect from "@/components/UiSelect.vue";
 import UiInput from "@/components/UiInput.vue";
 import MainButton from "@/components/MainButton.vue";
-import UiCheckbox from "@/components/UiCheckbox.vue";
+import UiCheckboxInteraction from "@/components/UiCheckboxInteraction.vue";
 import TableMistakes from "@/components/Mistakes/TableMistakes.vue";
 
 export default {
   components: {
-    UiSelect, MainButton, UiInput, UiCheckbox, TableMistakes
+    UiSelect, MainButton, UiInput, UiCheckbox: UiCheckboxInteraction, TableMistakes
   },
   props: {
     themeLight: {

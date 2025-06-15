@@ -14,15 +14,23 @@ export default {
       default: true
     },
   },
+  computed:{
+    errorsData() {
+      const error = ['Не классифицирована', 'Информация', 'Предупреждение','Средняя','Высокая','Критическая'];
+      return Array.from({length: 6}, (_, i) => ({
+        id: i + 1,
+        errors: error
+      }))
+    },
+  }
 }
 </script>
 
 <template>
   <div class="errorGroup">
-    <div class="errorBlock" v-for="i in 6" :key="i">
-      <input type="checkbox" :id="'error' + i">
-      <label :for="'error' + i" :style="themeStatus?{color:themeLight.textCheckbox}:{color:themeDark.textCheckbox}">Тип
-        ошибки {{ i }}</label>
+    <div class="errorBlock" v-for="item in errorsData" :key="item.id">
+      <input type="checkbox" :id="'error' + item.id">
+      <label :for="'error' + item.id" :style="themeStatus?{color:themeLight.textCheckbox}:{color:themeDark.textCheckbox}">{{item.errors[item.id-1]}}</label>
     </div>
   </div>
 </template>

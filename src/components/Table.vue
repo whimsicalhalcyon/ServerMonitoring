@@ -14,7 +14,8 @@ export default {
       default: true
     },
     isSelected: {
-      type: Number,
+      type: Object,
+      default: null,
     },
 
   },

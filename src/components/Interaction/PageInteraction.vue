@@ -3,13 +3,15 @@ import Table from '@/components/Table.vue';
 import UiSelect from "@/components/UiSelect.vue";
 import uiInput from "@/components/UiInput.vue";
 import mainButton from "@/components/MainButton.vue";
-import UiCheckbox from "@/components/UiCheckbox.vue";
+import UiCheckboxInteraction from "@/components/UiCheckboxInteraction.vue";
 import ModalWindow from "@/components/Interaction/ModalWindow.vue";
 
 export default {
   components: {
-    Table, UiSelect, uiInput, mainButton, UiCheckbox, ModalWindow
+    UiCheckboxInteraction,
+    Table, UiSelect, uiInput, mainButton, UiCheckbox: UiCheckboxInteraction, ModalWindow
   },
+  emits: ['changeTheme'],
   props: {
     themeLight: {
       type: Object,
@@ -39,11 +41,11 @@ export default {
       this.modalWindow = !this.modalWindow
     },
     confirmDelete() {
-      let confirmed = window.confirm("Вы точно хотите удалить?");
+      let confirmed = window.confirm(`Вы точно хотите удалить ${this.isSelected.dns}?`);
       if (confirmed) {
-        alert('удалилось');
+        alert(`Сервер ${this.isSelected.dns} безвозратно удален!`);
       } else {
-        alert('отмена');
+        alert(`Сервер ${this.isSelected.dns} не был удален`);
       }
     }
   }
@@ -101,8 +103,8 @@ export default {
             <p style="margin-bottom: 10px"
                :style="themeStatus?{color:themeLight.textCheckbox}:{color:themeDark.textCheckbox}">Тип
               ошибки:</p>
-            <ui-checkbox :themeStatus="themeStatus"
-                         :themeLight="themeLight" :themeDark="themeDark"></ui-checkbox>
+            <ui-checkbox-interaction :themeStatus="themeStatus"
+                         :themeLight="themeLight" :themeDark="themeDark"></ui-checkbox-interaction>
           </div>
           <ui-select class="first-select" :themeStatus="themeStatus"
                      :themeLight="themeLight" :themeDark="themeDark">
