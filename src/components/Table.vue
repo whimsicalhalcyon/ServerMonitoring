@@ -112,6 +112,7 @@ export default {
   border-radius: 8px;
   background: v-bind('currTheme.backgroundComponent');
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
 }
 
 .custom-table {
