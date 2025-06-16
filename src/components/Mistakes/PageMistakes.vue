@@ -52,7 +52,7 @@ export default {
           <i class="fa-solid fa-file-excel"></i>
         </main-button>
         <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-          <option disabled>Выбрать интервал</option>
+          <option disabled selected>Выбрать интервал</option>
           <option>5 минут</option>
           <option>10 минут</option>
           <option>15 минут</option>
