@@ -262,12 +262,12 @@ export default {
   background: #757575 !important;
 }
 .one {
-  max-width: 725px;
+  max-width: 805px;
   width: 100%;
 }
 .two{
   display: flex;
-  max-width: 500px;
+  max-width: 420px;
   width: 100%;
   gap: 20px;
 }
