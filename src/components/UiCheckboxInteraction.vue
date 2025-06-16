@@ -72,7 +72,7 @@ export default {
   align-items: center;
 }
 .errorBlock input[type="checkbox"] {
-  margin-right: 3%;
+  margin-right: 5%;
   transform: scale(1.1);
 }
 

@@ -4,33 +4,37 @@ import UiSelect from '@/components/UiSelect.vue';
 import MainButton from '@/components/MainButton.vue';
 
 export default {
-  components: {
-    UiInput, MainButton, UiSelect
-  },
+  components: { UiInput, UiSelect, MainButton },
   props: {
-    openDialog: {
-      type: Boolean,
-      default: false
-    },
-    themeStatus: {
-      type: Boolean,
-      default: true
-    },
-    themeLight: {
-      type: Object,
-      required: true
-    },
-    themeDark: {
-      type: Object,
-      required: true
-    },
+    openDialog: { type: Boolean, default: false },
+    themeStatus: { type: Boolean, default: true },
+    themeLight: { type: Object, required: true },
+    themeDark: { type: Object, required: true },
+    isAddBlock: { type: Boolean, default: false },
+    isAddServer: { type: Boolean, default: false },
   },
   methods: {
     hideWindow() {
-      this.$emit("update:openDialog", false);
-    }
-  }
-}
+      this.$emit('update:openDialog', false);
+    },
+    addBlock() {
+      const blockName = this.$refs.blockName.value;
+      if (blockName) {
+        this.$emit('addBlock', blockName);
+        this.hideWindow();
+      }
+    },
+    addServer() {
+      const ip = this.$refs.ip.value;
+      const dns = this.$refs.dns.value;
+      const group = this.$refs.group.value;
+      if (ip && dns && group) {
+        this.$emit('addServer', { ip, dns, group });
+        this.hideWindow();
+      }
+    },
+  },
+};
 </script>
 
 <template>
@@ -41,74 +45,67 @@ export default {
         ? { background: themeLight.backgroundComponent, color: themeLight.textColor }
         : { background: themeDark.backgroundComponent, color: themeDark.textColor }"
     >
-      <h1 class="dialog-title" :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }">
-        Добавление узла
-      </h1>
-
-      <div class="dialog-inputs">
-        <div class="dialog-field">
-          <label class="dialog-label" for="ip"
-                 :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
-          >IP-адрес:</label>
-          <ui-input
-              id="ip"
-              :themeStatus="themeStatus"
-              :themeLight="themeLight"
-              :themeDark="themeDark"
-          />
+      <template v-if="isAddBlock">
+        <h1 class="dialog-title" :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }">
+          Добавить блок
+        </h1>
+        <div class="dialog-inputs">
+          <div class="dialog-field">
+            <label class="dialog-label" for="blockName"
+                   :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
+            >Название блока:</label>
+            <ui-input id="blockName" ref="blockName" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" />
+          </div>
         </div>
-
-        <div class="dialog-field">
-          <label class="dialog-label" for="dns"
-                 :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
-          >Доменное имя:</label>
-          <ui-input
-              id="dns"
-              :themeStatus="themeStatus"
-              :themeLight="themeLight"
-              :themeDark="themeDark"
-          />
+        <div class="dialog-buttons">
+          <main-button @click="addBlock" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+            Сохранить
+          </main-button>
+          <main-button @click="hideWindow" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" class="drop">
+            Отмена
+          </main-button>
         </div>
-
-        <div class="dialog-field">
-          <label class="dialog-label" for="group"
-                 :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
-          >Группа:</label>
-          <ui-select
-              id="group"
-              :themeStatus="themeStatus"
-              :themeLight="themeLight"
-              :themeDark="themeDark"
-          >
-            <option>APP</option>
-            <option>APP2006</option>
-            <option>IvanZolo2004</option>
-          </ui-select>
+      </template>
+      <template v-if="isAddServer">
+        <h1 class="dialog-title" :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }">
+          Добавление узла
+        </h1>
+        <div class="dialog-inputs">
+          <div class="dialog-field">
+            <label class="dialog-label" for="ip"
+                   :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
+            >IP-адрес:</label>
+            <ui-input id="ip" ref="ip" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" />
+          </div>
+          <div class="dialog-field">
+            <label class="dialog-label" for="dns"
+                   :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
+            >Доменное имя:</label>
+            <ui-input id="dns" ref="dns" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" />
+          </div>
+          <div class="dialog-field">
+            <label class="dialog-label" for="group"
+                   :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
+            >Группа:</label>
+            <ui-select id="group" ref="group" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+              <option>APP</option>
+              <option>APP2006</option>
+              <option>IvanZolo2004</option>
+            </ui-select>
+          </div>
         </div>
-      </div>
-
-      <div class="dialog-buttons">
-        <main-button
-            :themeStatus="themeStatus"
-            :themeLight="themeLight"
-            :themeDark="themeDark"
-            @click="hideWindow"
-        >Сохранить</main-button>
-
-        <main-button
-            :themeStatus="themeStatus"
-            :themeLight="themeLight"
-            :themeDark="themeDark"
-            @click.stop="hideWindow"
-            class="drop"
-        >
-          Отмена
-        </main-button>
-      </div>
+        <div class="dialog-buttons">
+          <main-button @click="addServer" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+            Сохранить
+          </main-button>
+          <main-button @click="hideWindow" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" class="drop">
+            Отмена
+          </main-button>
+        </div>
+      </template>
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .dialog-overlay {
@@ -123,9 +120,12 @@ export default {
   align-items: center;
   z-index: 10000;
 }
-.drop{
+
+.drop {
   background: #757575 !important;
+  width: 100%;
 }
+
 .dialog-content {
   background-color: #ffffff;
   border-radius: 12px;
@@ -143,7 +143,7 @@ export default {
   font-size: 28px;
   color: #212121;
   text-align: center;
-  font-family:"Segoe UI Semibold";
+  font-family: "Segoe UI Semibold";
 }
 
 .dialog-inputs {
@@ -169,13 +169,16 @@ export default {
   justify-content: space-between;
   align-items: center;
 }
-input{
+
+input {
   width: 100%;
 }
-select{
+
+select {
   width: 100%;
 }
-button{
+
+button {
   width: 48%;
 }
 </style>

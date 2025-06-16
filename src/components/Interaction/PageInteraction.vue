@@ -1,15 +1,15 @@
 <script>
 import Table from '@/components/Table.vue';
 import UiSelect from "@/components/UiSelect.vue";
-import uiInput from "@/components/UiInput.vue";
-import mainButton from "@/components/MainButton.vue";
+import UiInput from "@/components/UiInput.vue";
+import MainButton from "@/components/MainButton.vue";
 import UiCheckboxInteraction from "@/components/UiCheckboxInteraction.vue";
-import ModalWindow from "@/components/Interaction/ModalWindow.vue";
+import ModalWindowMain from '@/components/Interaction/ModalWindowMain.vue';
 
 export default {
   components: {
     UiCheckboxInteraction,
-    Table, UiSelect, uiInput, mainButton, UiCheckbox: UiCheckboxInteraction, ModalWindow
+    Table, UiSelect, UiInput, MainButton, UiCheckbox: UiCheckboxInteraction, ModalWindowMain
   },
   emits: ['changeTheme'],
   props: {
@@ -31,25 +31,43 @@ export default {
       openPanel: true,
       isSelected: null,
       modalWindow: false,
-    }
+      blocks: [
+        { name: 'app', servers: ['nn-lsed-app01.nnov.ru', 'nn-lsed-app02.nnov.ru', 'nn-lsed-app03.nnov.ru'], isExpanded: false },
+        { name: 'backup', servers: [], isExpanded: false },
+        { name: 'bl', servers: [], isExpanded: false },
+        { name: 'convert', servers: [], isExpanded: false },
+        { name: 'custom', servers: [], isExpanded: false },
+      ],
+    };
   },
   methods: {
     togglePanel() {
-      this.openPanel = !this.openPanel
+      this.openPanel = !this.openPanel;
     },
     toggleWindow() {
-      this.modalWindow = !this.modalWindow
+      this.modalWindow = !this.modalWindow;
     },
     confirmDelete() {
       let confirmed = window.confirm(`Вы точно хотите удалить ${this.isSelected.dns}?`);
       if (confirmed) {
-        alert(`Сервер ${this.isSelected.dns} безвозратно удален!`);
+        alert(`Сервер ${this.isSelected.dns} безвозвратно удален!`);
       } else {
         alert(`Сервер ${this.isSelected.dns} не был удален`);
       }
-    }
-  }
-}
+    },
+    addBlock(newBlockName) {
+      this.blocks.push({ name: newBlockName, servers: [], isExpanded: false });
+    },
+    addServer(newServer) {
+      const block = this.blocks.find(b => b.name === newServer.group);
+      if (block) {
+        block.servers.push(newServer.dns);
+      } else {
+        this.blocks.push({ name: newServer.group, servers: [newServer.dns], isExpanded: false });
+      }
+    },
+  },
+};
 </script>
 
 <template>
@@ -104,7 +122,7 @@ export default {
                :style="themeStatus?{color:themeLight.textCheckbox}:{color:themeDark.textCheckbox}">Тип
               ошибки:</p>
             <ui-checkbox-interaction :themeStatus="themeStatus"
-                         :themeLight="themeLight" :themeDark="themeDark"></ui-checkbox-interaction>
+                                     :themeLight="themeLight" :themeDark="themeDark"></ui-checkbox-interaction>
           </div>
           <div class="two">
             <ui-select class="first-select" :themeStatus="themeStatus"
@@ -144,8 +162,14 @@ export default {
       />
     </div>
   </div>
-  <modal-window :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"
-                v-model:openDialog="modalWindow"></modal-window>
+  <modal-window-main
+      v-model:openDialog="modalWindow"
+      :themeStatus="themeStatus"
+      :themeLight="themeLight"
+      :themeDark="themeDark"
+      @addBlock="addBlock"
+      @addServer="addServer"
+  />
 </template>
 
 <style scoped>
@@ -227,7 +251,6 @@ export default {
   border-bottom: 1px solid;
 }
 
-
 .main .text {
   display: flex;
   gap: 8px;
@@ -261,17 +284,20 @@ export default {
 .drop {
   background: #757575 !important;
 }
+
 .one {
   max-width: 805px;
   width: 100%;
 }
-.two{
+
+.two {
   display: flex;
   max-width: 420px;
   width: 100%;
   gap: 20px;
 }
-.three{
+
+.three {
   display: flex;
   max-width: 420px;
   width: 100%;
