@@ -14,9 +14,24 @@ export default {
       default: true
     }
   },
+  data() {
+    return {
+      checkboxId: `checkbox-${Math.random().toString(36).substr(2, 9)}`
+    }
+  }
+  ,
+
   computed: {
     textColor() {
       return this.themeStatus ? this.themeLight.textCheckbox : this.themeDark.textCheckbox;
+    }
+  },
+  methods: {
+    toggleCheckbox() {
+      const checkbox = document.getElementById(this.checkboxId);
+      if (checkbox) {
+        checkbox.checked = !checkbox.checked;
+      }
     }
   }
 }
@@ -25,7 +40,12 @@ export default {
 <template>
   <div class="errorGroup">
     <input type="checkbox" :id="'error' + i">
-    <label :style="themeStatus?{color:themeLight.textCheckbox}:{color:themeDark.textCheckbox}"></label><span class="slot-content" :style="{ color: textColor }">
+    <label :style="themeStatus?{color:themeLight.textCheckbox}:{color:themeDark.textCheckbox}"></label>
+    <span
+        class="slot-content"
+        :style="{ color: textColor, fontSize: '14px' }"
+        @click="toggleCheckbox"
+    >
       <slot></slot>
     </span>
   </div>
@@ -47,6 +67,7 @@ export default {
 
 label {
   margin-left: 10px;
+  font-size: 14px;
 }
 
 .errorBlock input[type="checkbox"] {
@@ -54,7 +75,7 @@ label {
   transform: scale(1.1);
 }
 
-.errorBlock label {
-  font-size: 14px;
+.slot-content {
+  cursor: pointer
 }
 </style>
