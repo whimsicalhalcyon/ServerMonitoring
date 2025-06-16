@@ -36,8 +36,14 @@ export default {
 
 <template>
   <div class="main">
-    <div class="text">
-      <p :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}" class="mistakes">Ошибки</p>
+    <div class="main-top">
+      <div class="text">
+        <p :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}">Ошибки</p>
+        <div class="themes" v-on:click="$emit('changeTheme', !themeStatus)">
+          <i class="fa-solid fa-sun" :class="themeStatus ? 'fa-moon': 'fa-sun'"
+             :style="themeStatus ? {color: themeDark.backgroundComponent}: {color: themeLight.backgroundComponent}"></i>
+        </div>
+      </div>
     </div>
     <div class="panel" v-if="openPanel" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
       <div class="top">
@@ -91,6 +97,13 @@ export default {
 .main {
   width: 100%;
 }
+.themes {
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  margin-left: auto;
+}
+
 .main .panel {
   display: flex;
   flex-direction: column;
@@ -130,6 +143,17 @@ export default {
 
 .table-mistakes {
   margin-top: 20px;
+}
+
+.main .main-top .text {
+  display: flex;
+  gap: 8px;
+  padding-top: 20px;
+  align-items: center;
+
+}
+.main .main-top .text p {
+  font-size: 28px;
 }
 
 </style>

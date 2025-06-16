@@ -110,7 +110,7 @@ export default {
     <menu-page :checkButton="checkButton" @open-monitor="openMonitorWindow" @open-mistakes="openMistakesWindow" @open-interaction="openInteractionWindow" :open-interaction="openInteraction" :open-mistakes="openMistakes" :open-monitor="openMonitor" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark"></menu-page>
     <page-monitor v-if="openMonitor" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark" @changeTheme="changeToTheme"></page-monitor>
     <page-interaction v-if="openInteraction" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark" @changeTheme="changeToTheme"></page-interaction>
-    <page-mistakes v-if="openMistakes" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark"></page-mistakes>
+    <page-mistakes v-if="openMistakes" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark" @changeTheme="changeToTheme"></page-mistakes>
   </div>
 
 </template>
