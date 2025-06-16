@@ -3,12 +3,13 @@
 import UiSelect from "@/components/UiSelect.vue";
 import UiInput from "@/components/UiInput.vue";
 import MainButton from "@/components/MainButton.vue";
+import MistakeCheckbox from "@/components/Mistakes/MistakeCheckbox.vue";
 import UiCheckboxInteraction from "@/components/UiCheckboxInteraction.vue";
 import TableMistakes from "@/components/Mistakes/TableMistakes.vue";
 
 export default {
   components: {
-    UiSelect, MainButton, UiInput, UiCheckbox: UiCheckboxInteraction, TableMistakes
+    UiSelect, MainButton, UiInput, MistakeCheckbox, TableMistakes, UiCheckbox: UiCheckboxInteraction,
   },
   props: {
     themeLight: {
@@ -70,11 +71,11 @@ export default {
         <main-button class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Найти</main-button>
       </div>
       <div class="bottom">
-        <ui-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</ui-checkbox>
-        <ui-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</ui-checkbox>
-        <ui-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</ui-checkbox>
-        <ui-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</ui-checkbox>
-        <ui-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</ui-checkbox>
+        <mistake-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</mistake-checkbox>
+        <mistake-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</mistake-checkbox>
+        <mistake-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</mistake-checkbox>
+        <mistake-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</mistake-checkbox>
+        <mistake-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</mistake-checkbox>
       </div>
     </div>
     <div class="table-mistakes">
@@ -102,7 +103,6 @@ export default {
   position: sticky;
   top: 0;
   z-index: 1000;
-  //box-shadow: 0px 5px 5px 0px rgba(34, 60, 80, 0.2);
 }
 .main .panel .top {
   display: flex;
