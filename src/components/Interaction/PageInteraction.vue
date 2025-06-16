@@ -106,27 +106,31 @@ export default {
             <ui-checkbox-interaction :themeStatus="themeStatus"
                          :themeLight="themeLight" :themeDark="themeDark"></ui-checkbox-interaction>
           </div>
-          <ui-select class="first-select" :themeStatus="themeStatus"
-                     :themeLight="themeLight" :themeDark="themeDark">
-            <option disabled selected>Выбрать состояние</option>
-            <option>Все</option>
-            <option>Активировано</option>
-            <option>Деактивировано</option>
-          </ui-select>
-          <ui-select class="second-select" :themeStatus="themeStatus"
-                     :themeLight="themeLight" :themeDark="themeDark">
-            <option disabled selected>Выбрать группу</option>
-            <option>Все</option>
-            <option>APP</option>
-            <option>APP2006</option>
-            <option>IvanZolo2004</option>
-          </ui-select>
-          <main-button :themeStatus="themeStatus"
-                       :themeLight="themeLight" :themeDark="themeDark" class="drop">Сбросить
-          </main-button>
-          <main-button :themeStatus="themeStatus"
-                       :themeLight="themeLight" :themeDark="themeDark">Сохранить
-          </main-button>
+          <div class="two">
+            <ui-select class="first-select" :themeStatus="themeStatus"
+                       :themeLight="themeLight" :themeDark="themeDark">
+              <option disabled selected>Выбрать состояние</option>
+              <option>Все</option>
+              <option>Активировано</option>
+              <option>Деактивировано</option>
+            </ui-select>
+            <ui-select class="second-select" :themeStatus="themeStatus"
+                       :themeLight="themeLight" :themeDark="themeDark">
+              <option disabled selected>Выбрать группу</option>
+              <option>Все</option>
+              <option>APP</option>
+              <option>APP2006</option>
+              <option>IvanZolo2004</option>
+            </ui-select>
+          </div>
+          <div class="three">
+            <main-button :themeStatus="themeStatus"
+                         :themeLight="themeLight" :themeDark="themeDark" class="drop">Сбросить
+            </main-button>
+            <main-button :themeStatus="themeStatus"
+                         :themeLight="themeLight" :themeDark="themeDark">Сохранить
+            </main-button>
+          </div>
         </div>
       </div>
     </div>
@@ -243,29 +247,34 @@ export default {
 .bottom {
   display: flex;
   align-items: center;
-
+  justify-content: space-between;
 }
 
 .bottom select {
-  width: 16%;
+  width: 100%;
 }
 
 .bottom button {
-  width: 13.5%;
+  width: 100%;
 }
 
 .drop {
-  margin-right: 1%;
   background: #757575 !important;
 }
-
-.second-select {
-  margin-right: 2%;
-  margin-left: 1%;
-}
-
 .one {
-  margin-right: 2%;
-  width: 50%;
+  max-width: 725px;
+  width: 100%;
+}
+.two{
+  display: flex;
+  max-width: 500px;
+  width: 100%;
+  gap: 20px;
+}
+.three{
+  display: flex;
+  max-width: 420px;
+  width: 100%;
+  gap: 20px;
 }
 </style>

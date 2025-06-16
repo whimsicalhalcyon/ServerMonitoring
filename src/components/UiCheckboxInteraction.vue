@@ -37,20 +37,30 @@ export default {
 
 <style scoped>
 .errorGroup {
-  width: 48.96%;
   display: flex;
-  gap:2%;
   width: 100%;
+  gap: 2%;
 }
-
-.errorBlock {
-  display: flex;
-  align-items: center;
-  width: 15.68%;
+.errorBlock:nth-child(1){
+  width:22.29%;
 }
-
+.errorBlock:nth-child(2){
+  width:14.22%;
+}
+.errorBlock:nth-child(3){
+  width:18.07%;
+}
+.errorBlock:nth-child(4){
+  width:9.88%;
+}
+.errorBlock:nth-child(5){
+  width:9.88%;
+}
+.errorBlock:nth-child(6){
+  width:13.73%;
+}
 .errorBlock input[type="checkbox"] {
-  margin-right: 10%;
+  margin-right: 3%;
   transform: scale(1.1);
 }
 
