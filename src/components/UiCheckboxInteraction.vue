@@ -43,21 +43,33 @@ export default {
 }
 .errorBlock:nth-child(1){
   width:22.29%;
+  display: flex;
+  align-items: center;
 }
 .errorBlock:nth-child(2){
   width:14.22%;
+  display: flex;
+  align-items: center;
 }
 .errorBlock:nth-child(3){
   width:18.07%;
+  display: flex;
+  align-items: center;
 }
 .errorBlock:nth-child(4){
   width:9.88%;
+  display: flex;
+  align-items: center;
 }
 .errorBlock:nth-child(5){
   width:9.88%;
+  display: flex;
+  align-items: center;
 }
 .errorBlock:nth-child(6){
   width:13.73%;
+  display: flex;
+  align-items: center;
 }
 .errorBlock input[type="checkbox"] {
   margin-right: 3%;

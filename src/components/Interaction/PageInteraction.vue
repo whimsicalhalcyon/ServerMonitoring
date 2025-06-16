@@ -125,10 +125,10 @@ export default {
           </div>
           <div class="three">
             <main-button :themeStatus="themeStatus"
-                         :themeLight="themeLight" :themeDark="themeDark" class="drop">Сбросить
+                         :themeLight="themeLight" :themeDark="themeDark">Найти
             </main-button>
             <main-button :themeStatus="themeStatus"
-                         :themeLight="themeLight" :themeDark="themeDark">Сохранить
+                         :themeLight="themeLight" :themeDark="themeDark" class="drop">Сбросить
             </main-button>
           </div>
         </div>
@@ -179,7 +179,7 @@ export default {
 }
 
 .top .top-left .input-search {
-  width: 18.87%;
+  width: 41.544%;
 }
 
 .btn {
