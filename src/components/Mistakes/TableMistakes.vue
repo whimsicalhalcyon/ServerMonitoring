@@ -25,9 +25,26 @@ export default {
       type: Number,
     },
   },
+  data() {
+    return {
+      sortColumn: {
+        time:false,
+        importance: false,
+        recoveryTime: false,
+        state: false,
+        serverName:false,
+        problem: false,
+        duration: false
+      }
+    }
+
+  },
   methods: {
     toggleSelect(index) {
       this.$emit('update:isSelected', this.isSelected === index ? null : index);
+    },
+    togglepanel(column) {
+      this.sortColumn[column] = !this.sortColumn[column];
     }
   },
   computed: {
@@ -72,21 +89,57 @@ export default {
     <table class="custom-table">
       <thead :style="{ background: currTheme.backgroundFilter }">
       <tr>
-        <th class="rounded-tl" :style="cellStyle"></th>
-        <th :style="cellStyle">Время</th>
-        <th :style="cellStyle">Важность</th>
-        <th :style="cellStyle">Время восстановления</th>
-        <th :style="cellStyle">Состояние</th>
-        <th :style="cellStyle">Имя сервера</th>
-        <th :style="cellStyle">Проблема</th>
-        <th class="rounded-tr" :style="cellStyle">Длительность</th>
+        <th :style="cellStyle">
+          <div class="header-table">
+            <span>Время</span>
+            <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+             :class="sortColumn.time ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('time')"></i>
+          </div>
+        </th>
+        <th :style="cellStyle">
+          <div class="header-table">
+            <span>Важность</span>
+            <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+             :class="sortColumn.importance ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('importsnce')"></i>
+          </div>
+        </th>
+        <th :style="cellStyle">
+        <div class="header-table">
+          <span>Время восстановления</span>
+          <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+             :class="sortColumn.recoveryTime ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('recoveryTime')"></i>
+        </div></th>
+        <th :style="cellStyle">
+          <div class="header-table">
+            <span>Состояние</span>
+            <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+             :class="sortColumn.state ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('state')"></i>
+          </div>
+        </th>
+        <th :style="cellStyle">
+        <div class="header-table">
+          <span>Имя сервера</span>
+          <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+             :class="sortColumn.serverName ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('serverName')"></i>
+        </div></th>
+        <th :style="cellStyle">
+          <div class="header-table">
+            <span>Проблема</span>
+            <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+             :class="sortColumn.problem ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('problem')"></i>
+          </div>
+        </th>
+        <th class="rounded-tr" :style="cellStyle">
+          <div class="header-table">
+            <span>Длительность</span>
+            <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+               :class="sortColumn.duration ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('duration')"></i>
+          </div>
+        </th>
       </tr>
       </thead>
       <tbody>
       <tr v-for="item in tableData" :key="item.id">
-        <td :style="cellStyle">
-          <mistake-checkbox theme-dark="" theme-light=""></mistake-checkbox>
-        </td>
         <td :style="cellStyle">{{ item.time }}</td>
         <td class="name-mistake"
             :style="{
@@ -98,6 +151,7 @@ export default {
             }"
         >
           {{item.importance}}
+
         </td>
         <td :style="cellStyle">{{ item.recoveryTime }}</td>
         <td class="status"
@@ -105,7 +159,7 @@ export default {
               ...cellStyle,
               color: item.state === 'Активно' ? '#9E271E' :
                      item.state === 'Решено' ? '#4CAF50' :
-                     '#FFC107',
+                     '#9E271E',
 
             }"
         >
@@ -171,9 +225,6 @@ tbody tr:last-child td:last-child {
   border-bottom-right-radius: 12px;
 }
 
-.status, .name-mistake {
-  font-weight: 600;
-}
 tbody tr:hover td {
   background-color: rgba(0, 0, 0, 0.03);
 }
@@ -181,6 +232,13 @@ tbody tr:hover td {
 th:not(:last-child),
 td:not(:last-child) {
   border-right: none;
+}
+
+.header-table {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 </style>

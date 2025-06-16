@@ -29,7 +29,7 @@ export default {
     return {
       openPanel: true
     }
-  }
+  },
 
 }
 </script>
@@ -48,40 +48,34 @@ export default {
     <div class="panel" v-if="openPanel" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
       <div class="top">
         <ui-input :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
+        <main-button :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" class="download">
+          <i class="fa-solid fa-file-excel"></i>
+        </main-button>
         <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-          <option disabled>Сортировать по</option>
-          <option>По названию</option>
-          <option>По времени</option>
-          <option>По узлу сети</option>
-          <option>По длительности</option>
-          <option>По важности</option>
+          <option disabled>Выбрать интервал</option>
+          <option>5 минут</option>
+          <option>10 минут</option>
+          <option>15 минут</option>
         </ui-select>
+      </div>
+      <div class="bottom">
         <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
           <option disabled>Состояние</option>
           <option>Любое</option>
           <option>Ошибка</option>
           <option>Решено</option>
         </ui-select>
-        <ui-select class="select select-data" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-          <option>Выбрать формат</option>
-          <option>PDF</option>
-          <option>PNG</option>
-          <option>DOCX</option>
-        </ui-select>
-        <main-button class="btn btn-data" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Выгрузить</main-button>
-      </div>
-      <div class="bottom">
         <ui-input class="date" placeholder="дд.мм.гггг 00:00"  :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
         </ui-input>
         <ui-input class="date" placeholder="дд.мм.гггг 00:00" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
         <main-button class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Найти</main-button>
+        <main-button class="btn btn-close" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Сбросить</main-button>
       </div>
       <div class="bottom">
-        <mistake-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</mistake-checkbox>
-        <mistake-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</mistake-checkbox>
-        <mistake-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</mistake-checkbox>
-        <mistake-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</mistake-checkbox>
-        <mistake-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</mistake-checkbox>
+        <mistake-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критическая</mistake-checkbox>
+        <mistake-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Предупреждение</mistake-checkbox>
+        <mistake-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Средняя</mistake-checkbox>
+        <mistake-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Высокая</mistake-checkbox>
       </div>
     </div>
     <div class="table-mistakes">
@@ -133,12 +127,20 @@ export default {
   width: 10%;
 }
 
+.download {
+  width: 2%;
+}
+
 .mistakes {
   font-size: 32px;
 }
 
 .select-data, .btn-data {
   width: 10%;
+}
+
+.btn-close {
+  background: #757575 !important;
 }
 
 .table-mistakes {
