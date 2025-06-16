@@ -1,8 +1,11 @@
 <script>
 
+import MistakeCheckbox from "@/components/Mistakes/MistakeCheckbox.vue";
 import UiCheckboxInteraction from "@/components/UiCheckboxInteraction.vue";
 export default {
   components: {
+    UiCheckboxInteraction,
+    MistakeCheckbox,
     uiCheckbox: UiCheckboxInteraction
   },
   props: {
@@ -82,7 +85,7 @@ export default {
       <tbody>
       <tr v-for="item in tableData" :key="item.id">
         <td :style="cellStyle">
-          <ui-checkbox theme-dark="" theme-light=""></ui-checkbox>
+          <mistake-checkbox theme-dark="" theme-light=""></mistake-checkbox>
         </td>
         <td :style="cellStyle">{{ item.time }}</td>
         <td class="name-mistake"
@@ -136,14 +139,12 @@ export default {
 th {
   font-weight: normal;
   padding: 12px 16px;
-  //border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 td {
   padding: 12px 16px;
   color: v-bind('currTheme.textColor');
   background: v-bind('currTheme.backgroundComponent');
-  //border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 tbody tr:nth-child(even) td {

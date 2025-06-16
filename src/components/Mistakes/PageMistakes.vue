@@ -3,12 +3,13 @@
 import UiSelect from "@/components/UiSelect.vue";
 import UiInput from "@/components/UiInput.vue";
 import MainButton from "@/components/MainButton.vue";
+import MistakeCheckbox from "@/components/Mistakes/MistakeCheckbox.vue";
 import UiCheckboxInteraction from "@/components/UiCheckboxInteraction.vue";
 import TableMistakes from "@/components/Mistakes/TableMistakes.vue";
 
 export default {
   components: {
-    UiSelect, MainButton, UiInput, UiCheckbox: UiCheckboxInteraction, TableMistakes
+    UiSelect, MainButton, UiInput, MistakeCheckbox, TableMistakes, UiCheckbox: UiCheckboxInteraction,
   },
   props: {
     themeLight: {
@@ -35,8 +36,14 @@ export default {
 
 <template>
   <div class="main">
-    <div class="text">
-      <p :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}" class="mistakes">Ошибки</p>
+    <div class="main-top">
+      <div class="text">
+        <p :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}">Ошибки</p>
+        <div class="themes" v-on:click="$emit('changeTheme', !themeStatus)">
+          <i class="fa-solid fa-sun" :class="themeStatus ? 'fa-moon': 'fa-sun'"
+             :style="themeStatus ? {color: themeDark.backgroundComponent}: {color: themeLight.backgroundComponent}"></i>
+        </div>
+      </div>
     </div>
     <div class="panel" v-if="openPanel" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
       <div class="top">
@@ -70,11 +77,11 @@ export default {
         <main-button class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Найти</main-button>
       </div>
       <div class="bottom">
-        <ui-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</ui-checkbox>
-        <ui-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</ui-checkbox>
-        <ui-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</ui-checkbox>
-        <ui-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</ui-checkbox>
-        <ui-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</ui-checkbox>
+        <mistake-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</mistake-checkbox>
+        <mistake-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</mistake-checkbox>
+        <mistake-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</mistake-checkbox>
+        <mistake-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</mistake-checkbox>
+        <mistake-checkbox :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Критичная</mistake-checkbox>
       </div>
     </div>
     <div class="table-mistakes">
@@ -90,6 +97,13 @@ export default {
 .main {
   width: 100%;
 }
+.themes {
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  margin-left: auto;
+}
+
 .main .panel {
   display: flex;
   flex-direction: column;
@@ -102,7 +116,6 @@ export default {
   position: sticky;
   top: 0;
   z-index: 1000;
-  //box-shadow: 0px 5px 5px 0px rgba(34, 60, 80, 0.2);
 }
 .main .panel .top {
   display: flex;
@@ -130,6 +143,17 @@ export default {
 
 .table-mistakes {
   margin-top: 20px;
+}
+
+.main .main-top .text {
+  display: flex;
+  gap: 8px;
+  padding-top: 20px;
+  align-items: center;
+
+}
+.main .main-top .text p {
+  font-size: 28px;
 }
 
 </style>
