@@ -117,38 +117,40 @@ export default {
         <div class="line"
              :style="themeStatus?{borderColor:themeLight.borderColor}:{borderColor:themeDark.borderColor}"></div>
         <div class="bottom">
-          <div class="one">
-            <p style="margin-bottom: 10px"
-               :style="themeStatus?{color:themeLight.textCheckbox}:{color:themeDark.textCheckbox}">Тип
-              ошибки:</p>
-            <ui-checkbox-interaction :themeStatus="themeStatus"
+          <div class="left-checkbox">
+            <div class="textLeft">
+              <p style="margin-bottom: 10px"
+                 :style="themeStatus?{color:themeLight.textCheckbox}:{color:themeDark.textCheckbox}">Тип
+                ошибки:</p>
+            </div>
+            <ui-checkbox-interaction class="check" :themeStatus="themeStatus"
                                      :themeLight="themeLight" :themeDark="themeDark"></ui-checkbox-interaction>
           </div>
-          <div class="two">
-            <ui-select class="first-select" :themeStatus="themeStatus"
-                       :themeLight="themeLight" :themeDark="themeDark">
-              <option disabled selected>Выбрать состояние</option>
-              <option>Все</option>
-              <option>Активировано</option>
-              <option>Деактивировано</option>
-            </ui-select>
-            <ui-select class="second-select" :themeStatus="themeStatus"
-                       :themeLight="themeLight" :themeDark="themeDark">
-              <option disabled selected>Выбрать группу</option>
-              <option>Все</option>
-              <option>APP</option>
-              <option>APP2006</option>
-              <option>IvanZolo2004</option>
-            </ui-select>
-          </div>
-          <div class="three">
-            <main-button :themeStatus="themeStatus"
-                         :themeLight="themeLight" :themeDark="themeDark">Найти
-            </main-button>
-            <main-button :themeStatus="themeStatus"
-                         :themeLight="themeLight" :themeDark="themeDark" class="drop">Сбросить
-            </main-button>
-          </div>
+
+          <ui-select class="first-select" :themeStatus="themeStatus"
+                     :themeLight="themeLight" :themeDark="themeDark">
+            <option disabled selected>Выбрать состояние</option>
+            <option>Все</option>
+            <option>Активировано</option>
+            <option>Деактивировано</option>
+          </ui-select>
+          <ui-select class="second-select" :themeStatus="themeStatus"
+                     :themeLight="themeLight" :themeDark="themeDark">
+            <option disabled selected>Выбрать группу</option>
+            <option>Все</option>
+            <option>APP</option>
+            <option>APP2006</option>
+            <option>IvanZolo2004</option>
+          </ui-select>
+
+
+          <main-button class="btn" :themeStatus="themeStatus"
+                       :themeLight="themeLight" :themeDark="themeDark">Найти
+          </main-button>
+          <main-button  :themeStatus="themeStatus"
+                       :themeLight="themeLight" :themeDark="themeDark" class="drop">Сбросить
+          </main-button>
+
         </div>
       </div>
     </div>
@@ -177,6 +179,17 @@ export default {
   width: 100%;
 }
 
+.textLeft {
+  width: 53.85%;
+}
+.left-checkbox {
+  display: flex;
+  flex-direction: column;
+  width: 53.85%;
+}
+.check {
+  gap: 2%;
+}
 .themes {
   cursor: pointer;
   width: 30px;
@@ -206,9 +219,6 @@ export default {
   width: 41.544%;
 }
 
-.btn {
-  width: 15.568%;
-}
 
 .top {
   display: flex;
@@ -270,37 +280,21 @@ export default {
 .bottom {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 1%
 }
 
 .bottom select {
-  width: 100%;
+  width: 16%;
 }
 
-.bottom button {
-  width: 100%;
-}
+
 
 .drop {
   background: #757575 !important;
 }
 
-.one {
-  max-width: 805px;
-  width: 100%;
-}
 
-.two {
-  display: flex;
-  max-width: 420px;
-  width: 100%;
-  gap: 20px;
-}
-
-.three {
-  display: flex;
-  max-width: 420px;
-  width: 100%;
-  gap: 20px;
+.bottom button {
+  width: 10%;
 }
 </style>

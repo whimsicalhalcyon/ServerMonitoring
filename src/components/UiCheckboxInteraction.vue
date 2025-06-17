@@ -38,45 +38,12 @@ export default {
 <style scoped>
 .errorGroup {
   display: flex;
-  width: 100%;
-  gap: 2%;
+  align-items: center;
+  text-align: center;
 }
-.errorBlock:nth-child(1){
-  width:22.29%;
+.errorBlock {
   display: flex;
   align-items: center;
-}
-.errorBlock:nth-child(2){
-  width:14.22%;
-  display: flex;
-  align-items: center;
-}
-.errorBlock:nth-child(3){
-  width:18.07%;
-  display: flex;
-  align-items: center;
-}
-.errorBlock:nth-child(4){
-  width:9.88%;
-  display: flex;
-  align-items: center;
-}
-.errorBlock:nth-child(5){
-  width:9.88%;
-  display: flex;
-  align-items: center;
-}
-.errorBlock:nth-child(6){
-  width:13.73%;
-  display: flex;
-  align-items: center;
-}
-.errorBlock input[type="checkbox"] {
-  margin-right: 5%;
-  transform: scale(1.1);
-}
-
-.errorBlock label {
-  font-size: 14px;
+  gap: 8px;
 }
 </style>
