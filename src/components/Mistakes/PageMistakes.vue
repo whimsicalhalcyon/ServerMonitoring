@@ -36,7 +36,7 @@ export default {
 
 <template>
   <div class="main">
-    <div class="main-top">
+    <div class="main-top" :style="themeStatus ? {background: themeLight.background}: {background: themeDark.background}">
       <div class="text">
         <p :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}">Ошибки</p>
         <div class="themes" v-on:click="$emit('changeTheme', !themeStatus)">
@@ -44,46 +44,47 @@ export default {
              :style="themeStatus ? {color: themeDark.backgroundComponent}: {color: themeLight.backgroundComponent}"></i>
         </div>
       </div>
-    </div>
-    <div class="panel" v-if="openPanel" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
-      <div class="top">
-        <ui-input :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
-        <main-button :themeStatus="themeStatus" :themeLight="themeLight"
-                     :themeDark="themeDark" style="width: 4%;"><i class="fa-solid fa-file-excel"></i></main-button>
-      </div>
-      <div class="line"
-           :style="themeStatus?{borderColor:themeLight.borderColor}:{borderColor:themeDark.borderColor}"></div>
-      <div class="left-checkbox">
-      <div class="bottom">
-        <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-          <option disabled selected>Выбрать интервал</option>
-          <option>5 минут</option>
-          <option>10 минут</option>
-          <option>15 минут</option>
-        </ui-select>
-        <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-          <option disabled>Состояние</option>
-          <option>Любое</option>
-          <option>Ошибка</option>
-          <option>Решено</option>
-        </ui-select>
-        <ui-input class="date" placeholder="дд.мм.гггг 00:00"  :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-        </ui-input>
-        <ui-input class="date" placeholder="дд.мм.гггг 00:00" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
-        <main-button class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Найти</main-button>
-        <main-button class="btn btn-close" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Сбросить</main-button>
-
-      </div>
-
-        <div class="textLeft">
-          <p style="margin-bottom: 10px"
-             :style="themeStatus?{color:themeLight.textCheckbox}:{color:themeDark.textCheckbox}">Тип
-            ошибки:</p>
+      <div class="panel" v-if="openPanel" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
+        <div class="top">
+          <ui-input :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
+          <main-button :themeStatus="themeStatus" :themeLight="themeLight"
+                       :themeDark="themeDark" style="width: 4%;"><i class="fa-solid fa-file-excel"></i></main-button>
         </div>
-        <ui-checkbox-interaction class="check" :themeStatus="themeStatus"
-                                 :themeLight="themeLight" :themeDark="themeDark"></ui-checkbox-interaction>
+        <div class="line"
+             :style="themeStatus?{borderColor:themeLight.borderColor}:{borderColor:themeDark.borderColor}"></div>
+        <div class="left-checkbox">
+          <div class="bottom">
+            <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+              <option disabled selected>Выбрать интервал</option>
+              <option>5 минут</option>
+              <option>10 минут</option>
+              <option>15 минут</option>
+            </ui-select>
+            <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+              <option disabled>Состояние</option>
+              <option>Любое</option>
+              <option>Ошибка</option>
+              <option>Решено</option>
+            </ui-select>
+            <ui-input class="date" placeholder="дд.мм.гггг 00:00"  :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+            </ui-input>
+            <ui-input class="date" placeholder="дд.мм.гггг 00:00" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
+            <main-button class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Найти</main-button>
+            <main-button class="btn btn-close" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Сбросить</main-button>
+
+          </div>
+
+          <div class="textLeft">
+            <p style="margin-bottom: 10px"
+               :style="themeStatus?{color:themeLight.textCheckbox}:{color:themeDark.textCheckbox}">Тип
+              ошибки:</p>
+          </div>
+          <ui-checkbox-interaction class="check" :themeStatus="themeStatus"
+                                   :themeLight="themeLight" :themeDark="themeDark"></ui-checkbox-interaction>
+        </div>
       </div>
     </div>
+
     <div class="table-mistakes">
       <table-mistakes :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" class="table-mistakes"></table-mistakes>
     </div>
@@ -95,6 +96,15 @@ export default {
 
 .main {
   width: 100%;
+}
+
+.main .main-top {
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding-bottom: 1.1%;
 }
 .themes {
   cursor: pointer;
@@ -112,9 +122,6 @@ export default {
   border-radius: 12px;
   gap: 14px;
   margin-top: 20px;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
 }
 .main .panel .top {
   display: flex;
@@ -160,10 +167,6 @@ export default {
   background: #757575 !important;
 }
 
-.table-mistakes {
-  margin-top: 20px;
-}
-
 .main .main-top .text {
   display: flex;
   gap: 8px;
@@ -175,11 +178,5 @@ export default {
   font-size: 28px;
 }
 
-.themes i{
-  cursor: pointer;
-  width: 30px;
-  height: 30px;
-  margin-left: auto;
-}
 
 </style>
