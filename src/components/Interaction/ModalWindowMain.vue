@@ -33,16 +33,14 @@ export default {
     openAddServer() {
       this.addServerModal = true;
     },
-    deleteServer(blockIndex, serverIndex) {
-      if (window.confirm(`Вы точно хотите удалить ${this.blocks[blockIndex].servers[serverIndex]}?`)) {
-        this.blocks[blockIndex].servers.splice(serverIndex, 1);
-        alert(`Сервер ${this.blocks[blockIndex].servers[serverIndex]} удален!`);
-      } else {
-        alert(`Сервер ${this.blocks[blockIndex].servers[serverIndex]} не удален`);
-      }
-    },
     toggleExpand(blockIndex) {
       this.blocks[blockIndex].isExpanded = !this.blocks[blockIndex].isExpanded;
+    },
+    deleteBlock(blockIndex) {
+      if (window.confirm(`Вы точно хотите удалить блок ${this.blocks[blockIndex].name}?`)) {
+        this.blocks.splice(blockIndex, 1);
+        alert(`Блок ${this.blocks[blockIndex].name} удалён!`);
+      }
     },
   },
 };
@@ -70,12 +68,15 @@ export default {
       <div class="blocks-container">
         <div v-for="(block, blockIndex) in blocks" :key="blockIndex" class="block">
           <div class="block-header" @click="toggleExpand(blockIndex)">
-            {{ block.name }} <i :class="block.isExpanded ? 'fa fa-chevron-up' : 'fa fa-chevron-down'"></i>
+            <span>{{ block.name }}</span>
+            <div>
+              <i :class="block.isExpanded ? 'fa fa-chevron-up' : 'fa fa-chevron-down'"></i>
+              <button @click.stop="deleteBlock(blockIndex)" class="delete-btn">Х</button>
+            </div>
           </div>
           <div class="servers" v-show="block.isExpanded">
             <div v-for="(server, serverIndex) in block.servers" :key="serverIndex" class="server-item">
               {{ server }}
-              <button @click="deleteServer(blockIndex, serverIndex)" class="delete-btn">Удалить</button>
             </div>
           </div>
         </div>
@@ -164,6 +165,12 @@ export default {
   align-items: center;
 }
 
+.block-header div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .servers {
   padding-left: 20px;
   transition: all 0.3s ease;
@@ -193,7 +200,7 @@ export default {
 }
 
 button {
-  width: 30%;
+  width: 100%;
 }
 
 i {

@@ -41,6 +41,7 @@ export default {
   <div v-if="openDialog" class="dialog-overlay">
     <div
         class="dialog-content"
+        :class="{'dialog-content-add-block': isAddBlock, 'dialog-content-add-server': isAddServer}"
         :style="themeStatus
         ? { background: themeLight.backgroundComponent, color: themeLight.textColor }
         : { background: themeDark.backgroundComponent, color: themeDark.textColor }"
@@ -51,10 +52,14 @@ export default {
         </h1>
         <div class="dialog-inputs">
           <div class="dialog-field">
-            <label class="dialog-label" for="blockName"
+            <label class="dialog-label" for="group"
                    :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
-            >Название блока:</label>
-            <ui-input id="blockName" ref="blockName" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" />
+            >Группа:</label>
+            <ui-select id="group" ref="group" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+              <option>APP</option>
+              <option>APP2006</option>
+              <option>IvanZolo2004</option>
+            </ui-select>
           </div>
         </div>
         <div class="dialog-buttons">
@@ -68,7 +73,7 @@ export default {
       </template>
       <template v-if="isAddServer">
         <h1 class="dialog-title" :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }">
-          Добавление узла
+          Добавление сервера
         </h1>
         <div class="dialog-inputs">
           <div class="dialog-field">
@@ -121,22 +126,34 @@ export default {
   z-index: 10000;
 }
 
-.drop {
-  background: #757575 !important;
-  width: 100%;
-}
-
 .dialog-content {
   background-color: #ffffff;
   border-radius: 12px;
-  min-width: 470px;
-  min-height: 430px;
   padding: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   gap: 20px;
-  z-index: 10001;
+}
+
+/* Стили для модального окна "Добавить блок" */
+.dialog-content-add-block {
+  min-width: 470px;
+  min-height: 235px; /* Уменьшена минимальная высота для компактности */
+  max-height: 80vh; /* Ограничение максимальной высоты */
+  overflow-y: auto; /* Скроллинг при необходимости */
+}
+
+/* Стили для модального окна "Добавление узла" */
+.dialog-content-add-server {
+  min-width: 470px;
+  min-height: 405px; /* Оставляем прежнюю высоту для трёх полей */
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.drop {
+  background: #757575 !important;
 }
 
 .dialog-title {
@@ -150,6 +167,7 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  flex-grow: 1; /* Занимает доступное пространство */
 }
 
 .dialog-field {
