@@ -113,6 +113,10 @@ export default {
   margin-left: auto;
 }
 
+.text i {
+  margin-top: 4px;
+  font-size: 18px;
+}
 .main .panel {
   display: flex;
   flex-direction: column;
@@ -137,11 +141,11 @@ export default {
 }
 
 .check {
-  gap: 2%;
+  gap: 1.1%;
 }
 
 .textLeft {
-  margin-top: 1%;
+  margin-top: 0.8%;
 }
 
 .main .panel .bottom .date {

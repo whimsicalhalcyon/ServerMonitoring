@@ -279,7 +279,6 @@ export default {
 .bottom-checkbox {
   display: flex;
   flex-direction: column;
-  margin-top: 10px;
 }
 
 .textLeft {
