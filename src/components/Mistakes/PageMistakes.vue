@@ -89,7 +89,6 @@ export default {
     </div>
   </div>
 
-
 </template>
 
 <style scoped>
@@ -132,6 +131,10 @@ export default {
 
 .check {
   gap: 2%;
+}
+
+.textLeft {
+  margin-top: 1%;
 }
 
 .main .panel .bottom .date {
