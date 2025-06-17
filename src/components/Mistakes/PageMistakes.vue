@@ -175,4 +175,11 @@ export default {
   font-size: 28px;
 }
 
+.themes i{
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  margin-left: auto;
+}
+
 </style>

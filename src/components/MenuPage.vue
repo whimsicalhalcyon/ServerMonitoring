@@ -1,5 +1,4 @@
 <script>
-
 export default {
   data() {
     return {
@@ -7,7 +6,7 @@ export default {
       isHovered: true,
     };
   },
-  props : {
+  props: {
     openMonitor: {
       type: Boolean,
       default: false
@@ -53,30 +52,29 @@ export default {
         behavior: "smooth",
       });
     },
+    handleButtonClick(buttonId) {
+      this.$emit('button-clicked', buttonId);
+    }
   },
   computed: {
     themeStatusE() {
       if (this.isHovered) {
-        return this.themeStatus ? this.themeDark.backgroundFilter : this.themeLight.backgroundFilter
-
+        return this.themeStatus ? this.themeDark.backgroundFilter : this.themeLight.backgroundFilter;
       } else {
-        return this.themeStatus ? this.themeLight.backgroundFilter : this.themeDark.backgroundFilter
+        return this.themeStatus ? this.themeLight.backgroundFilter : this.themeDark.backgroundFilter;
       }
     },
     checkMistakes() {
-      if (this.checkButton === 1) {
-        return this.themeStatus ? this.themeLight.background : this.themeDark.background
-      }
+      return this.checkButton === 1
+          ? (this.themeStatus ? this.themeLight.background : this.themeDark.background) : 'none';
     },
     checkInteraction() {
-      if (this.checkButton === 2) {
-        return this.themeStatus ? this.themeLight.background : this.themeDark.background
-      }
+      return this.checkButton === 2
+          ? (this.themeStatus ? this.themeLight.background : this.themeDark.background) : 'none';
     },
     checkMonitor() {
-      if (this.checkButton === 3) {
-        return this.themeStatus ? this.themeLight.background : this.themeDark.background
-      }
+      return this.checkButton === 3
+          ? (this.themeStatus ? this.themeLight.background : this.themeDark.background) : 'none';
     }
   }
 }
@@ -85,26 +83,25 @@ export default {
 <template>
   <div class="panel" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
     <div class="buttons">
-      <button class="button" @click="$emit('open-mistakes', true)" :style="{background: this.checkMistakes, borderColor: themeDark.borderColor}">
+      <button class="button" @click="handleButtonClick(1)" :style="{background: checkMistakes, borderColor: themeDark.borderColor}">
         <i class="fa-solid fa-bug" style="font-size: 18px;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"></i>
-     </button>
+      </button>
 
-      <button class="button"  @click="$emit('open-interaction', true)" :style="{background: this.checkInteraction, borderColor: themeDark.borderColor}">
+      <button class="button" @click="handleButtonClick(2)" :style="{background: checkInteraction, borderColor: themeDark.borderColor}">
         <i class="fa-solid fa-server" style="font-size: 18px;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"></i>
       </button>
 
-      <button class="button"  @click="$emit('open-monitor', true)" :style="{background: this.checkMonitor, borderColor: themeDark.borderColor}">
+      <button class="button" @click="handleButtonClick(3)" :style="{background: checkMonitor, borderColor: themeDark.borderColor}">
         <i class="fa-solid fa-chart-line" style="font-size: 18px;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"></i>
-
       </button>
     </div>
 
-    <div v-if="showButton"  @click="scrollToTop" class="scroll-to-top"><img src="../assets/svg/up-square-svgrepo-com.svg" class="img"></div>
+    <div v-if="showButton" @click="scrollToTop" class="scroll-to-top"><img src="../assets/svg/up-square-svgrepo-com.svg" class="img"></div>
   </div>
-
 </template>
 
 <style scoped>
+
 .panel {
   width: 80px;
   display: flex;
@@ -118,15 +115,12 @@ export default {
   flex-direction: column;
   position: sticky;
   top: 20px;
-
-
 }
 .button {
   width: 80px;
   height: 44px;
   background: none;
   cursor: pointer;
-
 }
 
 .scroll-to-top {
@@ -140,18 +134,10 @@ export default {
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-
-
-
 }
 .img {
   width: 34px;
   height: 34px;
   stroke: #212121;
 }
-
-
-
 </style>
-
-
