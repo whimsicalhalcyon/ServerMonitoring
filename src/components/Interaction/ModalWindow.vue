@@ -136,18 +136,16 @@ export default {
   gap: 20px;
 }
 
-/* Стили для модального окна "Добавить блок" */
 .dialog-content-add-block {
   min-width: 470px;
-  min-height: 235px; /* Уменьшена минимальная высота для компактности */
-  max-height: 80vh; /* Ограничение максимальной высоты */
-  overflow-y: auto; /* Скроллинг при необходимости */
+  min-height: 235px;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
-/* Стили для модального окна "Добавление узла" */
 .dialog-content-add-server {
   min-width: 470px;
-  min-height: 405px; /* Оставляем прежнюю высоту для трёх полей */
+  min-height: 405px;
   max-height: 80vh;
   overflow-y: auto;
 }
@@ -167,7 +165,7 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  flex-grow: 1; /* Занимает доступное пространство */
+  flex-grow: 1;
 }
 
 .dialog-field {
