@@ -74,8 +74,11 @@ export default {
       this.savePage()
     },
     changeToTheme(status) {
-      this.themeStatusLight = status
+      this.themeStatusLight = status;
+      localStorage.setItem('theme', this.themeStatusLight);
+
     },
+
     savePage() {
       localStorage.setItem('pageState', JSON.stringify({
         openMonitor: this.openMonitor,
@@ -97,10 +100,23 @@ export default {
     }
   },
 
+
   watch: {
     openMonitor(newValue) {
       localStorage.setItem('monitorState', JSON.stringify(newValue));
+    },
+  },
+  computed: {
+    themeLocal() {
+      if (localStorage.getItem('theme') === 'true') {
+        this.themeStatusLight = true
+      } else {
+        this.themeStatusLight = false
+      }
     }
+  },
+  mounted() {
+    this.themeLocal
   }
 }
 </script>
