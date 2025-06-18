@@ -25,6 +25,9 @@ export default {
       type: Boolean,
       default: true
     },
+    servers:{
+      type: Array,
+    }
   },
   data() {
     return {
@@ -41,18 +44,15 @@ export default {
     };
   },
   methods: {
-    togglePanel() {
-      this.openPanel = !this.openPanel;
-    },
     toggleWindow() {
       this.modalWindow = !this.modalWindow;
     },
     confirmDelete() {
-      let confirmed = window.confirm(`Вы точно хотите удалить ${this.isSelected.dns}?`);
+      let confirmed = window.confirm(`Вы точно хотите удалить ${this.isSelected.nameServer}?`);
       if (confirmed) {
-        alert(`Сервер ${this.isSelected.dns} безвозвратно удален!`);
+        alert(`Сервер ${this.isSelected.nameServer} безвозвратно удален!`);
       } else {
-        alert(`Сервер ${this.isSelected.dns} не был удален`);
+        alert(`Сервер ${this.isSelected.nameServer} не был удален`);
       }
     },
     addBlock(newBlockName) {
@@ -75,27 +75,20 @@ export default {
     <div class="fix" :style="themeStatus ? {background: themeLight.background}: {background: themeDark.background}">
       <div class="text">
         <p :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}">Узлы сети</p>
-        <div class="">
-          <i class="fa-solid fa-chevron-up " style="cursor: pointer;"
-             :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-             :class="openPanel ? 'fa-chevron-down' : 'fa-chevron-up'" @click="togglePanel"></i>
-        </div>
-        <div class="themes" v-on:click="$emit('changeTheme', !themeStatus)">
-          <i class="fa-solid fa-sun" :class="themeStatus ? 'fa-moon': 'fa-sun'"
+        <div class="themes" @click="$emit('changeTheme', !themeStatus)">
+          <i class="fa-solid fa-sun"
+             :class="themeStatus ? 'fa-moon': 'fa-sun'"
              :style="themeStatus ? {color: themeDark.backgroundComponent}: {color: themeLight.backgroundComponent}"></i>
         </div>
       </div>
 
-      <div class="panel" v-if="openPanel"
-           :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
+      <div class="panel" v-if="openPanel" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
         <div class="top">
           <div class="top-left">
             <ui-input class="input-search" placeholder="Поиск по DNS и IP" :themeStatus="themeStatus"
                       :themeLight="themeLight" :themeDark="themeDark"></ui-input>
             <main-button @click="toggleWindow" class="btn" :themeStatus="themeStatus" :themeLight="themeLight"
-                         :themeDark="themeDark">Добавить
-              узел
-            </main-button>
+                         :themeDark="themeDark">Добавить узел</main-button>
             <main-button :themeStatus="themeStatus" :themeLight="themeLight"
                          :themeDark="themeDark" style="width: 5%;"><i class="fa-solid fa-file-excel"></i></main-button>
           </div>
@@ -103,92 +96,78 @@ export default {
                :style="themeStatus ? {borderColor: themeLight.borderColor}: {borderColor: themeDark.borderColor}"
                v-if="isSelected">
             <div class="intoVisible">
-              <p :style="themeStatus?{color:themeLight.textColor}:{color:themeDark.textColor}"
-                 style="padding-left: 14px;">{{isSelected.dns}}</p>
+              <p :style="themeStatus ? {color: themeLight.textColor} : {color: themeDark.textColor}"
+                 style="padding-left: 14px;">{{ isSelected.nameServer }}</p>
               <div class="buttons">
-                <button class="btnVisible" style="background: #4FC3F7"><i class="fa-solid fa-pen-to-square"></i>
+                <button class="btnVisible" style="background: #4FC3F7"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button class="btnVisible" style="margin-right: 10px; background: #F44336" @click="confirmDelete">
+                  <i class="fa-solid fa-trash"></i>
                 </button>
-                <button class="btnVisible" style="margin-right: 10px; background: #F44336" @click="confirmDelete"><i
-                    class="fa-solid fa-trash"></i></button>
               </div>
             </div>
           </div>
         </div>
-        <div class="line"
-             :style="themeStatus?{borderColor:themeLight.borderColor}:{borderColor:themeDark.borderColor}"></div>
-        <div class="bottom">
-          <div class="left-checkbox">
-            <div class="textLeft">
-              <p style="margin-bottom: 10px"
-                 :style="themeStatus?{color:themeLight.textCheckbox}:{color:themeDark.textCheckbox}">Тип
-                ошибки:</p>
-            </div>
-            <ui-checkbox-interaction class="check" :themeStatus="themeStatus"
-                                     :themeLight="themeLight" :themeDark="themeDark"></ui-checkbox-interaction>
-          </div>
 
-          <ui-select class="first-select" :themeStatus="themeStatus"
-                     :themeLight="themeLight" :themeDark="themeDark">
+        <div class="line"
+             :style="themeStatus ? {borderColor: themeLight.borderColor} : {borderColor: themeDark.borderColor}"></div>
+
+        <!-- Верхняя часть: select + кнопки -->
+        <div class="bottom-top">
+          <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
             <option disabled selected>Выбрать состояние</option>
             <option>Все</option>
             <option>Активировано</option>
             <option>Деактивировано</option>
           </ui-select>
-          <ui-select class="second-select" :themeStatus="themeStatus"
-                     :themeLight="themeLight" :themeDark="themeDark">
+          <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
             <option disabled selected>Выбрать группу</option>
             <option>Все</option>
             <option>APP</option>
             <option>APP2006</option>
             <option>IvanZolo2004</option>
           </ui-select>
+          <main-button class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Найти</main-button>
+          <main-button class="btn drop" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Сбросить</main-button>
+        </div>
 
-
-          <main-button class="btn" :themeStatus="themeStatus"
-                       :themeLight="themeLight" :themeDark="themeDark">Найти
-          </main-button>
-          <main-button  :themeStatus="themeStatus"
-                       :themeLight="themeLight" :themeDark="themeDark" class="drop">Сбросить
-          </main-button>
-
+        <!-- Нижняя часть: чекбокс -->
+        <div class="bottom-checkbox">
+          <div class="textLeft">
+            <p style="margin-bottom: 10px;"
+               :style="themeStatus ? {color: themeLight.textCheckbox} : {color: themeDark.textCheckbox}">
+              Тип ошибки:
+            </p>
+          </div>
+          <ui-checkbox-interaction class="check" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-checkbox-interaction>
         </div>
       </div>
     </div>
+
     <div class="table">
       <Table
+          v-bind:servers="servers"
           :theme-light="themeLight"
           :theme-dark="themeDark"
           :theme-status="themeStatus"
           :is-selected="isSelected"
-          @update:isSelected="isSelected=$event"
+          @update:isSelected="isSelected = $event"
       />
     </div>
+
+    <modal-window-main
+        v-model:openDialog="modalWindow"
+        :themeStatus="themeStatus"
+        :themeLight="themeLight"
+        :themeDark="themeDark"
+        @addBlock="addBlock"
+        @addServer="addServer"
+    />
   </div>
-  <modal-window-main
-      v-model:openDialog="modalWindow"
-      :themeStatus="themeStatus"
-      :themeLight="themeLight"
-      :themeDark="themeDark"
-      @addBlock="addBlock"
-      @addServer="addServer"
-  />
 </template>
 
 <style scoped>
 .main {
   width: 100%;
-}
-
-.textLeft {
-  width: 53.85%;
-}
-.left-checkbox {
-  display: flex;
-  flex-direction: column;
-  width: 53.85%;
-}
-.check {
-  gap: 2%;
 }
 .themes {
   cursor: pointer;
@@ -197,28 +176,38 @@ export default {
   margin-left: auto;
 }
 
-.main .fix {
+.fix {
   position: sticky;
   top: 0;
   z-index: 1000;
   padding-bottom: 20px;
 }
 
-.main .panel {
+.panel {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: fit-content;
   padding: 20px;
   border-radius: 12px;
   gap: 14px;
   margin-top: 20px;
 }
 
-.top .top-left .input-search {
-  width: 41.544%;
+.text {
+  display: flex;
+  gap: 8px;
+  padding-top: 20px;
+  align-items: center;
 }
 
+.text p {
+  font-size: 28px;
+}
+
+.text i {
+  margin-top: 4px;
+  font-size: 18px;
+}
 
 .top {
   display: flex;
@@ -231,10 +220,8 @@ export default {
   width: 74.62%;
 }
 
-.intoVisible {
-  display: flex;
-  justify-content: space-between;
-  padding-top: 7px;
+.input-search {
+  width: 41.544%;
 }
 
 .top-right {
@@ -242,6 +229,12 @@ export default {
   width: 24.20%;
   border-radius: 8px;
   height: 40px;
+}
+
+.intoVisible {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 7px;
 }
 
 .buttons {
@@ -261,40 +254,34 @@ export default {
   border-bottom: 1px solid;
 }
 
-.main .text {
+.bottom-top {
   display: flex;
-  gap: 8px;
-  padding-top: 20px;
+  gap: 1.1%;
   align-items: center;
 }
 
-.main .text p {
-  font-size: 28px;
+.bottom-top .select {
+  width: 21.9%;
 }
 
-.main .text i {
-  margin-top: 4px;
-  font-size: 18px;
+.bottom-top .btn {
+  width: 10%;
 }
-
-.bottom {
-  display: flex;
-  align-items: center;
-  gap: 1%
-}
-
-.bottom select {
-  width: 16%;
-}
-
-
 
 .drop {
   background: #757575 !important;
 }
 
+.bottom-checkbox {
+  display: flex;
+  flex-direction: column;
+}
 
-.bottom button {
-  width: 10%;
+.textLeft {
+  width: 53.85%;
+}
+
+.check {
+  gap: 1.1%;
 }
 </style>

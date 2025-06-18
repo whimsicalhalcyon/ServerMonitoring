@@ -10,6 +10,7 @@ export default {
   },
   data() {
     return {
+      servers:[],
       openMonitor: false,
       openMistakes: false,
       openInteraction: false,
@@ -78,26 +79,48 @@ export default {
       localStorage.setItem('theme', this.themeStatusLight);
 
     },
-
     savePage() {
       localStorage.setItem('pageState', JSON.stringify({
         openMonitor: this.openMonitor,
         openMistakes: this.openMistakes,
-        openInteraction: this.openInteraction
+        openInteraction: this.openInteraction,
+        checkButton: this.checkButton
       }));
+    },
+    checkPage(buttonId) {
+      this.checkButton = buttonId;
+
+      switch (buttonId) {
+        case 1:
+          this.openMistakesWindow(true);
+          break;
+        case 2:
+          this.openInteractionWindow(true);
+          break;
+        case 3:
+          this.openMonitorWindow(true);
+          break;
+      }
+      this.savePage();
+    },
+    loadPageState() {
+      const pageState = localStorage.getItem('pageState');
+      if (pageState) {
+        const state = JSON.parse(pageState);
+        this.openMonitor = state.openMonitor;
+        this.openMistakes = state.openMistakes;
+        this.openInteraction = state.openInteraction;
+        this.checkButton = state.checkButton;
+      }
+    },
+    async fetchServers(){
+      const res=await fetch('/api/servers');
+      this.servers=await res.json();
     }
   },
-
-
   created() {
     // добавление страницы в локал сторадж, чтобы она при перезагрузке не пропадала
-    const pageState = localStorage.getItem('pageState');
-    if (pageState) {
-      const { openMonitor, openMistakes, openInteraction } = JSON.parse(pageState);
-      this.openMonitor = openMonitor;
-      this.openMistakes = openMistakes;
-      this.openInteraction = openInteraction;
-    }
+    this.loadPageState()
   },
 
 
@@ -117,16 +140,42 @@ export default {
   },
   mounted() {
     this.themeLocal
-  }
+    this.fetchServers();
+  },
+
 }
 </script>
 
 <template>
   <div class="page" :style="themeStatusLight ? {background: this.themeLight.background}: {background: this.themeDark.background}">
-    <menu-page :checkButton="checkButton" @open-monitor="openMonitorWindow" @open-mistakes="openMistakesWindow" @open-interaction="openInteractionWindow" :open-interaction="openInteraction" :open-mistakes="openMistakes" :open-monitor="openMonitor" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark"></menu-page>
-    <page-monitor v-if="openMonitor" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark" @changeTheme="changeToTheme"></page-monitor>
-    <page-interaction v-if="openInteraction" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark" @changeTheme="changeToTheme"></page-interaction>
-    <page-mistakes v-if="openMistakes" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark" @changeTheme="changeToTheme"></page-mistakes>
+    <menu-page
+        :checkButton="checkButton"
+        @button-clicked="checkPage"
+        :open-interaction="openInteraction"
+        :open-mistakes="openMistakes"
+        :open-monitor="openMonitor"
+        :themeStatus="themeStatusLight"
+        :themeLight="themeLight"
+        :themeDark="themeDark" ></menu-page>
+    <page-monitor
+        v-if="openMonitor"
+        :themeStatus="themeStatusLight"
+        :themeLight="themeLight"
+        :themeDark="themeDark"
+        @changeTheme="changeToTheme"></page-monitor>
+    <page-interaction
+        v-bind:servers="servers"
+        v-if="openInteraction"
+        :themeStatus="themeStatusLight"
+        :themeLight="themeLight"
+        :themeDark="themeDark"
+        @changeTheme="changeToTheme"></page-interaction>
+    <page-mistakes
+        v-if="openMistakes"
+        :themeStatus="themeStatusLight"
+        :themeLight="themeLight"
+        :themeDark="themeDark"
+        @changeTheme="changeToTheme"></page-mistakes>
   </div>
 
 </template>
