@@ -52,7 +52,6 @@ export default {
         </div>
         <div class="line"
              :style="themeStatus?{borderColor:themeLight.borderColor}:{borderColor:themeDark.borderColor}"></div>
-        <div class="left-checkbox">
           <div class="bottom">
             <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
               <option disabled selected>Выбрать интервал</option>
@@ -74,14 +73,15 @@ export default {
 
           </div>
 
-          <div class="textLeft">
-            <p style="margin-bottom: 10px"
-               :style="themeStatus?{color:themeLight.textCheckbox}:{color:themeDark.textCheckbox}">Тип
-              ошибки:</p>
+          <div class="bottom-checkbox">
+            <div class="textLeft">
+              <p style="margin-bottom: 10px;"
+                 :style="themeStatus ? {color: themeLight.textCheckbox} : {color: themeDark.textCheckbox}">
+                Тип ошибки:
+              </p>
+            </div>
+            <ui-checkbox-interaction class="check" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-checkbox-interaction>
           </div>
-          <ui-checkbox-interaction class="check" :themeStatus="themeStatus"
-                                   :themeLight="themeLight" :themeDark="themeDark"></ui-checkbox-interaction>
-        </div>
       </div>
     </div>
 
@@ -144,8 +144,10 @@ export default {
   gap: 1.1%;
 }
 
-.textLeft {
-  margin-top: 0.8%;
+
+.bottom-checkbox {
+  display: flex;
+  flex-direction: column;
 }
 
 .main .panel .bottom .date {

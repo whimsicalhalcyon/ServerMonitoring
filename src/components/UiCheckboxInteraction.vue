@@ -28,10 +28,10 @@ export default {
 
 <template>
   <div class="errorGroup">
-    <div class="errorBlock" v-for="item in errorsData" :key="item.id">
+    <label class="errorBlock" v-for="item in errorsData" :key="item.id">
       <input type="checkbox" :id="'error' + item.id">
-      <label :for="'error' + item.id" :style="themeStatus?{color:themeLight.textCheckbox}:{color:themeDark.textCheckbox}">{{item.errors[item.id-1]}}</label>
-    </div>
+      <span :style="themeStatus ? {color: themeLight.textCheckbox}:{color: themeDark.textCheckbox}">{{item.errors[item.id-1]}}</span>
+    </label>
   </div>
 </template>
 
