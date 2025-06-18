@@ -100,7 +100,7 @@ export default {
           <div class="header-table">
             <span>Важность</span>
             <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-             :class="sortColumn.importance ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('importsnce')"></i>
+             :class="sortColumn.importance ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('importance')"></i>
           </div>
         </th>
         <th :style="cellStyle">

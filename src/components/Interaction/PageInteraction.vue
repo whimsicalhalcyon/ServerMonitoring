@@ -25,6 +25,9 @@ export default {
       type: Boolean,
       default: true
     },
+    servers:{
+      type: Array,
+    }
   },
   data() {
     return {
@@ -41,18 +44,15 @@ export default {
     };
   },
   methods: {
-    togglePanel() {
-      this.openPanel = !this.openPanel;
-    },
     toggleWindow() {
       this.modalWindow = !this.modalWindow;
     },
     confirmDelete() {
-      let confirmed = window.confirm(`Вы точно хотите удалить ${this.isSelected.dns}?`);
+      let confirmed = window.confirm(`Вы точно хотите удалить ${this.isSelected.nameServer}?`);
       if (confirmed) {
-        alert(`Сервер ${this.isSelected.dns} безвозвратно удален!`);
+        alert(`Сервер ${this.isSelected.nameServer} безвозвратно удален!`);
       } else {
-        alert(`Сервер ${this.isSelected.dns} не был удален`);
+        alert(`Сервер ${this.isSelected.nameServer} не был удален`);
       }
     },
     addBlock(newBlockName) {
@@ -75,10 +75,6 @@ export default {
     <div class="fix" :style="themeStatus ? {background: themeLight.background}: {background: themeDark.background}">
       <div class="text">
         <p :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}">Узлы сети</p>
-        <i class="fa-solid fa-chevron-up"
-           :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-           :class="openPanel ? 'fa-chevron-down' : 'fa-chevron-up'"
-           style="cursor: pointer;" @click="togglePanel"></i>
         <div class="themes" @click="$emit('changeTheme', !themeStatus)">
           <i class="fa-solid fa-sun"
              :class="themeStatus ? 'fa-moon': 'fa-sun'"
@@ -101,7 +97,7 @@ export default {
                v-if="isSelected">
             <div class="intoVisible">
               <p :style="themeStatus ? {color: themeLight.textColor} : {color: themeDark.textColor}"
-                 style="padding-left: 14px;">{{ isSelected.dns }}</p>
+                 style="padding-left: 14px;">{{ isSelected.nameServer }}</p>
               <div class="buttons">
                 <button class="btnVisible" style="background: #4FC3F7"><i class="fa-solid fa-pen-to-square"></i></button>
                 <button class="btnVisible" style="margin-right: 10px; background: #F44336" @click="confirmDelete">
@@ -137,7 +133,7 @@ export default {
         <!-- Нижняя часть: чекбокс -->
         <div class="bottom-checkbox">
           <div class="textLeft">
-            <p style="margin-bottom: 10px"
+            <p style="margin-bottom: 10px;"
                :style="themeStatus ? {color: themeLight.textCheckbox} : {color: themeDark.textCheckbox}">
               Тип ошибки:
             </p>
@@ -149,6 +145,7 @@ export default {
 
     <div class="table">
       <Table
+          v-bind:servers="servers"
           :theme-light="themeLight"
           :theme-dark="themeDark"
           :theme-status="themeStatus"
@@ -172,7 +169,6 @@ export default {
 .main {
   width: 100%;
 }
-
 .themes {
   cursor: pointer;
   width: 30px;

@@ -10,6 +10,7 @@ export default {
   },
   data() {
     return {
+      servers:[],
       openMonitor: false,
       openMistakes: false,
       openInteraction: false,
@@ -110,6 +111,10 @@ export default {
         this.checkButton = state.checkButton;
       }
     },
+    async fetchServers(){
+      const res=await fetch('/api/servers');
+      this.servers=await res.json();
+    }
   },
   created() {
     // добавление страницы в локал сторадж, чтобы она при перезагрузке не пропадала
@@ -120,6 +125,9 @@ export default {
     openMonitor(newValue) {
       localStorage.setItem('monitorState', JSON.stringify(newValue));
     }
+  },
+  mounted() {
+    this.fetchServers();
   }
 }
 
@@ -143,6 +151,7 @@ export default {
         :themeDark="themeDark"
         @changeTheme="changeToTheme"></page-monitor>
     <page-interaction
+        v-bind:servers="servers"
         v-if="openInteraction"
         :themeStatus="themeStatusLight"
         :themeLight="themeLight"
