@@ -132,7 +132,7 @@ export default {
           <div class="error" style="background-color: #F44336;" title="Высокая">8</div>
           <div class="error" style="background-color: #B71C1C;" title="Критическая">2</div>
         </td>
-        <td :style="cellStyle">{{ item.idServerGroupNavigation.nameServerGroup }}</td>
+        <td :style="cellStyle">{{ item.idServerGroupNavigation }}</td>
         <td :style="cellStyle"><a :style="{color:currTheme.backgroundButton}" href="" class="link">Открыть</a></td>
       </tr>
       </tbody>
