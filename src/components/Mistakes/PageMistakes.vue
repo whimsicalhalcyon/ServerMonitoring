@@ -23,11 +23,18 @@ export default {
     themeStatus: {
       type: Boolean,
       default: true
+    },
+    serversProblem: {
+      type: Array,
     }
   },
   data() {
     return {
-      openPanel: true
+      openPanel: true,
+      sortOptions:'none',
+      sortParametres: [
+        {value:'title', name:''}
+      ]
     }
   },
 
@@ -86,7 +93,11 @@ export default {
     </div>
 
     <div class="table-mistakes">
-      <table-mistakes :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" class="table-mistakes"></table-mistakes>
+      <table-mistakes
+          v-bind:servers="serversProblem"
+          :themeStatus="themeStatus"
+          :themeLight="themeLight"
+          :themeDark="themeDark" class="table-mistakes"></table-mistakes>
     </div>
   </div>
 

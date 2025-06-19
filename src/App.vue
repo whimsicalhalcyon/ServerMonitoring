@@ -116,6 +116,12 @@ export default {
     async fetchServers(){
       const res=await fetch('/api/servers');
       this.servers=await res.json();
+
+      const serverGroup = await  fetch('/api/serversgroups');
+      this.serverGroup= await serverGroup.json();
+
+      const serverProblems = await  fetch('/api/problems');
+      this.serverProblems= await serverProblems.json();
     }
   },
   created() {
@@ -171,6 +177,7 @@ export default {
         :themeDark="themeDark"
         @changeTheme="changeToTheme"></page-interaction>
     <page-mistakes
+        v-bind:serversProblem="serverProblems"
         v-if="openMistakes"
         :themeStatus="themeStatusLight"
         :themeLight="themeLight"

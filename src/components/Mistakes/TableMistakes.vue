@@ -24,6 +24,10 @@ export default {
     isSelected: {
       type: Number,
     },
+    servers : {
+      type: Array,
+    }
+
   },
   data() {
     return {
@@ -139,7 +143,7 @@ export default {
       </tr>
       </thead>
       <tbody>
-      <tr v-for="item in tableData" :key="item.id">
+      <tr v-for="item in servers" :key="item.id">
         <td :style="cellStyle">{{ item.time }}</td>
         <td class="name-mistake"
             :style="{
@@ -157,16 +161,16 @@ export default {
         <td class="status"
             :style="{
               ...cellStyle,
-              color: item.state === 'Активно' ? '#9E271E' :
-                     item.state === 'Решено' ? '#4CAF50' :
+              color: item.serverStatus === false ? '#9E271E' :
+                     item.serverStatus === true ? '#4CAF50' :
                      '#9E271E',
 
             }"
         >
-          {{ item.state }}
+          {{item.serverStatus == true ? item.serverStatus='Решена' : item.serverStatus ='Ошибка'}}
         </td>
-        <td :style="cellStyle">{{ item.serverName }}</td>
-        <td :style="cellStyle">{{ item.problem }}</td>
+        <td :style="cellStyle">{{ item.nameServer }}</td>
+        <td :style="cellStyle">{{ item.problems }}</td>
         <td :style="cellStyle">{{ item.duration }}</td>
       </tr>
       </tbody>
