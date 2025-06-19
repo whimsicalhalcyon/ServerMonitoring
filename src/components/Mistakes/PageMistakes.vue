@@ -52,36 +52,36 @@ export default {
         </div>
         <div class="line"
              :style="themeStatus?{borderColor:themeLight.borderColor}:{borderColor:themeDark.borderColor}"></div>
-          <div class="bottom">
-            <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-              <option disabled selected>Выбрать интервал</option>
-              <option>5 минут</option>
-              <option>10 минут</option>
-              <option>15 минут</option>
-            </ui-select>
-            <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-              <option disabled>Состояние</option>
-              <option>Любое</option>
-              <option>Ошибка</option>
-              <option>Решено</option>
-            </ui-select>
-            <ui-input class="date" placeholder="дд.мм.гггг 00:00"  :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-            </ui-input>
-            <ui-input class="date" placeholder="дд.мм.гггг 00:00" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
-            <main-button class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Найти</main-button>
-            <main-button class="btn btn-close" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Сбросить</main-button>
+        <div class="bottom">
+          <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+            <option disabled selected>Выбрать интервал</option>
+            <option>5 минут</option>
+            <option>10 минут</option>
+            <option>15 минут</option>
+          </ui-select>
+          <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+            <option disabled>Состояние</option>
+            <option>Любое</option>
+            <option>Ошибка</option>
+            <option>Решено</option>
+          </ui-select>
+          <ui-input class="date" placeholder="дд.мм.гггг 00:00"  :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+          </ui-input>
+          <ui-input class="date" placeholder="дд.мм.гггг 00:00" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
+          <main-button class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Найти</main-button>
+          <main-button class="btn btn-close" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Сбросить</main-button>
 
-          </div>
+        </div>
 
-          <div class="bottom-checkbox">
-            <div class="textLeft">
-              <p style="margin-bottom: 10px;"
-                 :style="themeStatus ? {color: themeLight.textCheckbox} : {color: themeDark.textCheckbox}">
-                Тип ошибки:
-              </p>
-            </div>
-            <ui-checkbox-interaction class="check" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-checkbox-interaction>
+        <div class="bottom-checkbox">
+          <div class="textLeft">
+            <p style="margin-bottom: 10px;"
+               :style="themeStatus ? {color: themeLight.textCheckbox} : {color: themeDark.textCheckbox}">
+              Тип ошибки:
+            </p>
           </div>
+          <ui-checkbox-interaction class="check" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-checkbox-interaction>
+        </div>
       </div>
     </div>
 
