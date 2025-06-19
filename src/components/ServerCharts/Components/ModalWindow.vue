@@ -71,15 +71,15 @@ export default {
 
       <div class="container-range">
         <div class="container-range-param">
-          <span>Ширина</span>
+          <span class="param-name">Ширина</span>
           <input-range class="range-input"></input-range>
-          <span>Размер точек</span>
+          <span class="param-name">Размер точек</span>
           <input-range class="range-input"></input-range>
         </div>
         <div class="container-range-param">
-          <span>Прозрачность</span>
+          <span class="param-name">Прозрачность</span>
           <input-range class="range-input"></input-range>
-          <span>Заполнение</span>
+          <span class="param-name">Заполнение</span>
           <input-range class="range-input"></input-range>
         </div>
         <div class="container-range-param">
@@ -94,7 +94,7 @@ export default {
         <main-button :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" class="button-add">Добавить набор данных</main-button>
         <div class="save-close">
           <main-button :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" class="button-cancel" @click="hideWindow">Отмена</main-button>
-          <main-button :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Сохранить</main-button>
+          <main-button :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" class="save-btn">Сохранить</main-button>
         </div>
       </div>
     </div>
@@ -147,6 +147,25 @@ export default {
 
 .select-element {
   margin-bottom: 20px;
+  width: 100%;
+}
+
+.select-element {
+  margin-top: 3%;
+}
+
+.graphic {
+  background-color: #f5f5f5;
+  height: 425px;
+}
+
+.save-close {
+  display: flex;
+  width: 30%;
+}
+
+.param-name {
+  margin-bottom: 1%;
 }
 
 .select-param {
@@ -155,7 +174,7 @@ export default {
   background-color: #f5f5f5;
   border-radius: 8px;
   margin-top: 8px;
-  padding: 20px;
+  padding: 15px;
 }
 
 .graphic {
@@ -164,7 +183,8 @@ export default {
   width: 730px;
   padding: 15px;
   background-color: #fafafa;
-  border-radius: 16px;
+  border-radius: 8px;
+  margin-left: 1%;
 }
 
 .graphic-header {
@@ -200,6 +220,7 @@ export default {
 }
 
 .container-range-param {
+  width: 30%;
   display: flex;
   flex-direction: column;
 }
@@ -208,14 +229,18 @@ export default {
   margin-bottom: 20px;
 }
 
+.save-btn {
+  width: 100%;
+}
+
 .colors {
   display: flex;
   flex-direction: row;
 }
 
 .color-picker {
-  width: 30px;
-  height: 20px;
+  width: 100%;
+  height: 100px;
 }
 
 .container-button {
@@ -228,6 +253,7 @@ export default {
   background-color: white !important;
   color: #38bdf8 !important;
   border: 1px solid #38bdf8 !important;
+  width: 15%;
 }
 
 .button-add:hover {
@@ -236,11 +262,12 @@ export default {
 }
 
 .button-cancel {
-  margin-right: 20px;
-  background-color: #525252;
+  margin-right: 20px !important;
+  background-color: #525252 !important;
+  width: 100%;
 }
 
 .button-cancel:hover {
-  background-color: #262626;
+  background-color: #262626 !important;
 }
 </style>

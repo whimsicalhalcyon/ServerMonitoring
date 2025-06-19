@@ -1,7 +1,17 @@
 <script>
-
+import Table from '@/components/Table.vue';
+import UiSelect from "@/components/UiSelect.vue";
+import UiInput from "@/components/UiInput.vue";
+import MainButton from "@/components/MainButton.vue";
+import UiCheckboxInteraction from "@/components/UiCheckboxInteraction.vue";
+import ModalWindowMain from '@/components/Interaction/ModalWindowMain.vue';
 
 export default {
+  components: {
+    UiCheckboxInteraction,
+    Table, UiSelect, UiInput, MainButton, UiCheckbox: UiCheckboxInteraction, ModalWindowMain
+  },
+  emits: ['changeTheme'],
   props: {
     themeLight: {
       type: Object,
@@ -14,128 +24,264 @@ export default {
     themeStatus: {
       type: Boolean,
       default: true
+    },
+    servers:{
+      type: Array,
     }
   },
   data() {
     return {
       openPanel: true,
-    }
+      isSelected: null,
+      modalWindow: false,
+      blocks: [
+        { name: 'app', servers: ['nn-lsed-app01.nnov.ru', 'nn-lsed-app02.nnov.ru', 'nn-lsed-app03.nnov.ru'], isExpanded: false },
+        { name: 'backup', servers: [], isExpanded: false },
+        { name: 'bl', servers: [], isExpanded: false },
+        { name: 'convert', servers: [], isExpanded: false },
+        { name: 'custom', servers: [], isExpanded: false },
+      ],
+    };
   },
   methods: {
-    togglePanel() {
-      this.openPanel = !this.openPanel
+    toggleWindow() {
+      this.modalWindow = !this.modalWindow;
     },
-  }
-  // data() {
-  //   return {
-  //     panelVisible: true
-  //   }
-  // }
-}
+    confirmDelete() {
+      let confirmed = window.confirm(`Вы точно хотите удалить ${this.isSelected.nameServer}?`);
+      if (confirmed) {
+        alert(`Сервер ${this.isSelected.nameServer} безвозвратно удален!`);
+      } else {
+        alert(`Сервер ${this.isSelected.nameServer} не был удален`);
+      }
+    },
+    addBlock(newBlockName) {
+      this.blocks.push({ name: newBlockName, servers: [], isExpanded: false });
+    },
+    addServer(newServer) {
+      const block = this.blocks.find(b => b.name === newServer.group);
+      if (block) {
+        block.servers.push(newServer.dns);
+      } else {
+        this.blocks.push({ name: newServer.group, servers: [newServer.dns], isExpanded: false });
+      }
+    },
+  },
+};
 </script>
 
 <template>
   <div class="main">
-    <div class="panel" v-if="openPanel" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
+    <div class="fix" :style="themeStatus ? {background: themeLight.background}: {background: themeDark.background}">
+      <div class="text">
+        <p :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}">Узлы сети</p>
+        <div class="themes" @click="$emit('changeTheme', !themeStatus)">
+          <i class="fa-solid fa-sun"
+             :class="themeStatus ? 'fa-moon': 'fa-sun'"
+             :style="themeStatus ? {color: themeDark.backgroundComponent}: {color: themeLight.backgroundComponent}"></i>
+        </div>
+      </div>
+
+      <div class="panel" v-if="openPanel" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
+        <div class="top">
+          <div class="top-left">
+            <ui-input class="input-search" placeholder="Поиск по DNS и IP" :themeStatus="themeStatus"
+                      :themeLight="themeLight" :themeDark="themeDark"></ui-input>
+            <main-button @click="toggleWindow" class="btn" :themeStatus="themeStatus" :themeLight="themeLight"
+                         :themeDark="themeDark">Добавить узел</main-button>
+            <main-button :themeStatus="themeStatus" :themeLight="themeLight"
+                         :themeDark="themeDark" style="width: 5%;"><i class="fa-solid fa-file-excel"></i></main-button>
+          </div>
+          <div class="top-right"
+               :style="themeStatus ? {borderColor: themeLight.borderColor}: {borderColor: themeDark.borderColor}"
+               v-if="isSelected">
+            <div class="intoVisible">
+              <p :style="themeStatus ? {color: themeLight.textColor} : {color: themeDark.textColor}"
+                 style="padding-left: 14px;">{{ isSelected.nameServer }}</p>
+              <div class="buttons">
+                <button class="btnVisible" style="background: #4FC3F7"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button class="btnVisible" style="margin-right: 10px; background: #F44336" @click="confirmDelete">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="line"
+             :style="themeStatus ? {borderColor: themeLight.borderColor} : {borderColor: themeDark.borderColor}"></div>
+
+        <!-- Верхняя часть: select + кнопки -->
+        <div class="bottom-top">
+          <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+            <option disabled selected>Выбрать состояние</option>
+            <option>Все</option>
+            <option>Активировано</option>
+            <option>Деактивировано</option>
+          </ui-select>
+          <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+            <option disabled selected>Выбрать группу</option>
+            <option>Все</option>
+            <option>APP</option>
+            <option>APP2006</option>
+            <option>IvanZolo2004</option>
+          </ui-select>
+          <main-button class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Найти</main-button>
+          <main-button class="btn drop" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Сбросить</main-button>
+        </div>
+
+        <!-- Нижняя часть: чекбокс -->
+        <div class="bottom-checkbox">
+          <div class="textLeft">
+            <p style="margin-bottom: 10px;"
+               :style="themeStatus ? {color: themeLight.textCheckbox} : {color: themeDark.textCheckbox}">
+              Тип ошибки:
+            </p>
+          </div>
+          <ui-checkbox-interaction class="check" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-checkbox-interaction>
+        </div>
+      </div>
     </div>
-    <div class="table"></div>
+
+    <div class="table">
+      <Table
+          v-bind:servers="servers"
+          :theme-light="themeLight"
+          :theme-dark="themeDark"
+          :theme-status="themeStatus"
+          :is-selected="isSelected"
+          @update:isSelected="isSelected = $event"
+      />
+    </div>
+
+    <modal-window-main
+        v-model:openDialog="modalWindow"
+        :themeStatus="themeStatus"
+        :themeLight="themeLight"
+        :themeDark="themeDark"
+        @addBlock="addBlock"
+        @addServer="addServer"
+    />
   </div>
-
-<!--  <div class="flex flex-col w-full px-4 xl:px-8 2xl:px-16">-->
-<!--    &lt;!&ndash; Заголовок + панель &ndash;&gt;-->
-<!--    <div class="sticky top-0 z-30 w-full bg-[#f5f5f5] rounded-b-xl pb-5 shadow-sm">-->
-<!--      <div class="flex items-center gap-[15px] py-5">-->
-<!--        <h1 class="text-4xl text-black-700">Узлы сети</h1>-->
-<!--        <button-->
-<!--            @click="panelVisible = !panelVisible"-->
-<!--            class="text-black-700 hover:text-black-900 transition text-xl"-->
-<!--            title="Свернуть/развернуть"-->
-<!--        >-->
-<!--          <i :class="panelVisible ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'"></i>-->
-<!--        </button>-->
-<!--      </div>-->
-
-<!--      &lt;!&ndash; Панель управления &ndash;&gt;-->
-<!--      <transition name="fade">-->
-<!--        <section-->
-<!--            v-if="panelVisible"-->
-<!--            class="w-full bg-white rounded-xl px-5 py-5 text-neutral-500 shadow"-->
-<!--        >-->
-<!--          &lt;!&ndash; Верхняя часть &ndash;&gt;-->
-<!--          <div class="flex flex-wrap justify-between items-center gap-4">-->
-<!--            <div class="flex flex-wrap gap-4">-->
-<!--              <UiInput class="w-[280px] max-w-full" />-->
-<!--              <MainButton @click="$emit('open-modal')">Добавить узел</MainButton>-->
-<!--              <MainButton class="w-10"><i class="fa-solid fa-file-excel"></i></MainButton>-->
-<!--            </div>-->
-
-<!--            <div class="flex items-center gap-3 border rounded-lg border-neutral-400 px-3 py-2 h-12 min-w-[280px]">-->
-<!--              <p class="text-sm">Выбранный узел:</p>-->
-<!--              <div class="flex gap-3">-->
-<!--                <button class="svg bg-sky-400 hover:bg-sky-700">-->
-<!--                  <i class="fa-solid fa-pen-to-square"></i>-->
-<!--                </button>-->
-<!--                <button class="svg bg-red-500 hover:bg-red-800">-->
-<!--                  <i class="fa-solid fa-trash"></i>-->
-<!--                </button>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-
-<!--          <div class="my-5 h-px bg-neutral-400 w-full"></div>-->
-
-<!--          &lt;!&ndash; Нижняя часть &ndash;&gt;-->
-<!--          <div class="flex flex-wrap justify-between gap-5">-->
-<!--            <div class="flex flex-col gap-2">-->
-<!--              <p class="text-xl text-neutral-800">Тип ошибки:</p>-->
-<!--              <div class="flex flex-wrap gap-3">-->
-<!--                <UiCheckbox v-for="i in 6" :key="i" />-->
-<!--              </div>-->
-<!--            </div>-->
-
-<!--            <div class="flex flex-col gap-2">-->
-<!--              <p class="text-xl text-neutral-800">Состояние:</p>-->
-<!--              <UiSelect />-->
-<!--            </div>-->
-
-<!--            <div class="flex flex-col gap-2">-->
-<!--              <p class="text-xl text-neutral-800">Группа:</p>-->
-<!--              <UiSelect />-->
-<!--            </div>-->
-
-<!--            <div class="flex items-end">-->
-<!--              <div class="flex gap-3">-->
-<!--                <DisabledButton class="bg-neutral-400">Сбросить</DisabledButton>-->
-<!--                <MainButton>Применить</MainButton>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </section>-->
-<!--      </transition>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; Таблица &ndash;&gt;-->
-<!--    <section class="mt-6 w-full">-->
-<!--      <Table />-->
-<!--    </section>-->
-<!--  </div>-->
 </template>
 
 <style scoped>
-  .main {
-    width: 100%;
-  }
-  .main .panel {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: fit-content;
-    padding: 20px;
-    border-radius: 12px;
-    gap: 14px;
-    margin-top: 20px;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-  }
+.main {
+  width: 100%;
+}
+.themes {
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  margin-left: auto;
+}
+
+.fix {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding-bottom: 20px;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 20px;
+  border-radius: 12px;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.text {
+  display: flex;
+  gap: 8px;
+  padding-top: 20px;
+  align-items: center;
+}
+
+.text p {
+  font-size: 28px;
+}
+
+.text i {
+  margin-top: 4px;
+  font-size: 18px;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+}
+
+.top-left {
+  display: flex;
+  gap: 1.18%;
+  width: 74.62%;
+}
+
+.input-search {
+  width: 41.544%;
+}
+
+.top-right {
+  border: 1px solid;
+  width: 24.20%;
+  border-radius: 8px;
+  height: 40px;
+}
+
+.intoVisible {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 7px;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btnVisible {
+  width: 25px;
+  height: 25px;
+  border-radius: 2px;
+  color: white;
+  cursor: pointer;
+}
+
+.line {
+  border-bottom: 1px solid;
+}
+
+.bottom-top {
+  display: flex;
+  gap: 1.1%;
+  align-items: center;
+}
+
+.bottom-top .select {
+  width: 21.9%;
+}
+
+.bottom-top .btn {
+  width: 10%;
+}
+
+.drop {
+  background: #757575 !important;
+}
+
+.bottom-checkbox {
+  display: flex;
+  flex-direction: column;
+}
+
+.textLeft {
+  width: 53.85%;
+}
+
+.check {
+  gap: 1.1%;
+}
 </style>

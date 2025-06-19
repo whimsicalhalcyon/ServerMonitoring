@@ -10,6 +10,7 @@ export default {
   },
   data() {
     return {
+      servers:[],
       openMonitor: false,
       openMistakes: false,
       openInteraction: false,
@@ -21,6 +22,7 @@ export default {
         textColor: '#212121',
         textFilter: '#ffffff',
         textButton: '#ffffff',
+        textCheckbox: '#3E3E40',
         borderColor: '#A0A0A0',
         clear: 'rgba(33, 33, 33, 0)',
         grid: 'rgba(117,117,117,0.5)',
@@ -37,6 +39,7 @@ export default {
         textColor: '#E0E0E0',
         textFilter: '#ffffff',
         textButton: '#ffffff',
+        textCheckbox: '#A0A0A0',
         borderColor: '#E0E0E0',
         clear: 'rgba(33, 33, 33, 0)',
         grid: 'rgba(117,117,117,0.5)',
@@ -46,6 +49,7 @@ export default {
       },
       themeStatusLight: true,
       checkButton: 1,
+      isSelected: null,
     }
   },
   methods : {
@@ -54,49 +58,124 @@ export default {
       this.openMistakes = false;
       this.openInteraction = false
       this.checkButton = 3;
+      this.savePage()
     },
     openMistakesWindow(status) {
       this.openMonitor = false;
       this.openMistakes = status;
       this.openInteraction = false
       this.checkButton = 1;
+      this.savePage()
     },
     openInteractionWindow(status) {
       this.openMonitor = false;
       this.openMistakes = false;
       this.openInteraction = status
       this.checkButton = 2;
+      this.savePage()
     },
     changeToTheme(status) {
-      this.themeStatusLight = status
+      this.themeStatusLight = status;
+      localStorage.setItem('theme', this.themeStatusLight);
+
     },
+    savePage() {
+      localStorage.setItem('pageState', JSON.stringify({
+        openMonitor: this.openMonitor,
+        openMistakes: this.openMistakes,
+        openInteraction: this.openInteraction,
+        checkButton: this.checkButton
+      }));
+    },
+    checkPage(buttonId) {
+      this.checkButton = buttonId;
 
-  },
-
-
-  created() {
-    // добавление страницы в локал сторадж, чтобы она при перезагрузке не пропадала
-    const page_state = localStorage.getItem('monitorState');
-    if(page_state) {
-      this.openMonitor = JSON.parse(page_state)
+      switch (buttonId) {
+        case 1:
+          this.openMistakesWindow(true);
+          break;
+        case 2:
+          this.openInteractionWindow(true);
+          break;
+        case 3:
+          this.openMonitorWindow(true);
+          break;
+      }
+      this.savePage();
+    },
+    loadPageState() {
+      const pageState = localStorage.getItem('pageState');
+      if (pageState) {
+        const state = JSON.parse(pageState);
+        this.openMonitor = state.openMonitor;
+        this.openMistakes = state.openMistakes;
+        this.openInteraction = state.openInteraction;
+        this.checkButton = state.checkButton;
+      }
+    },
+    async fetchServers(){
+      const res=await fetch('/api/servers');
+      this.servers=await res.json();
     }
   },
+  created() {
+    // добавление страницы в локал сторадж, чтобы она при перезагрузке не пропадала
+    this.loadPageState()
+  },
+
 
   watch: {
     openMonitor(newValue) {
       localStorage.setItem('monitorState', JSON.stringify(newValue));
     },
+  },
+  computed: {
+    themeLocal() {
+      if (localStorage.getItem('theme') === 'true') {
+        this.themeStatusLight = true
+      } else {
+        this.themeStatusLight = false
+      }
+    }
+  },
+  mounted() {
+    this.themeLocal
+    this.fetchServers();
+  },
 
-  }
 }
 </script>
 
 <template>
   <div class="page" :style="themeStatusLight ? {background: this.themeLight.background}: {background: this.themeDark.background}">
-    <menu-page :checkButton="checkButton" @open-monitor="openMonitorWindow" @open-mistakes="openMistakesWindow" @open-interaction="openInteractionWindow" :open-interaction="openInteraction" :open-mistakes="openMistakes" :open-monitor="openMonitor" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark"></menu-page>
-    <page-monitor v-if="openMonitor" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark" @changeTheme="changeToTheme"></page-monitor>
-    <page-interaction v-if="openInteraction" :themeStatus="themeStatusLight" :themeLight="themeLight" :themeDark="themeDark"></page-interaction>
-    <page-mistakes v-if="openMistakes" ></page-mistakes>
+    <menu-page
+        :checkButton="checkButton"
+        @button-clicked="checkPage"
+        :open-interaction="openInteraction"
+        :open-mistakes="openMistakes"
+        :open-monitor="openMonitor"
+        :themeStatus="themeStatusLight"
+        :themeLight="themeLight"
+        :themeDark="themeDark" ></menu-page>
+    <page-monitor
+        v-if="openMonitor"
+        :themeStatus="themeStatusLight"
+        :themeLight="themeLight"
+        :themeDark="themeDark"
+        @changeTheme="changeToTheme"></page-monitor>
+    <page-interaction
+        v-bind:servers="servers"
+        v-if="openInteraction"
+        :themeStatus="themeStatusLight"
+        :themeLight="themeLight"
+        :themeDark="themeDark"
+        @changeTheme="changeToTheme"></page-interaction>
+    <page-mistakes
+        v-if="openMistakes"
+        :themeStatus="themeStatusLight"
+        :themeLight="themeLight"
+        :themeDark="themeDark"
+        @changeTheme="changeToTheme"></page-mistakes>
   </div>
 
 </template>
@@ -105,7 +184,6 @@ export default {
 .page {
   display: flex;
   gap: 20px;
-
   padding-right: 20px;
 }
 </style>
