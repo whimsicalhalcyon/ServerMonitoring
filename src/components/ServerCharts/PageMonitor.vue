@@ -40,6 +40,9 @@ export default {
     toggleWindow() {
       this.modalWindow = !this.modalWindow
     },
+    btn() {
+      console.log('g')
+    }
   },
 }
 
@@ -92,7 +95,7 @@ export default {
 
           </ui-input>
           <ui-input class="date" placeholder="дд.мм.гггг 00:00" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
-          <main-button class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Найти</main-button>
+          <main-button class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" @click="btn">Найти</main-button>
           <main-button class="btn btn-close" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Сбросить</main-button>
           <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" :style="themeStatus ? {borderColor: themeLight.borderColor, background: themeLight.backgroundComponent}: {borderColor: themeDark.borderColor, background: themeDark.backgroundComponent}">
             <option disabled selected>Выбрать формат</option>
