@@ -198,7 +198,4 @@ export default {
   gap: 20px;
   padding-right: 20px;
 }
-.monitor {
-  height: 100vh;
-}
 </style>

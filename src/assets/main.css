@@ -17,6 +17,7 @@
 #app {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-weight: normal;
+  min-height: 100vh;
 }
 
 
