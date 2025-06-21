@@ -157,6 +157,7 @@ export default {
 <template>
   <div class="page" :style="themeStatusLight ? {background: this.themeLight.background}: {background: this.themeDark.background}">
     <menu-page
+        class="height"
         :checkButton="checkButton"
         @button-clicked="checkPage"
         :open-interaction="openInteraction"
@@ -166,7 +167,7 @@ export default {
         :themeLight="themeLight"
         :themeDark="themeDark" ></menu-page>
     <page-monitor
-        class="monitor"
+        class="height"
         :serversGroups="serversGroups"
         :servers="servers"
         :parameters="parameters"
@@ -176,6 +177,7 @@ export default {
         :themeDark="themeDark"
         @changeTheme="changeToTheme"></page-monitor>
     <page-interaction
+        class="height"
         v-bind:servers="servers"
         v-if="openInteraction"
         :themeStatus="themeStatusLight"
@@ -183,6 +185,7 @@ export default {
         :themeDark="themeDark"
         @changeTheme="changeToTheme"></page-interaction>
     <page-mistakes
+        class="height"
         v-if="openMistakes"
         :themeStatus="themeStatusLight"
         :themeLight="themeLight"
@@ -197,5 +200,8 @@ export default {
   display: flex;
   gap: 20px;
   padding-right: 20px;
+}
+.height {
+  min-height: 100vh;
 }
 </style>
