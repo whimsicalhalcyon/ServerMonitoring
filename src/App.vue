@@ -11,6 +11,8 @@ export default {
   data() {
     return {
       servers:[],
+      serversGroups: [],
+      parameters: [],
       openMonitor: false,
       openMistakes: false,
       openInteraction: false,
@@ -116,6 +118,12 @@ export default {
     async fetchServers(){
       const res=await fetch('/api/servers');
       this.servers=await res.json();
+
+      const resServersGroup = await fetch('/api/serversgroups');
+      this.serversGroups = await resServersGroup.json();
+
+      const resParameters = await fetch('/api/parameters');
+      this.parameters = await resParameters.json();
     }
   },
   created() {
@@ -158,6 +166,10 @@ export default {
         :themeLight="themeLight"
         :themeDark="themeDark" ></menu-page>
     <page-monitor
+        class="monitor"
+        :serversGroups="serversGroups"
+        :servers="servers"
+        :parameters="parameters"
         v-if="openMonitor"
         :themeStatus="themeStatusLight"
         :themeLight="themeLight"
@@ -185,5 +197,8 @@ export default {
   display: flex;
   gap: 20px;
   padding-right: 20px;
+}
+.monitor {
+  height: 100vh;
 }
 </style>
