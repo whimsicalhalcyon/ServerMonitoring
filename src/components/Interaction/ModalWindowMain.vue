@@ -1,9 +1,11 @@
 <script>
 import ModalWindow from '@/components/Interaction/ModalWindow.vue';
 import MainButton from '@/components/MainButton.vue';
+import SelectCheckbox from "@/components/ServerCharts/SelectCheckbox.vue";
+
 
 export default {
-  components: { ModalWindow, MainButton },
+  components: { ModalWindow, MainButton, SelectCheckbox },
   props: {
     openDialog: { type: Boolean, default: false },
     themeStatus: { type: Boolean, default: true },
@@ -65,25 +67,14 @@ export default {
           Добавить сервер
         </main-button>
       </div>
-      <div class="blocks-container">
-        <div v-for="(block, blockIndex) in blocks" :key="blockIndex" class="block">
-          <div class="block-header" @click="toggleExpand(blockIndex)">
-            <span>{{ block.name }}</span>
-            <div>
-              <i :class="block.isExpanded ? 'fa fa-chevron-up' : 'fa fa-chevron-down'"></i>
-              <button @click.stop="deleteBlock(blockIndex)" class="delete-btn">Х</button>
-            </div>
-          </div>
-          <div class="servers" v-show="block.isExpanded">
-            <div v-for="(server, serverIndex) in block.servers" :key="serverIndex" class="server-item">
-              {{ server }}
-            </div>
-          </div>
-        </div>
+      <select-checkbox
+          :blocks="blocks"
+          :show-delete-btn="false"
+          :show-delete-server="true"
+          :show-check-box="false"></select-checkbox>
       </div>
       <div class="dialog-footer">
         <main-button @click="hideWindow" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" class="drop">
-          Отмена
         </main-button>
       </div>
       <modal-window
@@ -101,7 +92,6 @@ export default {
           is-add-server
       />
     </div>
-  </div>
 </template>
 
 <style scoped>
@@ -142,19 +132,6 @@ export default {
   gap: 10px;
 }
 
-.blocks-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.block {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 10px;
-}
 
 .block-header {
   font-weight: bold;
@@ -171,25 +148,7 @@ export default {
   gap: 10px;
 }
 
-.servers {
-  padding-left: 20px;
-  transition: all 0.3s ease;
-}
 
-.server-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 5px 0;
-}
-
-.delete-btn {
-  background: #F44336;
-  color: white;
-  border: none;
-  padding: 2px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-}
 
 .dialog-footer {
   margin-top: auto;

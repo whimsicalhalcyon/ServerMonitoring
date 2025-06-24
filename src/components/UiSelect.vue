@@ -13,21 +13,14 @@ export default {
       type: Boolean,
       default: true
     },
-    modelValue : {
-      type: String
-    },
-    options : {
-      type: Array,
-      default: ()=> {}
-    }
+
   },
 }
 </script>
 
 <template>
   <select
-      :style="themeStatus ? {background: themeLight.backgroundFilter, color: themeLight.textColor}: {background: themeDark.backgroundFilter, color: themeDark.textColor}"
-      :value="modelValue">
+      :style="themeStatus ? {background: themeLight.backgroundFilter, color: themeLight.textColor}: {background: themeDark.backgroundFilter, color: themeDark.textColor}">
       <slot></slot>
   </select>
 </template>

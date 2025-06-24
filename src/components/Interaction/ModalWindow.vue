@@ -2,9 +2,10 @@
 import UiInput from '@/components/UiInput.vue';
 import UiSelect from '@/components/UiSelect.vue';
 import MainButton from '@/components/MainButton.vue';
+import SelectCheckbox from "@/components/ServerCharts/SelectCheckbox.vue";
 
 export default {
-  components: { UiInput, UiSelect, MainButton },
+  components: { UiInput, UiSelect, MainButton, SelectCheckbox },
   props: {
     openDialog: { type: Boolean, default: false },
     themeStatus: { type: Boolean, default: true },
@@ -12,6 +13,15 @@ export default {
     themeDark: { type: Object, required: true },
     isAddBlock: { type: Boolean, default: false },
     isAddServer: { type: Boolean, default: false },
+  },
+  data() {
+    return {
+      selectOPen: false,
+      selectedOptionsArray: [],
+      selectOptions: [
+        {name: 'Выберите параметры', servers: ['Параметр 1', 'Параметр 2', 'Параметр 3'], isExpanded: false }
+      ]
+    }
   },
   methods: {
     hideWindow() {
@@ -33,6 +43,26 @@ export default {
         this.hideWindow();
       }
     },
+    toggleDropdown() {
+      this.$el.querySelector('.dropdown-content').classList.toggle('show');
+    },
+    handleCheckboxChange(option) {
+      if (this.selectedOptionsArray.includes(option)) {
+        this.selectedOptionsArray = this.selectedOptionsArray.filter((item) => item !== option);
+      } else {
+        this.selectedOptionsArray = [...this.selectedOptionsArray, option];
+      }
+    },
+    showCheckboxes() {
+      let checkboxes = document.getElementById("checkboxes");
+      if (!this.selectOPen) {
+        checkboxes.style.display = "block";
+        this.selectOPen = true;
+      } else {
+        checkboxes.style.display = "none";
+        this.selectOPen = false;
+      }
+    }
   },
 };
 </script>
@@ -98,6 +128,12 @@ export default {
               <option>IvanZolo2004</option>
             </ui-select>
           </div>
+          <select-checkbox
+              :blocks="selectOptions"
+              :show-delete-btn="true"
+              :show-delete-server="false"
+              :show-add-btn="true"
+              :show-check-box="true"></select-checkbox>
         </div>
         <div class="dialog-buttons">
           <main-button @click="addServer" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">

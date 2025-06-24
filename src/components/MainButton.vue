@@ -35,7 +35,7 @@ export default {
 </script>
 
 <template>
-  <button :style="themeStatus ? {background: themeLight.backgroundButton, color: themeLight.textButton, backgroundColor: themeStatusE}: {background: themeDark.backgroundButton, color: themeDark.textButton,  backgroundColor: themeStatusE}" @mouseenter="isHovered = true" @mouseleave="isHovered = false"><slot></slot></button>
+  <button :style="themeStatus ? {background: themeLight.backgroundButton, color: themeLight.textButton, backgroundColor: themeStatusE}: {background: themeDark.backgroundButton, color: themeDark.textButton,  backgroundColor: themeStatus}" @mouseenter="isHovered = true" @mouseleave="isHovered = false"><slot></slot></button>
 </template>
 
 <style scoped>

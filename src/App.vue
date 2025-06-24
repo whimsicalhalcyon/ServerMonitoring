@@ -11,6 +11,8 @@ export default {
   data() {
     return {
       servers:[],
+      problems:[],
+      serverGroup: [],
       openMonitor: false,
       openMistakes: false,
       openInteraction: false,
@@ -114,14 +116,23 @@ export default {
       }
     },
     async fetchServers(){
-      const res=await fetch('/api/servers');
-      this.servers=await res.json();
+      // оригинальные подключения
+      // const res=await fetch('/api/servers');
+      // this.servers=await res.json();
+      // const resTwo=await fetch('/api/problems');
+      // this.problems=await resTwo.json();
+      // const resThree = await fetch('/api/serversgroups');
+      // this.serverGroup=await resThree.json();
 
-      const serverGroup = await  fetch('/api/serversgroups');
-      this.serverGroup= await serverGroup.json();
 
-      const serverProblems = await  fetch('/api/problems');
-      this.serverProblems= await serverProblems.json();
+      // тестовые подключения
+      const res = await fetch('/src/servers.json');
+      this.servers = await res.json();
+      const resProblem = await fetch('/src/problems.json');
+      this.problems =  await resProblem.json();
+    },
+    async fetchProblem() {
+
     }
   },
   created() {
@@ -147,6 +158,7 @@ export default {
   mounted() {
     this.themeLocal
     this.fetchServers();
+    this.fetchProblem()
   },
 
 }
@@ -177,7 +189,9 @@ export default {
         :themeDark="themeDark"
         @changeTheme="changeToTheme"></page-interaction>
     <page-mistakes
-        v-bind:serversProblem="serverProblems"
+        v-bind:problems="problems"
+        v-bind:servers="servers"
+        v-bind:serverGroup="serverGroup"
         v-if="openMistakes"
         :themeStatus="themeStatusLight"
         :themeLight="themeLight"

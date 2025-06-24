@@ -24,6 +24,9 @@ export default {
     isSelected: {
       type: Number,
     },
+    problems : {
+      type: Array,
+    },
     servers : {
       type: Array,
     }
@@ -49,6 +52,27 @@ export default {
     },
     togglepanel(column) {
       this.sortColumn[column] = !this.sortColumn[column];
+    },
+    dateDifference(dateStart, dateEnd) {
+      const start = new Date(dateStart);
+      const end = dateEnd === '-' ? new Date() : new Date(dateEnd);
+
+      const diffInMilliseconds = end - start;
+      const days = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diffInMilliseconds % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diffInMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
+
+      const parts = [];
+      if (days > 0) parts.push(`${days} д`);
+      if (hours > 0) parts.push(`${hours} ч`);
+      parts.push(`${minutes} мин`);
+
+      return parts.join(' ');
+
+    },
+    findServerName(serverId) {
+      const server = this.servers.find(s => s.idServer === serverId);
+      return server ? server.nameServer : 'Неизвестный сервер';
     }
   },
   computed: {
@@ -88,6 +112,7 @@ export default {
       background: currTheme.backgroundComponent,
       color: currTheme.textColor,
       borderColor: currTheme.borderColor
+
     }"
   >
     <table class="custom-table">
@@ -143,35 +168,38 @@ export default {
       </tr>
       </thead>
       <tbody>
-      <tr v-for="item in servers" :key="item.id">
-        <td :style="cellStyle">{{ item.time }}</td>
+      <tr v-for="item in problems" :key="item.id" >
+        <td :style="cellStyle">
+          {{item.dateTimeProblem.split('T')[0].split('-').reverse().join('.')}} {{item.dateTimeProblem.split('T')[1].substring(0, 8)}}
+        </td>
         <td class="name-mistake"
             :style="{
               ...cellStyle,
-              color: item.importance === 'Критическая' ? '#9E271E' :
-                     item.importance === 'Высокая' ? '#FFCC00' :
-                     item.importance === 'Средняя' ? '#F48C3E' :
+              color: item.errorImportanceText === 'Критическая' ? '#B71C1C' :
+                     item.errorImportanceText==='Информация'? '#BDBDBD':
+                     item.errorImportanceText==='Информация'? '#4FC3F7':
+                     item.errorImportanceText==='Предупреждение'? '#FFEB3B':
+                     item.errorImportanceText === 'Высокая' ? '#F44336' :
+                     item.errorImportanceText === 'Средняя' ? '#FF9800' :
                      '#4CAF50'
             }"
         >
-          {{item.importance}}
+          {{item.errorImportanceText}}
 
         </td>
-        <td :style="cellStyle">{{ item.recoveryTime }}</td>
+        <td :style="cellStyle" style="text-align:center">{{item.dateProblemSolution === null ? item.dateProblemSolution = '-':item.dateProblemSolution}}</td>
         <td class="status"
             :style="{
               ...cellStyle,
-              color: item.serverStatus === false ? '#9E271E' :
-                     item.serverStatus === true ? '#4CAF50' :
+              color: item.statusProblem === true ? '#4CAF50' :
+                     item.statusProblem === false ? '#9E271E' :
                      '#9E271E',
-
-            }"
-        >
-          {{item.serverStatus == true ? item.serverStatus='Решена' : item.serverStatus ='Ошибка'}}
+            }">
+          {{item.statusProblem ? 'Решена' : 'Ошибка'}}
         </td>
-        <td :style="cellStyle">{{ item.nameServer }}</td>
-        <td :style="cellStyle">{{ item.problems }}</td>
-        <td :style="cellStyle">{{ item.duration }}</td>
+        <td :style="cellStyle">{{findServerName(item.idServer)}}</td>
+        <td :style="cellStyle">{{item.messageProblem}}</td>
+        <td :style="cellStyle">{{dateDifference(item.dateTimeProblem, new Date())}}</td>
       </tr>
       </tbody>
     </table>
