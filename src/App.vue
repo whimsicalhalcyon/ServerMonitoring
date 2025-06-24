@@ -116,15 +116,17 @@ export default {
       }
     },
     async fetchServers(){
-      const res=await fetch('/api/servers');
-      this.servers=await res.json();
+      // const res=await fetch('/api/servers');
+      // this.servers=await res.json();
 
-      const resServersGroup = await fetch('/api/serversgroups');
+      const resServersGroup = await fetch('/api/Blocks/server_metric');
+      // const resServersGroup = await fetch('/src/serversgroups.json');
       this.serversGroups = await resServersGroup.json();
 
-      const resParameters = await fetch('/api/parameters');
-      this.parameters = await resParameters.json();
+      // const resParameters = await fetch('/api/parameters');
+      // this.parameters = await resParameters.json();
     }
+
   },
   created() {
     // добавление страницы в локал сторадж, чтобы она при перезагрузке не пропадала
@@ -144,11 +146,14 @@ export default {
       } else {
         this.themeStatusLight = false
       }
-    }
+    },
+
+
   },
   mounted() {
     this.themeLocal
-    this.fetchServers();
+    this.fetchServers()
+    setInterval(this.fetchServers, 60000)
   },
 
 }
