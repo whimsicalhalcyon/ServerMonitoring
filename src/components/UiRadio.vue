@@ -12,17 +12,33 @@ export default {
     themeStatus: {
       type: Boolean,
       default: true
+    },
+    modelValue : {
+      type: String
+    },
+    options : {
+      type: Array,
+      default: ()=> {}
     }
   },
 }
 </script>
 
 <template>
-  <input :style="themeStatus ? {borderColor: themeLight.radioBorder}: {borderColor: themeDark.radioBorder}">
+  <select
+      :style="themeStatus ? {background: themeLight.backgroundFilter, color: themeLight.textColor}: {background: themeDark.backgroundFilter, color: themeDark.textColor}"
+      :value="modelValue">
+    <slot></slot>
+  </select>
 </template>
 
 <style scoped>
-  input {
-    border: 1px solid
-  }
+select {
+  border-radius: 8px;
+  width: 21.9%;
+  height: 40px;
+  padding: 0 0 0 13px;
+  cursor: pointer;
+}
+
 </style>

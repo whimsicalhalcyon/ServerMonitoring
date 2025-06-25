@@ -13,14 +13,67 @@ export default {
       type: Boolean,
       default: true
     },
-    isSelected:{
-      type: Number,
+    modelValue: {
+      type: Object,
+      default: null,
     },
-
+    servers: {
+      type: Array,
+    },
+    errorBlocks: {
+      type: Array,
+    }
+  },
+  data() {
+    return {
+      sortColumn: {
+        dns: false,
+        ip: false,
+        group: false,
+      },
+    }
   },
   methods: {
-    toggleSelect(index) {
-      this.$emit('update:isSelected', this.isSelected === index ? null : index);
+    toggleSelect(item) {
+      this.$emit('update:modelValue', this.modelValue?.id === item.id ? null : item);
+    },
+    togglepanel(column) {
+      this.sortColumn[column] = !this.sortColumn[column];
+    },
+    getErrorColor(importance) {
+      switch (importance) {
+        case 0:
+          return '#BDBDBD';       // Не классифицирована
+        case 1:
+          return '#4FC3F7';       // Информация
+        case 2:
+          return '#FFEB3B';       // предупреждение
+        case 3:
+          return '#FF9800';       // средняя
+        case 4:
+          return '#F44336';       // высокая
+        case 5:
+          return '#780303';       // критическая
+      }
+    },
+    getTextColor(importance) {
+      return importance === 2 ? 'black' : 'white';
+    },
+    getErrorTitle(importance) {
+      switch (importance) {
+        case 0:
+          return 'Не классифицирована';
+        case 1:
+          return 'Информация';
+        case 2:
+          return 'Предупреждение';       // Средняя
+        case 3:
+          return 'Средняя';       // Предупреждение
+        case 4:
+          return 'Высокая';       // Информация
+        case 5:
+          return 'Критическая';
+      }
     }
   },
   computed: {
@@ -29,13 +82,47 @@ export default {
     },
     cellStyle() {
       return {
-        background: this.currTheme.backgroundComponent,
         color: this.currTheme.textColor,
-        border: `1px solid ${this.themeLight.borderColor}`
       };
-    }
+    },
+    groupedErrors() {
+      return this.errorBlocks.map((item) => {
+        const errorCounts = {};
+        // Собираем ошибки из item.errors, где serverId соответствует item.id
+        if (Array.isArray(item.errors)) {
+          item.errors.forEach((error) => {
+            if (error.serverId === item.id  && Number.isInteger(error.importance)) {
+              errorCounts[error.importance] = (errorCounts[error.importance] || 0) + 1;
+            }
+          });
+        }
+        // Собираем ошибки из block.servers, где serverId соответствует item.id
+        if (item.block && Array.isArray(item.block.servers)) {
+          item.block.servers.forEach((server) => {
+            if (server && Array.isArray(server.errors)) {
+              server.errors.forEach((error) => {
+                if (error.serverId === item.id && Number.isInteger(error.importance)) {
+                  errorCounts[error.importance] = (errorCounts[error.importance] || 0) + 1;
+                }
+              });
+            }
+          });
+        }
+        // Преобразуем в массив и сортируем по importance
+        return Object.entries(errorCounts)
+            .map(([importance, count]) => ({
+              importance: parseInt(importance),
+              count,
+            }))
+            .sort((a, b) => a.importance - b.importance); // Сортировка для предсказуемого порядка
+      });
+    },
+    // filteredErrors() {
+    //   return this.errorServers.filter(s =>
+    //       s.errors?.some(e => e.state === false)
+    //   );
+    // }
   }
-
 }
 </script>
 
@@ -53,16 +140,37 @@ export default {
       <thead :style="{ background: currTheme.backgroundFilter }">
       <tr>
         <th class="rounded-tl" :style="cellStyle"></th>
-        <th :style="cellStyle">DNS-имя</th>
-        <th :style="cellStyle">IP-адрес</th>
+        <th :style="cellStyle">
+          <div class="header-table">
+            <span>DNS-имя</span>
+            <i class="fa-solid fa-chevron-up " style="cursor: pointer;"
+               :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+               :class="sortColumn.dns ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('dns')"></i>
+          </div>
+        </th>
+        <th :style="cellStyle">
+          <div class="header-table">
+            <span>IP-адрес</span>
+            <i class="fa-solid fa-chevron-up " style="cursor: pointer;"
+               :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+               :class="sortColumn.ip ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('ip')"></i>
+          </div>
+        </th>
         <th :style="cellStyle">Состояние</th>
         <th :style="cellStyle">Ошибки</th>
-        <th :style="cellStyle">Группа</th>
+        <th :style="cellStyle">
+          <div class="header-table">
+            <span>Группа</span>
+            <i class="fa-solid fa-chevron-up " style="cursor: pointer;"
+               :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+               :class="sortColumn.group ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('group')"></i>
+          </div>
+        </th>
         <th class="rounded-tr" :style="cellStyle">Графики</th>
       </tr>
       </thead>
       <tbody>
-      <tr v-for="i in 70" key="i">
+      <tr v-for="(item,index) in errorBlocks" :key="item.id">
         <td :style="cellStyle">
           <button
               class="select-btn"
@@ -70,24 +178,44 @@ export default {
                 borderColor: currTheme.borderColor,
                 color: currTheme.borderColor
               }"
-              @click="toggleSelect(i)"
+              @click="toggleSelect(item)"
           >
-            <i class="fa-solid fa-check" v-if="isSelected===i"></i>
+            <i class="fa-solid fa-check" v-if="this.modelValue?.id === item.id"></i>
           </button>
         </td>
-        <td :style="cellStyle">server1.local</td>
-        <td :style="cellStyle">192.168.0.1</td>
-        <td :style="cellStyle">Активировано</td>
-        <td :style="cellStyle" class="error-container">
-          <div class="error" style="background-color: #BDBDBD;" title="Это подсказка">1</div>
-          <div class="error" style="background-color: #4FC3F7;">3</div>
-          <div class="error" style="background-color: #FFEB3B; color: black;">7</div>
-          <div class="error" style="background-color: #FF9800;">1</div>
-          <div class="error" style="background-color: #F44336;">4</div>
-          <div class="error" style="background-color: #B71C1C;">6</div>
+        <td :style="cellStyle">{{ item.hostName }}</td>
+        <td :style="cellStyle">{{ item.ipAddres }}</td>
+        <td :style="{...cellStyle, color:item.state?'#4CAF50':'#9E271E'}">{{
+            item.state ? 'Активировано' : 'Деактивировано'
+          }}
         </td>
-        <td :style="cellStyle">APP</td>
-        <td :style="cellStyle"><a>Открыть</a></td>
+        <td :style="cellStyle" class="error-container" style="height: 100%">
+          <div
+              v-if="groupedErrors[index] && groupedErrors[index].length"
+              v-for="error in groupedErrors[index]"
+              :key="error.importance"
+              class="error"
+              :title="getErrorTitle(error.importance)"
+              :style="{
+                backgroundColor: getErrorColor(error.importance),
+                color: getTextColor(error.importance),
+              }"
+          >
+            {{ error.count }}
+          </div>
+          <span v-else :style="cellStyle">Нет ошибок</span>
+        </td>
+        <!--          <div v-if="item.errors.length" class="error" v-for="(error,index) in item.errors" :key="index" :style="{}" :title="error.type">-->
+        <!--            {{error.count}}-->
+        <!--          </div>-->
+        <!--          <div class="error" style="background-color: #BDBDBD;" title="Не классифицирована">1</div>-->
+        <!--          <div class="error" style="background-color: #4FC3F7;" title="Информация">2</div>-->
+        <!--          <div class="error" style="background-color: #FFEB3B; color: black;" title="Предупреждение">4</div>-->
+        <!--          <div class="error" style="background-color: #FF9800;" title="Средняя">6</div>-->
+        <!--          <div class="error" style="background-color: #F44336;" title="Высокая">8</div>-->
+        <!--          <div class="error" style="background-color: #B71C1C;" title="Критическая">2</div>-->
+        <td :style="cellStyle">{{ item.block?.name }}</td>
+        <td :style="cellStyle"><a :style="{color:currTheme.backgroundButton}" href="" class="link">Открыть</a></td>
       </tr>
       </tbody>
     </table>
@@ -96,31 +224,53 @@ export default {
 
 
 <style scoped>
+.header-table {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
 .table-container {
-  border-radius: 12px;
+  font-size: 15px;
   overflow: hidden;
+  border-radius: 8px;
+  background: v-bind('currTheme.backgroundComponent');
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
 }
 
 .custom-table {
   width: 100%;
-  border-collapse: separate; /* это важно для границ */
+  border-collapse: separate;
   border-spacing: 0;
   text-align: left;
 }
 
-th,
-td {
-  padding: 12px;
-  vertical-align: middle;
-  box-sizing: border-box;
+th {
+  font-weight: normal;
+  padding: 12px 16px;
 }
 
-th.rounded-tl {
+td {
+  padding: 12px 16px;
+  color: v-bind('currTheme.textColor');
+  background: v-bind('currTheme.backgroundComponent');
+}
+
+tbody tr:nth-child(even) td {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+th:first-child {
   border-top-left-radius: 12px;
 }
 
-th.rounded-tr {
+th:last-child {
   border-top-right-radius: 12px;
 }
 
@@ -130,6 +280,15 @@ tbody tr:last-child td:first-child {
 
 tbody tr:last-child td:last-child {
   border-bottom-right-radius: 12px;
+}
+
+tbody tr:hover td {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+th:not(:last-child),
+td:not(:last-child) {
+  border-right: none;
 }
 
 .select-btn {
@@ -152,7 +311,10 @@ tbody tr:last-child td:last-child {
 
 .error-container {
   display: flex;
-  gap: 4px;
+  gap: 5px;
+  height: 100%;
+  min-height: 49px;
+  align-items: center;
 }
 
 .error {
