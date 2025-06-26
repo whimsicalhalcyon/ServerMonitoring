@@ -88,18 +88,6 @@ export default {
     }
   },
   watch: {
-    serverParameterData: {
-      handler(newVal) {
-        console.log('серверные параметры:', newVal);
-      },
-      deep: true
-    },
-    groups: {
-      handler(newVal) {
-        console.log('группы:', newVal);
-      },
-      deep: true
-    },
   },
 }
 ;

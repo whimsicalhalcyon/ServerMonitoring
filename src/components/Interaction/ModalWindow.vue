@@ -137,9 +137,6 @@ export default {
       this.hideWindow();
     }
   },
-  created() {
-    console.log('ModalWindow props:', this.$props);
-  }
 };
 </script>
 

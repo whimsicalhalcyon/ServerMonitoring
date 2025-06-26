@@ -57,184 +57,42 @@ export default {
   methods: {
     async fetchServers() {
       try {
-        const res = await fetch('/api/api/servers');
+        const res = await fetch('api/api/servers');
         if (!res.ok) throw new Error('Ошибка загрузки серверов');
         this.servers = await res.json();
       } catch (error) {
-        console.error(error);
+        console.log(error);
         alert('Ошибка загрузки серверов');
       }
     },
     async fetchBlocks() {
       try {
-        const res = await fetch('/api/api/blocks');
+        const res = await fetch('api/api/blocks');
         if (!res.ok) throw new Error('Ошибка загрузки блоков');
         this.groups = await res.json();
-        console.log(this.groups);
       } catch (error) {
-        console.error(error);
+        console.log(error);
         alert('Ошибка загрузки блоков');
       }
     },
     async fetchErrorBlocks() {
       try {
-        const res = await fetch('/api/api/servers/error_block');
+        const res = await fetch('api/api/servers/error_block');
         if (!res.ok) throw new Error('Ошибка загрузки error_block');
         this.errorBlocks = await res.json();
       } catch (error) {
-        console.error(error);
+        console.log(error);
         alert('Ошибка загрузки error_block');
       }
     },
     async fetchServerParameter() {
       try {
-        const res = await fetch('/api/api/blocks/server_parameter');
+        const res = await fetch('api/api/blocks/server_parameter');
         if (!res.ok) throw new Error('Ошибка загрузки server_parameter');
         this.serverParameterData = await res.json();
-        console.log('Данные serverParameterData:', this.serverParameterData);
       } catch (error) {
-        console.error(error);
+        console.log(error);
         alert('Ошибка загрузки server_parameter');
-      }
-    },
-    // async errorBlockWithGroup() {
-    //   this.errorBlocks = this.errorBlocks.map(server => {
-    //     const group = this.groups.find(g => g.id === (server.blockId || server.block?.id));
-    //     return {
-    //       ...server,
-    //       block: group ? {id: group.id, name: group.name} : {id: null, name: '-'}
-    //     };
-    //   });
-    //   console.log('Synced ErrorBlocks:', this.errorBlocks);
-    // },
-    async addBlock(name) {
-      if (!name.trim()) return alert('Название обязательно');
-
-      const exists = this.groups.find(g => g.name === name.trim());
-      if (exists) return alert('Группа уже существует');
-
-      try {
-        const res = await fetch('/api/api/blocks', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({name})
-        });
-
-        if (!res.ok) throw new Error('Ошибка при добавлении');
-        await this.fetchBlocks();
-        await this.fetchServerParameter();
-      } catch (error) {
-        console.error(error);
-        alert('Ошибка при добавлении группы');
-      }
-    },
-    async addServer({dns, ip, group}) {
-      const targetGroup = this.groups.find(g => g.name === group);
-      if (!targetGroup) return alert('Группа не найдена');
-
-      const exists = this.servers.find(s =>
-          s.hostName === dns && s.ipAddres === ip && s.blockId === targetGroup.id
-      );
-      if (exists) return alert('Сервер уже существует');
-
-      const payload = {
-        hostName: dns,
-        ipAddres: ip,
-        blockId: targetGroup.id,
-        state: true,
-        // errors: [],
-        // metrics: [],
-        // serverParameters: [],
-        // block: null
-      };
-
-      try {
-        console.log('targetGroup:', targetGroup);
-        console.log('exists', exists);
-        console.log('payload for addServer:', payload);
-        const res = await fetch('/api/api/servers', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(payload)
-        });
-
-        if (!res.ok) throw new Error('Ошибка при добавлении');
-        await this.fetchServers();
-        await this.fetchErrorBlocks();
-        await this.fetchServerParameter();
-      } catch (error) {
-        console.log(error);
-        alert('Ошибка при добавлении сервера');
-      }
-    },
-    async deleteBlock(groupId) {
-      const group = this.groups.find(g => g.id === groupId);
-      if (!group) return alert('Группа не найдена');
-
-      const serversToDelete = this.servers.filter(s => s.blockId === groupId);
-      try {
-        // for (const s of serversToDelete) {
-        //   await fetch(`/api/blocks/${s.id}`, {method: 'DELETE'});
-        // }
-
-        const res = await fetch(`/api/api/blocks/${groupId}`, {method: 'DELETE'});
-        if (!res.ok) throw new Error('Ошибка удаления группы');
-
-        await this.fetchBlocks();
-        await this.fetchServers();
-        await this.fetchErrorBlocks();
-        await this.fetchServerParameter();
-      } catch (error) {
-        console.log(error);
-        alert('Ошибка удаления группы');
-      }
-    },
-    async deleteServer(id) {
-      try {
-        const res = await fetch(`/api/api/servers/${id}`, {method: 'DELETE'});
-        if (!res.ok) throw new Error('Ошибка удаления');
-        await this.fetchServers();
-        await this.fetchErrorBlocks();
-        await this.fetchServerParameter();
-      } catch (error) {
-        console.log(error);
-        console.log(id);
-        alert('Ошибка удаления сервера');
-      }
-    },
-    async editServer({id, ip, dns, group}) {
-      console.log('App.vue received editServer:', {id, ip, dns, group});
-      const block = this.groups.find(g => g.name === group);
-      if (!block) {
-        console.log('Группа не найдена:', group);
-        return alert('Группа не найдена');
-      }
-
-      const updated = {
-        id: id,
-        hostName: dns,
-        ipAddres: ip,
-        blockId: block.id,
-        state: true,
-        errors: [],
-        metrics: [],
-        serverParameters: [],
-        block: null,
-      };
-      try {
-        const res = await fetch(`/api/api/servers/${id}`, {
-          method: 'PUT',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(updated)
-        });
-
-        if (!res.ok) throw new Error('Ошибка обновления');
-        await this.fetchServers();
-        await this.fetchErrorBlocks();
-        await this.fetchServerParameter();
-      } catch (error) {
-        console.log(error);
-        alert('Ошибка обновления сервера');
       }
     },
     openMonitorWindow(status) {
@@ -306,15 +164,15 @@ export default {
   ,
 
 
-  watch: {
-    openMonitor(newValue) {
-      localStorage.setItem('monitorState', JSON.stringify(newValue));
-    },
-    serverParameterData(newValue) {
-      console.log('ОТ родителя:', newValue);
-    }
-  }
-  ,
+  // watch: {
+  //   openMonitor(newValue) {
+  //     localStorage.setItem('monitorState', JSON.stringify(newValue));
+  //   },
+  //   serverParameterData(newValue) {
+  //     console.log('ОТ родителя:', newValue);
+  //   }
+  // }
+  // ,
   computed: {
     themeLocal() {
       return localStorage.getItem('theme') === 'true';
@@ -344,11 +202,10 @@ export default {
         :themeLight="themeLight"
         :themeDark="themeDark"></menu-page>
     <page-interaction
-        @deleteServer="deleteServer"
-        @addBlock="addBlock"
-        @addServer="addServer"
-        @deleteBlock="deleteBlock"
-        @editServer="editServer"
+        :fetch-servers="fetchServers"
+        :fetch-blocks="fetchBlocks"
+        :fetch-error-blocks="fetchErrorBlocks"
+        :fetch-server-parameter="fetchServerParameter"
         :isDataLoaded="isDataLoaded"
         :groups="groups"
         :servers="servers"

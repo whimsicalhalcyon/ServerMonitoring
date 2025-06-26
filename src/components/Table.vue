@@ -22,7 +22,8 @@ export default {
     },
     errorBlocks: {
       type: Array,
-    }
+    },
+    fetchErrorBlocks: Function,
   },
   data() {
     return {
@@ -31,6 +32,11 @@ export default {
         ip: false,
         group: false,
       },
+      sortDirections: {
+        dns: null,    // null → нет сортировки, true → A–Я, false → Я–А
+        ip: null,
+        group: null,
+      }
     }
   },
   methods: {
@@ -39,6 +45,10 @@ export default {
     },
     togglepanel(column) {
       this.sortColumn[column] = !this.sortColumn[column];
+      const current = this.sortDirections[column];
+      if (current === null) this.sortDirections[column] = true;
+      else if (current === true) this.sortDirections[column] = false;
+      else this.sortDirections[column] = null;
     },
     getErrorColor(importance) {
       switch (importance) {
@@ -88,20 +98,20 @@ export default {
     groupedErrors() {
       return this.errorBlocks.map((item) => {
         const errorCounts = {};
-        // Собираем ошибки из item.errors, где serverId соответствует item.id
+        // Собираем активные ошибки (state: false) из item.errors
         if (Array.isArray(item.errors)) {
           item.errors.forEach((error) => {
-            if (error.serverId === item.id  && Number.isInteger(error.importance)) {
+            if (error.serverId === item.id && Number.isInteger(error.importance) && error.state === false) {
               errorCounts[error.importance] = (errorCounts[error.importance] || 0) + 1;
             }
           });
         }
-        // Собираем ошибки из block.servers, где serverId соответствует item.id
+        // Собираем активные ошибки (state: false) из block.servers
         if (item.block && Array.isArray(item.block.servers)) {
           item.block.servers.forEach((server) => {
             if (server && Array.isArray(server.errors)) {
               server.errors.forEach((error) => {
-                if (error.serverId === item.id && Number.isInteger(error.importance)) {
+                if (error.serverId === item.id && Number.isInteger(error.importance) && error.state === false) {
                   errorCounts[error.importance] = (errorCounts[error.importance] || 0) + 1;
                 }
               });
@@ -117,11 +127,56 @@ export default {
             .sort((a, b) => a.importance - b.importance); // Сортировка для предсказуемого порядка
       });
     },
+    sortedErrorBlocks() {
+      let sorted = [...this.errorBlocks];
+
+      const sorters = ['dns', 'ip', 'group'];
+
+      sorters.forEach(column => {
+        const dir = this.sortDirections[column];
+        if (dir !== null) {
+          sorted.sort((a, b) => {
+            let valA, valB;
+
+            if (column === 'dns') {
+              valA = a.hostName || '';
+              valB = b.hostName || '';
+              return dir
+                  ? valA.localeCompare(valB, 'ru')
+                  : valB.localeCompare(valA, 'ru');
+            }
+
+            if (column === 'group') {
+              valA = a.block?.name || '';
+              valB = b.block?.name || '';
+              return dir
+                  ? valA.localeCompare(valB, 'ru')
+                  : valB.localeCompare(valA, 'ru');
+            }
+
+            if (column === 'ip') {
+              const ipToNumber = ip => ip.split('.')
+                  .reduce((acc, octet) => (acc << 8) + parseInt(octet), 0);
+
+              valA = ipToNumber(a.ipAddres || '0.0.0.0');
+              valB = ipToNumber(b.ipAddres || '0.0.0.0');
+
+              return dir ? valA - valB : valB - valA;
+            }
+          });
+        }
+      });
+
+      return sorted;
+    }
     // filteredErrors() {
     //   return this.errorServers.filter(s =>
     //       s.errors?.some(e => e.state === false)
     //   );
     // }
+  },
+  mounted() {
+    this.fetchErrorBlocks();
   }
 }
 </script>
@@ -143,17 +198,25 @@ export default {
         <th :style="cellStyle">
           <div class="header-table">
             <span>DNS-имя</span>
-            <i class="fa-solid fa-chevron-up " style="cursor: pointer;"
+            <i class="fa-solid" style="cursor: pointer;"
                :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-               :class="sortColumn.dns ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('dns')"></i>
+               :class="{
+     'fa-sort-up': sortDirections.dns === true,
+     'fa-sort-down': sortDirections.dns === false,
+     'fa-sort': sortDirections.dns === null
+   }" @click="togglepanel('dns')"></i>
           </div>
         </th>
         <th :style="cellStyle">
           <div class="header-table">
             <span>IP-адрес</span>
-            <i class="fa-solid fa-chevron-up " style="cursor: pointer;"
+            <i class="fa-solid " style="cursor: pointer;"
                :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-               :class="sortColumn.ip ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('ip')"></i>
+               :class="{
+     'fa-sort-up': sortDirections.ip === true,
+     'fa-sort-down': sortDirections.ip === false,
+     'fa-sort': sortDirections.ip === null
+   }" @click="togglepanel('ip')"></i>
           </div>
         </th>
         <th :style="cellStyle">Состояние</th>
@@ -161,16 +224,20 @@ export default {
         <th :style="cellStyle">
           <div class="header-table">
             <span>Группа</span>
-            <i class="fa-solid fa-chevron-up " style="cursor: pointer;"
+            <i class="fa-solid " style="cursor: pointer;"
                :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-               :class="sortColumn.group ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('group')"></i>
+               :class="{
+     'fa-sort-up': sortDirections.group === true,
+     'fa-sort-down': sortDirections.group === false,
+     'fa-sort': sortDirections.group === null
+   }" @click="togglepanel('group')"></i>
           </div>
         </th>
         <th class="rounded-tr" :style="cellStyle">Графики</th>
       </tr>
       </thead>
       <tbody>
-      <tr v-for="(item,index) in errorBlocks" :key="item.id">
+      <tr v-for="(item,index) in sortedErrorBlocks" :key="item.id">
         <td :style="cellStyle">
           <button
               class="select-btn"

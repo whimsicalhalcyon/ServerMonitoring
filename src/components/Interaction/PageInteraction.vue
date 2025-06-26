@@ -42,6 +42,10 @@ export default {
     serverParameterData: {
       type: Array,
     },
+    fetchServers: Function,
+    fetchBlocks: Function,
+    fetchErrorBlocks: Function,
+    fetchServerParameter: Function
   },
   data() {
     return {
@@ -60,6 +64,166 @@ export default {
   },
   computed: {},
   methods: {
+    async addBlock(name) {
+      if (!name.trim()) return alert('Название обязательно');
+
+      const exists = this.groups.find(g => g.name === name.trim());
+      if (exists) return alert('Группа уже существует');
+
+      try {
+        const res = await fetch('api/api/blocks', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({name})
+        });
+        if (!res.ok) throw new Error('Ошибка при добавлении');
+        await this.fetchBlocks();
+        await this.fetchServerParameter();
+      } catch (error) {
+        console.error(error);
+        alert('Ошибка при добавлении группы');
+      }
+    },
+    async addServer({dns, ip, group}) {
+      const targetGroup = this.groups.find(g => g.name === group);
+      if (!targetGroup) return alert('Группа не найдена');
+
+      const exists = this.servers.find(s =>
+          s.hostName === dns && s.ipAddres === ip && s.blockId === targetGroup.id
+      );
+      if (exists) return alert('Сервер уже существует');
+
+      const payload = {
+        hostName: dns,
+        ipAddres: ip,
+        blockId: targetGroup.id,
+        state: true,
+        // errors: [],
+        // metrics: [],
+        // serverParameters: [],
+        // block: null
+      };
+
+      try {
+        console.log('targetGroup:', targetGroup);
+        console.log('exists', exists);
+        console.log('payload for addServer:', payload);
+        const res = await fetch('api/api/servers', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error('Ошибка при добавлении');
+        await this.fetchServers();
+        await this.fetchErrorBlocks();
+        await this.fetchServerParameter();
+      } catch (error) {
+        console.log(error);
+        alert('Ошибка при добавлении сервера');
+      }
+    },
+    async deleteBlock(groupId) {
+      const group = this.groups.find(g => g.id === groupId);
+      if (!group) return alert('Группа не найдена');
+
+      const serversToDelete = this.servers.filter(s => s.blockId === groupId);
+      try {
+        // for (const s of serversToDelete) {
+        //   await fetch(`/api/blocks/${s.id}`, {method: 'DELETE'});
+        // }
+
+        const res = await fetch(`api/api/blocks/${groupId}`, {method: 'DELETE'});
+        if (!res.ok) throw new Error('Ошибка удаления группы');
+        await this.fetchBlocks();
+        await this.fetchServers();
+        await this.fetchErrorBlocks();
+        await this.fetchServerParameter();
+      } catch (error) {
+        console.log(error);
+        alert('Ошибка удаления группы');
+      }
+    },
+    async deleteServer() {
+      const serverName = this.isSelected?.hostName;
+      const serverId = this.isSelected?.id;
+
+      if (!serverId) return;
+      console.log(serverId);
+      const confirmed = window.confirm(`Вы точно хотите удалить ${serverName}?`);
+      try {
+        if (confirmed) {
+          this.isSelected = null;
+          const res = await fetch(`api/api/servers/${serverId}`, {method: 'DELETE'});
+          if (!res.ok) throw new Error('Ошибка удаления');
+          await this.fetchServers();
+          await this.fetchErrorBlocks();
+          await this.fetchServerParameter();
+        }
+      } catch (error) {
+        console.log(error);
+        alert('Ошибка удаления сервера');
+      }
+    },
+    async editServer({id, ip, dns, group}) {
+      // id = this.isSelected?.id;
+      // ip = this.isSelected?.ipAddres;
+      // dns = this.isSelected?.hostName;
+      // group = this.isSelected.block?.name;
+      // console.log(this.isSelected);
+
+      if (!this.isDataLoaded) {
+        alert('Данные ещё загружаются, пожалуйста, подождите');
+        return;
+      }
+      // if (!this.isSelected) {
+      //   alert('Выберите сервер для редактирования');
+      //   return;
+      // }
+      // this.modalEditWindow = !this.modalEditWindow;
+
+      const block = this.groups.find(g => g.name === group);
+      console.log({id, ip, dns, group});
+      console.log(block);
+      if (!block) {
+        console.log('Группа не найдена:', group);
+        return alert('Группа не найдена');
+      }
+
+      const updated = {
+        id: id,
+        hostName: dns,
+        ipAddres: ip,
+        blockId: block.id,
+        state: true,
+        errors: [],
+        metrics: [],
+        serverParameters: [],
+        block: null,
+      };
+      try {
+        const res = await fetch(`api/api/servers/${id}`, {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(updated)
+        });
+
+        if (!res.ok) throw new Error('Ошибка обновления');
+        await this.fetchServers();
+        await this.fetchErrorBlocks();
+        await this.fetchServerParameter();
+      } catch (error) {
+        console.log(error);
+        alert('Ошибка обновления сервера');
+      }
+    },
+    openEditServerModal() {
+      if (!this.isSelected) {
+        alert('Выберите сервер для редактирования');
+        return;
+      }
+      this.modalEditWindow = true; // Открываем модальное окно
+    },
     filteredServers() {
       let filtered = [...this.errorBlocks];
 
@@ -81,11 +245,11 @@ export default {
             return Array.isArray(errors) && errors.some(error =>
                 error.serverId === server.id &&
                 Number.isInteger(error.importance) &&
-                this.selectedErrors.includes(error.importance)
+                this.selectedErrors.includes(error.importance) && error.state === false
             );
           };
           return hasMatchingErrors(server.errors) ||
-              (server.block && Array.isArray(server.block.servers) &&
+              (server.block && Array.isArray(server.block.servers) && server.errors.state === false &&
                   server.block.servers.some(s => s && hasMatchingErrors(s.errors)));
         });
       }
@@ -114,42 +278,7 @@ export default {
       }
       this.modalWindow = !this.modalWindow;
     },
-    confirmDelete() {
-      const serverName = this.isSelected?.hostName;
-      const serverId = this.isSelected?.id;
 
-      if (!serverId) return;
-
-      const confirmed = window.confirm(`Вы точно хотите удалить ${serverName}?`);
-      if (confirmed) {
-        this.$emit('deleteServer', serverId); // <--- Передаем id сервера наверх
-        this.isSelected = null;
-      }
-    },
-    openEditModal() {
-      console.log('Opening edit modal with isSelected:', this.isSelected);
-      if (!this.isDataLoaded) {
-        alert('Данные ещё загружаются, пожалуйста, подождите');
-        return;
-      }
-      if (!this.isSelected) {
-        alert('Выберите сервер для редактирования');
-        return;
-      }
-      this.modalEditWindow = !this.modalEditWindow;
-    },
-    addBlock(newBlockName) {
-      this.$emit('addBlock', newBlockName);
-    },
-    deleteBlock(groupId) {
-      this.$emit('deleteBlock', groupId);
-    },
-    addServer(newServer) {
-      this.$emit('addServer', newServer);
-    },
-    editServer(editObj) {
-      this.$emit('editServer', editObj);
-    }
   },
   watch: {
     servers(newVal) {
@@ -158,9 +287,6 @@ export default {
     errorBlocks(newVal) {
       this.filteredServersData = [...newVal];
     },
-    serverParameterData(newVal) {
-      console.log('Передаём в ModalWindowMain:', newVal);
-    }
   },
 };
 </script>
@@ -197,10 +323,10 @@ export default {
               <p :style="themeStatus ? {color: themeLight.textColor} : {color: themeDark.textColor}"
                  style="padding-left: 14px;">{{ isSelected.hostName }}</p>
               <div class="buttons">
-                <button class="btnVisible" style="background: #4FC3F7" @click="openEditModal"><i
+                <button class="btnVisible" style="background: #4FC3F7" @click="openEditServerModal"><i
                     class="fa-solid fa-pen-to-square"></i>
                 </button>
-                <button class="btnVisible" style="margin-right: 10px; background: #F44336" @click="confirmDelete">
+                <button class="btnVisible" style="margin-right: 10px; background: #F44336" @click="deleteServer">
                   <i class="fa-solid fa-trash"></i>
                 </button>
               </div>
@@ -259,6 +385,7 @@ export default {
           :theme-dark="themeDark"
           :theme-status="themeStatus"
           v-model:modelValue="isSelected"
+          :fetch-error-blocks="fetchErrorBlocks"
       />
     </div>
 
