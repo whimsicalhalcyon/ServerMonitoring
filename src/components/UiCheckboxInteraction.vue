@@ -13,24 +13,46 @@ export default {
       type: Boolean,
       default: true
     },
+    modelValue: {
+      type: Array,
+      default: () => []
+    }
   },
-  computed:{
+  computed: {
     errorsData() {
-      const error = ['Не классифицирована', 'Информация', 'Предупреждение','Средняя','Высокая','Критическая'];
-      return Array.from({length: 6}, (_, i) => ({
-        id: i + 1,
-        errors: error
-      }))
+      return [
+        {value: 1, label: 'Не классифицирована', color: '#BDBDBD'},
+        {value: 2, label: 'Информация', color: '#4FC3F7'},
+        {value: 3, label: 'Предупреждение', color: '#FFEB3B', textColor: 'black'},
+        {value: 4, label: 'Средняя', color: '#FF9800'},
+        {value: 5, label: 'Высокая', color: '#F44336'},
+        {value: 6, label: 'Критическая', color: '#780303'}
+      ];
     },
+  },
+  methods: {
+    toggleError(value) {
+      const newValue = [...this.modelValue]; // Используем modelValue
+      const index = newValue.indexOf(value);
+
+      if (index === -1) {
+        newValue.push(value);
+      } else {
+        newValue.splice(index, 1);
+      }
+
+      this.$emit('update:modelValue', newValue);
+    }
   }
 }
 </script>
 
 <template>
   <div class="errorGroup">
-    <label class="errorBlock" v-for="item in errorsData" :key="item.id">
-      <input type="checkbox" :id="'error' + item.id">
-      <span :style="themeStatus ? {color: themeLight.textCheckbox}:{color: themeDark.textCheckbox}">{{item.errors[item.id-1]}}</span>
+    <label class="errorBlock" v-for="item in errorsData" :key="item.value">
+      <input type="checkbox" :checked="modelValue.includes(item.value)" @change="toggleError(item.value)" :id="`error-${item.value}`">
+      <span
+          :style="themeStatus ? {color: themeLight.textCheckbox}:{color: themeDark.textCheckbox}">{{item.label}}</span>
     </label>
   </div>
 </template>
@@ -39,8 +61,8 @@ export default {
 .errorGroup {
   display: flex;
   align-items: center;
-  text-align: center;
 }
+
 .errorBlock {
   display: flex;
   align-items: center;

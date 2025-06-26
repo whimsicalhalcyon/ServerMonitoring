@@ -136,22 +136,17 @@ export default {
       });
     },
     searchServers() {
+      console.log(this.sortedGroups)
       let filtered = this.sortedGroups.filter(item =>
           item.hostName && item.hostName.toLowerCase().includes(this.currentSearch.toLowerCase())
       );
 
       if (this.checkedGroups.length > 0) {
         filtered = filtered.filter(server => {
-          const hasMatchingErrors = (errors) => {
-            return Array.isArray(errors) && errors.some(error =>
-                error.serverId === server.id &&
-                Number.isInteger(error.importance) &&
-                this.checkedGroups.includes(error.importance) && error.state === false
-            );
-          };
-          return hasMatchingErrors(server.errors) ||
-              (server.block && Array.isArray(server.block.servers) && server.errors.state === false &&
-                  server.block.servers.some(s => s && hasMatchingErrors(s.errors)));
+          return server.errors && server.errors.some(error => {
+            const importance = Number(error.importance);
+            return this.checkedGroups.includes(importance);
+          });
         });
       }
       return filtered;
@@ -361,7 +356,6 @@ export default {
 
           <div class="checkbox-group">
             <ui-checkbox-interaction class="check" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" v-model="checkedGroups"></ui-checkbox-interaction>
-
           </div>
         </div>
       </div>
