@@ -162,8 +162,6 @@ export default {
     this.loadPageState();
   }
   ,
-
-
   // watch: {
   //   openMonitor(newValue) {
   //     localStorage.setItem('monitorState', JSON.stringify(newValue));
@@ -176,7 +174,7 @@ export default {
   computed: {
     themeLocal() {
       return localStorage.getItem('theme') === 'true';
-    }
+    },
   }
   ,
   mounted() {

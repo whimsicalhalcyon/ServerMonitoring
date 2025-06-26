@@ -62,7 +62,11 @@ export default {
       selectedErrors: []
     };
   },
-  computed: {},
+  computed: {
+    thisGroups() {
+      return [...this.groups].sort((a, b) => a.name.localeCompare(b.name));
+    }
+  },
   methods: {
     async addBlock(name) {
       if (!name.trim()) return alert('Название обязательно');
@@ -350,7 +354,7 @@ export default {
                      :themeLight="themeLight" :themeDark="themeDark">
             <option disabled value="">Выбрать группу</option>
             <option value="Все">Все</option>
-            <option v-for="group in groups" :key="group.id" :value="group.name">
+            <option v-for="group in thisGroups" :key="group.id" :value="group.name">
               {{ group.name }}
             </option>
           </ui-select>

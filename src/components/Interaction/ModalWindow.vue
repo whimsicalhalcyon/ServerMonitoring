@@ -52,6 +52,11 @@ export default {
       immediate: true,
     },
   },
+  computed: {
+    thisGroups() {
+      return [...this.groups].sort((a, b) => a.name.localeCompare(b.name));
+    }
+  },
   methods: {
     initializeEditFields() {
       console.log('Initializing fields with server:', this.server);
@@ -205,7 +210,7 @@ export default {
                        :themeStatus="themeStatus"
                        :themeLight="themeLight" :themeDark="themeDark">
               <option disabled value="">Выбрать группу</option>
-              <option v-for="group in groups" :key="group.id" :value="group.name">
+              <option v-for="group in thisGroups" :key="group.id" :value="group.name">
                 {{ group.name }}
               </option>
             </ui-select>
