@@ -6,29 +6,17 @@ import MainButton from "@/components/MainButton.vue";
 import MistakeCheckbox from "@/components/Mistakes/MistakeCheckbox.vue";
 import UiCheckboxInteraction from "@/components/UiCheckboxInteraction.vue";
 import TableMistakes from "@/components/Mistakes/TableMistakes.vue";
+import * as XLSX from "xlsx";
 
 export default {
   components: {
     UiSelect, MainButton, UiInput, MistakeCheckbox, TableMistakes, UiCheckboxInteraction,
   },
   props: {
-    themeLight: {
-      type: Object,
-      required: true
-    },
-    themeDark: {
-      type: Object,
-      required: true
-    },
-    themeStatus: {
-      type: Boolean,
-      default: true
-    },
+    themeLight: Object,
+    themeDark: Object,
+    themeStatus: Boolean,
     problems: {
-      type: Array,
-      default: () => []
-    },
-    servers: {
       type: Array,
       default: () => []
     },
@@ -40,43 +28,49 @@ export default {
   data() {
     return {
       openPanel: true,
+      isSelected: null,
+      appliedSearchTerm:'',
+      selectGroupPanel: {
+        status: '',
+        group: '',
+        startDate: '',
+        endDate:''
+      },
+      currentSearch: '',
+      currentIpSearch:'',
+      checkedGroups: [],
       optionProblem: [
-        {name: 'all', value: 'Любое' },
-        {name: 'mistake', value: 'Ошибка' },
-        {name: 'answer', value: 'Решено' }
+        {name: 'all', value: 'Любое'},
+        {name: 'mistake', value: 'Ошибка'},
+        {name: 'answer', value: 'Решено'}
       ],
       sortOptions: {
         field: null,
-        direction: 'asc' // 'asc' или 'desc'
-      },
-      currentSearch: '',
-      activeSearch: '',
-      currentIpSearch: '',
-      activeFilters: {
-        group: '',
-        status: 'Любое',
-        startDate: '',
-        endDate: '',
-        errorTypes: [],
-        importance: []
-      },
-      filters: {
-        group: '',
-        status: 'Любое',
-        startDate: '',
-        endDate: '',
-        errorTypes: [],
-        importance: []
+        direction: 'asc'
       },
       importanceOptions: [
-        { value: 'Критическая', label: 'Критическая' },
-        { value: 'Высокая', label: 'Высокая' },
-        { value: 'Средняя', label: 'Средняя' },
-        { value: 'Информация', label: 'Информация' }
-      ]
+        {value: 5, label: 'Критическая'},
+        {value: 4, label: 'Высокая'},
+        {value: 3, label: 'Средняя'},
+        {value: 2, label: 'Предупреждение'},
+        {value: 1, label: 'Информация'}
+      ],
+      filters : {
+        group: '',
+        error: '',
+      }
     }
   },
   computed: {
+    uniqueGroups() {
+      const groups = new Map();
+      this.problems.forEach(server => {
+        if (server.block && server.block.id) {
+          groups.set(server.block.id, server.block);
+        }
+      });
+      return Array.from(groups.values());
+    },
     filteredProblems() {
       let filtered = [...this.problems];
 
@@ -104,235 +98,277 @@ export default {
         });
       }
 
-      if (this.currentIpSearch) {
-        const searchTerm = this.currentIpSearch.toLowerCase();
-        filtered = filtered.filter(problem => {
-          const server = this.findServerById(problem.idServer);
-          return server && server.ipAdress.toLowerCase().includes(searchTerm);
-        });
-      }
-
-      // Фильтрация по типу ошибки
-      if (this.filters.errorTypes.length > 0) {
-        filtered = filtered.filter(problem =>
-            this.filters.errorTypes.includes(problem.typeError)
-        );
-      }
-
-      // Фильтрация по важности
-      if (this.filters.importance.length > 0) {
-        filtered = filtered.filter(problem =>
-            this.filters.importance.includes(problem.errorImportanceText)
-        );
-      }
-
-      // Фильтрация по дате (если нужно)
-      // if (this.filters.startDate) {...}
-      // if (this.filters.endDate) {...}
-
-      // Сортировка
-      if (this.sortOptions.field) {
-        filtered.sort((a, b) => {
-          let field = this.sortOptions.field;
-          let valueA = a[field];
-          let valueB = b[field];
-
-          // Для специальных полей
-          if (field === 'serverName') {
-            const serverA = this.findServerById(a.idServer);
-            const serverB = this.findServerById(b.idServer);
-            valueA = serverA ? serverA.nameServer : '';
-            valueB = serverB ? serverB.nameServer : '';
-          } else if (field === 'duration') {
-            valueA = this.calculateDuration(a.dateTimeProblem, a.dateProblemSolution);
-            valueB = this.calculateDuration(b.dateTimeProblem, b.dateProblemSolution);
-          }
-
-          // Сравнение значений
-          if (valueA < valueB) {
-            return this.sortOptions.direction === 'asc' ? -1 : 1;
-          }
-          if (valueA > valueB) {
-            return this.sortOptions.direction === 'asc' ? 1 : -1;
-          }
-          return 0;
-        });
-      }
-
       return filtered;
+    },
+    sortedGroups() {
+      let filtered = [...this.problems];
+
+      if (this.filters.group) {
+        filtered = filtered.filter(server =>
+            server.block?.id === this.filters.group
+        );
+      }
+
+      if(this.filters.error ==='Ошибка') {
+        filtered = filtered.filter(server => {
+          server.errors.some(error => !error.state).sort((a, b) => {
+            const aErrors = a.errors.filter(e => !e.state).length;
+            const bErrors = b.errors.filter(e => !e.state).length;
+            return bErrors - aErrors;
+          })
+        })
+      } else if (this.filters.error === 'Решено') {
+        filtered = filtered.filter(server => {
+          server.errors.some(error => !error.state).sort((a, b) => {
+            const aResolved = a.errors.filter(e => e.state).length;
+            const bResolved = b.errors.filter(e => e.state).length;
+            return bResolved - aResolved;
+          })
+        })
+      }
+
+      return filtered.sort((a, b) => {
+        if (this.filters.group) {
+          const aInGroup = a.block?.id === this.filters.group;
+          const bInGroup = b.block?.id === this.filters.group;
+          if (aInGroup && !bInGroup) return -1;
+          if (!aInGroup && bInGroup) return 1;
+        }
+        const groupCompare = (a.block?.name || '').localeCompare(b.block?.name || '');
+        if (groupCompare !== 0) return groupCompare;
+        return (a.hostName || '').localeCompare(b.hostName || '');
+      });
+
+
     }
   },
   methods: {
     findServerById(serverId) {
-      return this.servers.find(s => s.idServer === serverId);
-    },
-
-    calculateDuration(start, end) {
-      const startDate = new Date(start);
-      const endDate = end === '-' ? new Date() : new Date(end);
-      return endDate - startDate;
-    },
-    applyFilters() {
-      this.activeSearch = this.currentSearch;
-      this.activeFilters = JSON.parse(JSON.stringify(this.filters));
-    },
-    toggleSort(field) {
-      if (this.sortOptions.field === field) {
-        // Изменяем направление сортировки, если поле то же
-        this.sortOptions.direction = this.sortOptions.direction === 'asc' ? 'desc' : 'asc';
-      } else {
-        // Устанавливаем новое поле и направление по умолчанию
-        this.sortOptions.field = field;
-        this.sortOptions.direction = 'asc';
-      }
-    },
-
-    clearFilters() {
-      this.filters = {
-        group: '',
-        status: 'Любое',
-        startDate: '',
-        endDate: '',
-        errorTypes: [],
-        importance: []
-      };
-      this.currentSearch = '';
-      this.sortOptions = {
-        field: null,
-        direction: 'asc'
-      };
+      return this.problems.find(s => s.idServer === serverId);
     },
 
     formatDate(dateString) {
       if (!dateString) return '';
       const date = new Date(dateString);
       return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-    }
+    },
+
+    exportToExcel() {
+      const wb = XLSX.utils.book_new();
+
+      const excelData = this.problems.map(problem => {
+        const server = this.findServerById(problem.idServer);
+        const duration = this.calculateDuration(problem.createdAt, problem.finishedAt);
+
+        const durationFormatted = this.formatDuration(duration);
+
+        return {
+          'Сервер': server ? server.hostName : 'Неизвестно',
+          'Важность': problem.message,
+          'Дата возникновения': this.formatDate(problem.createdAt),
+          'Дата решения': problem.finishedAt === '-' ? '-' : this.formatDate(problem.finishedAt),
+          'Статус': problem.state ? 'Решено' : 'Ошибка',
+          'Продолжительность': durationFormatted,
+        };
+      });
+
+      const ws = XLSX.utils.json_to_sheet(excelData);
+
+      XLSX.utils.book_append_sheet(wb, ws, "Ошибки серверов");
+
+      const fileName = `server_errors_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+    },
+
+    formatDuration(ms) {
+      if (!ms) return '-';
+
+      const seconds = Math.floor(ms / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+
+      const remainingHours = hours % 24;
+      const remainingMinutes = minutes % 60;
+      const remainingSeconds = seconds % 60;
+
+      let result = '';
+      if (days > 0) result += `${days}д `;
+      if (remainingHours > 0) result += `${remainingHours}ч `;
+      if (remainingMinutes > 0) result += `${remainingMinutes}м `;
+      if (remainingSeconds > 0 && days === 0) result += `${remainingSeconds}с`;
+
+      return result.trim() || '-';
+    },
+
+    calculateDuration(start, end) {
+      const startDate = new Date(start);
+      const endDate = end ? new Date(end) : new Date();
+      const diff = endDate - startDate;
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+      return `${days}д ${hours}ч ${minutes}м`;
+    },
+    toggleSort(field) {
+      if (this.sortOptions.field === field) {
+        this.sortOptions.direction = this.sortOptions.direction === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.sortOptions.field = field;
+        this.sortOptions.direction = 'asc';
+      }
+    },
+    applyFilters() {
+      this.appliedSearchTerm = this.currentSearch;
+    },
+
+    clearFilters() {
+      this.selectGroupPanel = {
+        status: '',
+        group: '',
+        startDate: '',
+        endDate: ''
+      };
+
+      this.currentSearch = '';
+      this.currentIpSearch = ''
+      this.sortOptions = {
+        field: null,
+        direction: 'asc'
+      };
+
+      this.$refs.tableMistakes?.resetSort?.();
+    },
+  },
+  mounted() {
+    console.log('page problems:', this.problems);
   }
 }
 </script>
 
 <template>
   <div class="main">
-    <div class="main-top" :style="themeStatus ? {background: themeLight.background}: {background: themeDark.background}">
+    <div class="main-top" :style="themeStatus ? {background: themeLight.background} : {background: themeDark.background}">
       <div class="text">
-        <p :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}">Ошибки</p>
-        <div class="themes" v-on:click="$emit('changeTheme', !themeStatus)">
-          <i class="fa-solid fa-sun" :class="themeStatus ? 'fa-moon': 'fa-sun'"
-             :style="themeStatus ? {color: themeDark.backgroundComponent}: {color: themeLight.backgroundComponent}"></i>
+        <p :style="themeStatus ? {color: themeLight.textColor} : {color: themeDark.textColor}">Ошибки</p>
+        <div class="themes" @click="$emit('changeTheme', !themeStatus)">
+          <i class="fa-solid fa-sun" :class="themeStatus ? 'fa-moon' : 'fa-sun'"
+             :style="themeStatus ? {color: themeDark.backgroundComponent} : {color: themeLight.backgroundComponent}"></i>
         </div>
       </div>
-      <div class="panel" v-if="openPanel" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
+
+      <div class="panel" v-if="openPanel" :style="themeStatus ? {background: themeLight.backgroundComponent} : {background: themeDark.backgroundComponent}">
         <div class="top">
           <ui-input
-              :themeStatus="themeStatus"
-              :themeLight="themeLight"
-              :themeDark="themeDark"
               v-model="currentSearch"
               placeholder="Поиск по имени сервера"
-              @input="currentSearch = $event.target.value">
-          </ui-input>
-          <main-button
               :themeStatus="themeStatus"
               :themeLight="themeLight"
-              :themeDark="themeDark"
-              style="width: 4%;">
+              :themeDark="themeDark">
+          </ui-input>
+
+          <main-button
+              style="width: 4%;"
+              @click="exportToExcel"
+              :themeStatus="themeStatus"
+              :themeLight="themeLight"
+              :themeDark="themeDark">
             <i class="fa-solid fa-file-excel"></i>
           </main-button>
         </div>
-        <div class="line"
-             :style="themeStatus?{borderColor:themeLight.borderColor}:{borderColor:themeDark.borderColor}"></div>
+
+        <div class="line" :style="themeStatus ? {borderColor: themeLight.borderColor} : {borderColor: themeDark.borderColor}"></div>
+
         <div class="bottom">
           <ui-select
-              class="select"
+              v-model="filters.group"
               :themeStatus="themeStatus"
               :themeLight="themeLight"
-              :themeDark="themeDark"
-              id="selectGroup"
-              v-model="filters.group">
+              :themeDark="themeDark">
             <option value="">Все группы серверов</option>
-            <option v-for="group in serverGroup" :key="group.idServerGroup" :value="group.idServerGroup">
-              {{group.nameServerGroup}}
+            <option v-for="group in uniqueGroups" :key="group.id" :value="group.id">
+              {{group.name}}
             </option>
           </ui-select>
 
           <ui-select
-              class="select"
+              v-model="filters.error"
               :themeStatus="themeStatus"
               :themeLight="themeLight"
-              :themeDark="themeDark"
-              v-model="filters.status">
-            <option v-for="option in optionProblem" :value="option.value">{{option.value}}</option>
+              :themeDark="themeDark">
+            <option value="">Состояние</option>
+            <option v-for="option in optionProblem" :value="option.value">
+              {{option.value }}
+            </option>
           </ui-select>
 
           <ui-input
-              class="date"
+              v-model="selectGroupPanel.startDate"
               placeholder="Начальная дата"
-              type="datetime-local"
               :themeStatus="themeStatus"
               :themeLight="themeLight"
-              :themeDark="themeDark"
-              v-model="filters.startDate">
+              :themeDark="themeDark">
           </ui-input>
 
           <ui-input
-              class="date"
+              v-model="selectGroupPanel.endDate"
               placeholder="Конечная дата"
-              type="datetime-local"
               :themeStatus="themeStatus"
               :themeLight="themeLight"
-              :themeDark="themeDark"
-              v-model="filters.endDate">
+              :themeDark="themeDark">
           </ui-input>
+
           <main-button
-              class="btn"
+              @click="applyFilters"
+              :themeStatus="themeStatus"
+              :themeLight="themeLight"
+              :themeDark="themeDark">
+            Найти
+          </main-button>
+
+          <main-button
+              @click="clearFilters"
               :themeStatus="themeStatus"
               :themeLight="themeLight"
               :themeDark="themeDark"
-          @click="applyFilters">Найти</main-button>
-          <main-button
-              class="btn btn-close"
-              :themeStatus="themeStatus"
-              :themeLight="themeLight"
-              :themeDark="themeDark"
-              @click="clearFilters">
+              class="btn-close">
             Сбросить
           </main-button>
         </div>
+
         <div class="bottom-checkbox">
           <div class="textLeft">
-            <p style="margin-bottom: 10px;"
-               :style="themeStatus ? {color: themeLight.textCheckbox} : {color: themeDark.textCheckbox}">
+            <p :style="themeStatus ? {color: themeLight.textCheckbox} : {color: themeDark.textCheckbox}">
               Тип ошибки:
             </p>
           </div>
-          <ui-checkbox-interaction
-              class="check"
-              :themeStatus="themeStatus"
-              :themeLight="themeLight"
-              :themeDark="themeDark"
-              v-model="filters.errorTypes">
-          </ui-checkbox-interaction>
 
+          <div class="checkbox-group">
+            <ui-checkbox-interaction
+                :themeStatus="themeStatus"
+                :themeLight="themeLight"
+                :themeDark="themeDark">
+            </ui-checkbox-interaction>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="table-mistakes">
       <table-mistakes
-          :problems="filteredProblems"
-          :servers="servers"
+          ref="tableMistakes"
+          :problems="sortedGroups"
           :themeStatus="themeStatus"
           :themeLight="themeLight"
           :themeDark="themeDark"
           :sortOptions="sortOptions"
-          @sort="toggleSort"
-          class="table-mistakes">
+          @sort="toggleSort">
       </table-mistakes>
     </div>
   </div>
 </template>
-
 <style scoped>
 
 .main {

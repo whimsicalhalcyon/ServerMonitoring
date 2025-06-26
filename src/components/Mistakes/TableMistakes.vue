@@ -2,6 +2,7 @@
 
 import MistakeCheckbox from "@/components/Mistakes/MistakeCheckbox.vue";
 import UiCheckboxInteraction from "@/components/UiCheckboxInteraction.vue";
+
 export default {
   components: {
     UiCheckboxInteraction,
@@ -26,10 +27,8 @@ export default {
     },
     problems : {
       type: Array,
+
     },
-    servers : {
-      type: Array,
-    }
 
   },
   data() {
@@ -42,6 +41,10 @@ export default {
         serverName:false,
         problem: false,
         duration: false
+      },
+      sortConfig: {
+        column: null,
+        ascending: 'asc'
       }
     }
 
@@ -51,13 +54,48 @@ export default {
       this.$emit('update:isSelected', this.isSelected === index ? null : index);
     },
     togglepanel(column) {
-      this.sortColumn[column] = !this.sortColumn[column];
+      if (this.sortConfig.column === column) {
+        this.sortConfig.direction = this.sortConfig.direction === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.sortConfig.column = column;
+        this.sortConfig.direction = 'asc';
+      }
+
+      Object.keys(this.sortColumn).forEach(key => {
+        this.sortColumn[key] = false;
+      });
+
+      if (this.sortConfig.column) {
+        this.sortColumn[this.sortConfig.column] = true;
+      }
+    },
+
+    compareValues(a, b, column) {
+      const valueGetters = {
+        time: item => this.parseDate(item.createdAt),
+        importance: item => parseInt(item.importance),
+        recoveryTime: item => item.finishedAt ? this.parseDate(item.finishedAt) : new Date(0),
+        state: item => item.state ? 1 : 0,
+        serverName: item => this.findServerName(item.serverId),
+        problem: item => item.message,
+        duration: item => this.getDurationInMinutes(item.createdAt, item.finishedAt)
+      };
+
+      const getValue = valueGetters[column];
+      const valA = getValue(a);
+      const valB = getValue(b);
+
+      if (typeof valA === 'string') return valA.localeCompare(valB);
+      if (valA instanceof Date) return valA - valB;
+      return valA - valB;
     },
     dateDifference(dateStart, dateEnd) {
-      const start = new Date(dateStart);
-      const end = dateEnd === '-' ? new Date() : new Date(dateEnd);
+      const start = new Date(dateStart)
+      const end = !dateEnd || dateEnd === '-' ? new Date() : new Date(dateEnd);
 
       const diffInMilliseconds = end - start;
+      if (diffInMilliseconds < 0) return "0 мин";
+
       const days = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
       const hours = Math.floor((diffInMilliseconds % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((diffInMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
@@ -67,25 +105,44 @@ export default {
       if (hours > 0) parts.push(`${hours} ч`);
       parts.push(`${minutes} мин`);
 
-      return parts.join(' ');
+      return parts.join(' ') || '0 мин';
 
     },
     findServerName(serverId) {
-      const server = this.servers.find(s => s.idServer === serverId);
-      return server ? server.nameServer : 'Неизвестный сервер';
+      const server = this.servers.find(s => s.id === serverId);
+      return server ? server.hostName : 'Неизвестный сервер';
+    },
+    resetSort() {
+      this.sortConfig = {
+        column: null,
+        direction: 'asc'
+      };
+      Object.keys(this.sortColumn).forEach(key => {
+        this.sortColumn[key] = false;
+      });
+    },
+    handleSort(field) {
+      if (field === 'serverGroup') {
+        this.$emit('sort', 'group');
+      } else {
+        this.$emit('sort', field);
+      }
     }
   },
   computed: {
-    currTheme() {
+    currTheme()
+    {
       return this.themeStatus ? this.themeLight : this.themeDark;
     },
-    cellStyle() {
+    cellStyle()
+    {
       return {
         color: this.currTheme.textColor,
         // borderColor: this.currTheme.borderColor
-      };
+      }
     },
-    tableData() {
+    tableData()
+    {
       const statuses = ['Критическая', 'Высокая', 'Средняя'];
       const states = ['Ошибка', 'Решено'];
       const problems = 'Zabbix agent is not available (for 3m)';
@@ -99,8 +156,57 @@ export default {
         serverName: 'server-name',
         problem: problems,
         duration: Date.now()
-      }));
+      }))
     }
+  ,
+    sortedProblems()
+    {
+      const allErrors = [];
+      this.problems.forEach(server => {
+        if (!server.errors) return;
+        server.errors.forEach(error => {
+          allErrors.push({
+            ...error,
+            serverName: server.hostName || 'Неизвестный сервер',
+            ip: server.ipAddres || '—'
+          });
+        });
+      });
+
+      if (!this.sortConfig.column) return allErrors;
+
+      const getValue = (item) => {
+        switch (this.sortConfig.column) {
+          case 'time':
+            return new Date(item.createdAt);
+          case 'importance':
+            return parseInt(item.importance);
+          case 'recoveryTime':
+            return item.finishedAt ? new Date(item.finishedAt) : new Date(0);
+          case 'state':
+            return item.state ? 1 : 0;
+          case 'serverName':
+            return item.serverName;
+          case 'problem':
+            return item.message;
+          case 'duration':
+            return this.getDurationInMinutes(item.createdAt, item.finishedAt);
+          default:
+            return item[this.sortConfig.column];
+        }
+      };
+
+      return allErrors.sort((a, b) => {
+        const valA = getValue(a);
+        const valB = getValue(b);
+
+        if (typeof valA === 'string') return this.sortConfig.direction === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        return this.sortConfig.direction === 'asc' ? valA - valB : valB - valA;
+      });
+    }
+  },
+  mounted() {
+    console.log('Received problems:', this.problems);
   }
 }
 </script>
@@ -122,84 +228,100 @@ export default {
           <div class="header-table">
             <span>Время</span>
             <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-             :class="sortColumn.time ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('time')"></i>
+               :class="[sortConfig.column === 'time'? (sortConfig.direction === 'asc' ? 'fa-chevron-up' : 'fa-chevron-down'): 'fa-chevron-down']" @click="togglepanel('time')"></i>
           </div>
         </th>
         <th :style="cellStyle">
           <div class="header-table">
             <span>Важность</span>
             <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-             :class="sortColumn.importance ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('importance')"></i>
+               :class="[sortConfig.column === 'importance'? (sortConfig.direction === 'asc' ? 'fa-chevron-up' : 'fa-chevron-down'): 'fa-chevron-down']" @click="togglepanel('importance')"></i>
           </div>
         </th>
         <th :style="cellStyle">
         <div class="header-table">
           <span>Время восстановления</span>
           <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-             :class="sortColumn.recoveryTime ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('recoveryTime')"></i>
+              :class="[sortConfig.column === 'recoveryTime'? (sortConfig.direction === 'asc' ? 'fa-chevron-up' : 'fa-chevron-down'): 'fa-chevron-down']" @click="togglepanel('recoveryTime')"></i>
         </div></th>
         <th :style="cellStyle">
           <div class="header-table">
             <span>Состояние</span>
             <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-             :class="sortColumn.state ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('state')"></i>
+               :class="[sortConfig.column === 'state'? (sortConfig.direction === 'asc' ? 'fa-chevron-up' : 'fa-chevron-down'): 'fa-chevron-down']" @click="togglepanel('state')"></i>
           </div>
         </th>
         <th :style="cellStyle">
         <div class="header-table">
           <span>Имя сервера</span>
           <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-             :class="sortColumn.serverName ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('serverName')"></i>
+             :class="[sortConfig.column === 'serverName'? (sortConfig.direction === 'asc' ? 'fa-chevron-up' : 'fa-chevron-down'): 'fa-chevron-down']" @click="togglepanel('serverName')"></i>
         </div></th>
         <th :style="cellStyle">
           <div class="header-table">
             <span>Проблема</span>
             <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-             :class="sortColumn.problem ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('problem')"></i>
+               :class="[sortConfig.column === 'problem'? (sortConfig.direction === 'asc' ? 'fa-chevron-up' : 'fa-chevron-down'): 'fa-chevron-down']" @click="togglepanel('problem')"></i>
           </div>
         </th>
         <th class="rounded-tr" :style="cellStyle">
           <div class="header-table">
             <span>Длительность</span>
             <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-               :class="sortColumn.duration ? 'fa-chevron-up' : 'fa-chevron-down'" @click="togglepanel('duration')"></i>
+                :class="[sortConfig.column === 'duration'? (sortConfig.direction === 'asc' ? 'fa-chevron-up' : 'fa-chevron-down'): 'fa-chevron-down']" @click="togglepanel('duration')"></i>
           </div>
         </th>
       </tr>
       </thead>
-      <tbody>
-      <tr v-for="item in problems" :key="item.id" >
+      <tbody v-for="server in problems">
+      <tr v-for="item in sortedProblems" :key="item.id">
         <td :style="cellStyle">
-          {{item.dateTimeProblem.split('T')[0].split('-').reverse().join('.')}} {{item.dateTimeProblem.split('T')[1].substring(0, 8)}}
+          {{item.createdAt
+            ? item.createdAt.split('T')[0].split('-').reverse().join('.') + ' ' +
+            item.createdAt.split('T')[1].substring(0,8)
+            : '-' }}
         </td>
+
         <td class="name-mistake"
             :style="{
-              ...cellStyle,
-              color: item.errorImportanceText === 'Критическая' ? '#B71C1C' :
-                     item.errorImportanceText==='Информация'? '#BDBDBD':
-                     item.errorImportanceText==='Информация'? '#4FC3F7':
-                     item.errorImportanceText==='Предупреждение'? '#FFEB3B':
-                     item.errorImportanceText === 'Высокая' ? '#F44336' :
-                     item.errorImportanceText === 'Средняя' ? '#FF9800' :
-                     '#4CAF50'
-            }"
-        >
-          {{item.errorImportanceText}}
-
+          ...cellStyle,
+          color: item.importance === 5 ? '#B71C1C' :
+                 item.importance === 4 ? '#F44336' :
+                 item.importance === 3 ? '#FF9800' :
+                 item.importance === 2 ? '#FFEB3B' :
+                 item.importance === 1 ? '#4FC3F7' :
+                 '#4CAF50'
+        }">
+          {{ item.importance === 5 ? 'Критическая' :
+            item.importance === 4 ? 'Высокая' :
+                item.importance === 3 ? 'Средняя' :
+                    item.importance === 2 ? 'Предупреждение' :
+                        item.importance === 1 ? 'Информация' : 'Не классифицирована' }}
         </td>
-        <td :style="cellStyle" style="text-align:center">{{item.dateProblemSolution === null ? item.dateProblemSolution = '-':item.dateProblemSolution}}</td>
+
+        <td :style="cellStyle" v-if="item.finishedAt">
+          {{ item.finishedAt
+            ? item.finishedAt.split('T')[0].split('-').reverse().join('.') + ' ' +
+            item.finishedAt.split('T')[1].substring(0,8)
+            : '-' }}
+        </td>
+        <td :style="cellStyle" style="text-align:center" v-else>
+          -
+        </td>
+
         <td class="status"
             :style="{
-              ...cellStyle,
-              color: item.statusProblem === true ? '#4CAF50' :
-                     item.statusProblem === false ? '#9E271E' :
-                     '#9E271E',
-            }">
-          {{item.statusProblem ? 'Решена' : 'Ошибка'}}
+          ...cellStyle,
+          color: item.state ? '#4CAF50' : '#9E271E'
+        }">
+          {{ item.state ? 'Решена' : 'Ошибка' }}
         </td>
-        <td :style="cellStyle">{{findServerName(item.idServer)}}</td>
-        <td :style="cellStyle">{{item.messageProblem}}</td>
-        <td :style="cellStyle">{{dateDifference(item.dateTimeProblem, new Date())}}</td>
+
+        <td :style="cellStyle">{{ item.serverName }}</td>
+
+        <td :style="cellStyle">{{ item.message }}</td>
+
+        <td :style="cellStyle">{{ dateDifference(item.createdAt, item.finishedAt) }}</td>
       </tr>
       </tbody>
     </table>
@@ -224,7 +346,7 @@ export default {
 
 th {
   font-weight: normal;
-  padding: 12px 16px;
+  padding: 12px 10px;
 }
 
 td {

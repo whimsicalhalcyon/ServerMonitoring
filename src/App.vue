@@ -117,23 +117,24 @@ export default {
     },
     async fetchServers(){
       // оригинальные подключения
-      // const res=await fetch('/api/servers');
-      // this.servers=await res.json();
-      // const resTwo=await fetch('/api/problems');
-      // this.problems=await resTwo.json();
-      // const resThree = await fetch('/api/serversgroups');
+      const res=await fetch('/api/servers');
+      this.servers=await res.json();
+      const resTwo=await fetch('/api/servers/error_block');
+      this.problems=await resTwo.json();
+
+
+      // const resThree = await fetch('/api/blocks');
       // this.serverGroup=await resThree.json();
+      // console.log(this.problems);
 
 
       // тестовые подключения
-      const res = await fetch('/src/servers.json');
-      this.servers = await res.json();
-      const resProblem = await fetch('/src/problems.json');
-      this.problems =  await resProblem.json();
+      // const res = await fetch('/src/error_block.json');
+      // this.problems = await res.json();
+      // console.log(this.problems);
+      // const resProblem = await fetch('/src/problems.json');
+      // this.problems =  await resProblem.json();
     },
-    async fetchProblem() {
-
-    }
   },
   created() {
     // добавление страницы в локал сторадж, чтобы она при перезагрузке не пропадала
@@ -158,7 +159,6 @@ export default {
   mounted() {
     this.themeLocal
     this.fetchServers();
-    this.fetchProblem()
   },
 
 }
@@ -190,8 +190,6 @@ export default {
         @changeTheme="changeToTheme"></page-interaction>
     <page-mistakes
         v-bind:problems="problems"
-        v-bind:servers="servers"
-        v-bind:serverGroup="serverGroup"
         v-if="openMistakes"
         :themeStatus="themeStatusLight"
         :themeLight="themeLight"

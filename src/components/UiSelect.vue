@@ -13,13 +13,21 @@ export default {
       type: Boolean,
       default: true
     },
+    modelValue: {
+      type: String
+    },
 
   },
+  methods: {
+    changeModelValue(event) {
+      this.$emit('update:modelValue', event.target.value);
+    }
+  }
 }
 </script>
 
 <template>
-  <select
+  <select :value="modelValue" @change="changeModelValue"
       :style="themeStatus ? {background: themeLight.backgroundFilter, color: themeLight.textColor}: {background: themeDark.backgroundFilter, color: themeDark.textColor}">
       <slot></slot>
   </select>
