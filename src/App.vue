@@ -116,15 +116,12 @@ export default {
       }
     },
     async fetchServers(){
-      // const res=await fetch('/api/servers');
-      // this.servers=await res.json();
-      // const resServersGroup = await fetch('/src/server_metric.json');
+
+      // const resServersGroup = await fetch('/src/server_metric (5).json');
       const resServersGroup = await fetch('/api/Blocks/server_metric');
-      // const resServersGroup = await fetch('/src/serversgroups.json');
       this.serversGroups = await resServersGroup.json();
 
-      // const resParameters = await fetch('/api/parameters');
-      // this.parameters = await resParameters.json();
+
     }
 
   },
