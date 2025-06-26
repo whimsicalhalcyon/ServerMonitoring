@@ -13,22 +13,12 @@ export default {
       type: Boolean,
       default: true
     },
-    modelValueInteraction: {
-      type: String,
-      default: ''
-    },
   },
-  methods: {
-    onInput(event) {
-      const value = event.target.value;
-      this.$emit('update:modelValueInteraction', value);
-    }
-  }
 }
 </script>
 
 <template>
-  <input type="text" @input="onInput" :value="modelValueInteraction" placeholder="Поиск по имени сервера" :style="themeStatus ? {borderColor: themeLight.borderColor, color: themeLight.textColor}: {borderColor: themeDark.borderColor, color: themeDark.textColor}">
+  <input type="text" placeholder="Поиск по имени сервера" :style="themeStatus ? {borderColor: themeLight.borderColor, color: themeLight.textColor}: {borderColor: themeDark.borderColor, color: themeDark.textColor}">
 </template>
 
 <style scoped>

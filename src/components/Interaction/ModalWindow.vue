@@ -34,7 +34,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    blocks:{
+    blocks: {
       type: Array
     }
   },
@@ -78,6 +78,20 @@ export default {
     }
   },
   methods: {
+    searchElement() {
+      this.selectedServerGroup = document.querySelector('#group').value; //выбранная группа добавление/редактирование
+      this.newServerIp = document.querySelector('#ip').value;
+      this.newServerDns = document.querySelector('#dns').value;
+
+      if (this.isAddServer) {
+        this.addServer();
+      } else if (this.isEditServer) {
+        this.saveEditServer();
+      } else if (this.isAddBlock) {
+        this.newGroupName = document.querySelector('#newGroup').value;
+        this.addBlock();
+      }
+    },
     toggleExpand(index) {
       this.blocks[index].isExpanded = !this.blocks[index].isExpanded;
     },
@@ -97,13 +111,37 @@ export default {
 
       const group = this.groups.find(g => g.id === this.server.blockId);
       this.selectedServerGroup = group ? group.name : '';
+
+      this.$nextTick(() => {
+        const ipInput = document.querySelector('#ip');
+        const dnsInput = document.querySelector('#dns');
+        const groupSelect = document.querySelector('#group');
+
+        if (ipInput) ipInput.value = this.newServerIp;
+        if (dnsInput) dnsInput.value = this.newServerDns;
+        if (groupSelect) groupSelect.value = this.selectedServerGroup;
+      });
     },
     hideWindow() {
       this.$emit('update:openDialog', false);
+      // Очистка модели
       this.newGroupName = '';
       this.newServerIp = '';
       this.newServerDns = '';
       this.selectedServerGroup = '';
+
+      // Принудительно очищаем в DOM
+      const groupSelect = document.querySelector('#group');
+      const groupNameInput = document.querySelector('#newGroup');
+      const serverIpInput = document.querySelector('#ip');
+      const serverDnsInput = document.querySelector('#dns');
+
+
+      if (groupSelect) groupSelect.value = '';
+      if (groupNameInput) groupNameInput.value = '';
+      if (serverIpInput) serverIpInput.value = '';
+      if (serverDnsInput) serverDnsInput.value = '';
+
     },
     addBlock() {
       if (!this.newGroupName.trim()) {
@@ -153,6 +191,7 @@ export default {
         group: this.selectedServerGroup,
         serverId: this.server?.id
       });
+      console.log(this.newServerIp);
       if (!this.newServerIp || !this.isValidIPv4(this.newServerIp)) {
         alert('Введите корректный IPv4 адрес');
         return;
@@ -196,14 +235,15 @@ export default {
             <label class="dialog-label" for="newGroup"
                    :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
             >Группа:</label>
-            <ui-input id="newGroup" v-model:modelValueInteraction="newGroupName" placeholder=""
+            <ui-input id="newGroup" placeholder=""
                       :themeStatus="themeStatus"
                       :themeLight="themeLight"
                       :themeDark="themeDark"></ui-input>
           </div>
         </div>
         <div class="dialog-buttons">
-          <main-button @click="addBlock" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+          <main-button @click="searchElement" :themeStatus="themeStatus" :themeLight="themeLight"
+                       :themeDark="themeDark">
             Сохранить
           </main-button>
           <main-button @click="hideWindow" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"
@@ -222,7 +262,7 @@ export default {
             <label class="dialog-label" for="ip"
                    :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
             >IP-адрес:</label>
-            <ui-input id="ip" v-model:modelValueInteraction="newServerIp" placeholder="" :themeStatus="themeStatus"
+            <ui-input id="ip" placeholder="" :themeStatus="themeStatus"
                       :themeLight="themeLight"
                       :themeDark="themeDark"/>
           </div>
@@ -230,7 +270,7 @@ export default {
             <label class="dialog-label" for="dns"
                    :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
             >Доменное имя:</label>
-            <ui-input id="dns" v-model:modelValueInteraction="newServerDns" placeholder="" :themeStatus="themeStatus"
+            <ui-input id="dns" placeholder="" :themeStatus="themeStatus"
                       :themeLight="themeLight"
                       :themeDark="themeDark"/>
           </div>
@@ -238,7 +278,7 @@ export default {
             <label class="dialog-label" for="group"
                    :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
             >Группа:</label>
-            <ui-select id="group" v-model:selectGroupValue="selectedServerGroup"
+            <ui-select id="group"
                        :themeStatus="themeStatus"
                        :themeLight="themeLight" :themeDark="themeDark">
               <option disabled value="">Выбрать группу</option>
@@ -268,7 +308,7 @@ export default {
           </div>
         </div>
         <div class="dialog-buttons">
-          <main-button @click="isEditServer ? saveEditServer() : addServer()" :themeStatus="themeStatus"
+          <main-button @click="searchElement" :themeStatus="themeStatus"
                        :themeLight="themeLight" :themeDark="themeDark">
             Сохранить
           </main-button>

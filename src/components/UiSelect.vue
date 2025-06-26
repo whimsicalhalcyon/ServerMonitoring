@@ -13,28 +13,13 @@ export default {
       type: Boolean,
       default: true
     },
-    selectGroupValue: {
-      type: String,
-      default: ''
-    },
-    selectGroupPanel:{
-      type: [String, Object],
-      default: ''
-    }
-  },
-  methods: {
-    onChange(event) {
-      const value = event.target.value;
-      this.$emit('update:selectGroupValue', value);
-      this.$emit('update:selectGroupPanel', value);
-    }
   }
 }
 </script>
 
 <template>
-  <select :value="selectGroupValue || selectGroupPanel" @change="onChange"
-          :style="themeStatus ? {background: themeLight.backgroundFilter, color: themeLight.textColor}: {background: themeDark.backgroundFilter, color: themeDark.textColor}">
+  <select
+      :style="themeStatus ? {background: themeLight.backgroundFilter, color: themeLight.textColor}: {background: themeDark.backgroundFilter, color: themeDark.textColor}">
     <slot></slot>
   </select>
 </template>

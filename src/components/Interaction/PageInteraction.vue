@@ -1,9 +1,9 @@
 <script>
-import Table from '@/components/Table.vue';
+import Table from '@/components/Interaction/Table.vue';
 import UiSelect from "@/components/UiSelect.vue";
 import UiInput from "@/components/UiInput.vue";
 import MainButton from "@/components/MainButton.vue";
-import UiCheckboxInteraction from "@/components/UiCheckboxInteraction.vue";
+import UiCheckboxInteraction from "@/components/Interaction/UiCheckboxInteraction.vue";
 import ModalWindowMain from '@/components/Interaction/ModalWindowMain.vue';
 import ModalWindow from "@/components/Interaction/ModalWindow.vue";
 
@@ -53,13 +53,15 @@ export default {
       isSelected: null,
       modalWindow: false,
       modalEditWindow: false,
+      searchValue: '',
+      filteredServersData: [],
+      selectedErrors: [],
+      selectGroupValue: '',
       selectGroupPanel: {
         status: '',
         group: ''
       },
-      searchValue: '',
-      filteredServersData: [],
-      selectedErrors: []
+
     };
   },
   computed: {
@@ -68,6 +70,12 @@ export default {
     }
   },
   methods: {
+    searchElement(){
+      this.selectGroupPanel.status = document.querySelector('#filterSelectState').value;
+      this.selectGroupPanel.group = document.querySelector('#filterSelectGroup').value;
+      this.searchValue = document.querySelector('#search').value;
+      this.filteredServers();
+    },
     async addBlock(name) {
       if (!name.trim()) return alert('Название обязательно');
 
@@ -75,7 +83,7 @@ export default {
       if (exists) return alert('Группа уже существует');
 
       try {
-        const res = await fetch('api/api/blocks', {
+        const res = await fetch('/api/blocks', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({name})
@@ -112,7 +120,7 @@ export default {
         console.log('targetGroup:', targetGroup);
         console.log('exists', exists);
         console.log('payload for addServer:', payload);
-        const res = await fetch('api/api/servers', {
+        const res = await fetch('/api/servers', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(payload)
@@ -137,7 +145,7 @@ export default {
         //   await fetch(`/api/blocks/${s.id}`, {method: 'DELETE'});
         // }
 
-        const res = await fetch(`api/api/blocks/${groupId}`, {method: 'DELETE'});
+        const res = await fetch(`/api/blocks/${groupId}`, {method: 'DELETE'});
         if (!res.ok) throw new Error('Ошибка удаления группы');
         await this.fetchBlocks();
         await this.fetchServers();
@@ -158,7 +166,7 @@ export default {
       try {
         if (confirmed) {
           this.isSelected = null;
-          const res = await fetch(`api/api/servers/${serverId}`, {method: 'DELETE'});
+          const res = await fetch(`/api/servers/${serverId}`, {method: 'DELETE'});
           if (!res.ok) throw new Error('Ошибка удаления');
           await this.fetchServers();
           await this.fetchErrorBlocks();
@@ -204,7 +212,7 @@ export default {
         block: null,
       };
       try {
-        const res = await fetch(`api/api/servers/${id}`, {
+        const res = await fetch(`/api/servers/${id}`, {
           method: 'PUT',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(updated)
@@ -267,11 +275,22 @@ export default {
       this.filteredServersData = filtered;
     },
     resetFilters() {
+      // Очистка модели
       this.selectGroupPanel.status = '';
       this.selectGroupPanel.group = '';
       this.searchValue = '';
-      this.filteredServersData = [...this.errorBlocks];
       this.selectedErrors = [];
+
+      // Принудительно очищаем в DOM
+      const stateSelect = document.querySelector('#filterSelectState');
+      const groupSelect = document.querySelector('#filterSelectGroup');
+      const searchInput = document.querySelector('#search');
+      if (stateSelect) stateSelect.value = '';
+      if (groupSelect) groupSelect.value = '';
+      if (searchInput) searchInput.value = '';
+
+      // Сброс отфильтрованных данных
+      this.filteredServersData = [...this.errorBlocks];
     },
     toggleWindow() {
       if (!this.isDataLoaded) {
@@ -309,7 +328,7 @@ export default {
            :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
         <div class="top">
           <div class="top-left">
-            <ui-input class="input-search" v-model:model-value-interaction="searchValue" placeholder="Поиск по DNS и IP"
+            <ui-input id="search" class="input-search" placeholder="Поиск по DNS и IP"
                       :themeStatus="themeStatus"
                       :themeLight="themeLight" :themeDark="themeDark"></ui-input>
             <main-button @click="toggleWindow" class="btn" :themeStatus="themeStatus" :themeLight="themeLight"
@@ -341,14 +360,14 @@ export default {
 
         <!-- Верхняя часть: select + кнопки -->
         <div class="bottom-top">
-          <ui-select class="select" v-model:selectGroupPanel="selectGroupPanel.status" :themeStatus="themeStatus"
+          <ui-select id="filterSelectState" class="select" :themeStatus="themeStatus"
                      :themeLight="themeLight" :themeDark="themeDark">
             <option disabled value="">Выбрать состояние</option>
             <option value="Все">Все</option>
             <option>Активировано</option>
             <option>Деактивировано</option>
           </ui-select>
-          <ui-select class="select" v-model:selectGroupPanel="selectGroupPanel.group" :themeStatus="themeStatus"
+          <ui-select id="filterSelectGroup" class="select" :themeStatus="themeStatus"
                      :themeLight="themeLight" :themeDark="themeDark">
             <option disabled value="">Выбрать группу</option>
             <option value="Все">Все</option>
@@ -356,7 +375,7 @@ export default {
               {{ group.name }}
             </option>
           </ui-select>
-          <main-button class="btn" @click="filteredServers" :themeStatus="themeStatus" :themeLight="themeLight"
+          <main-button class="btn" @click="searchElement" :themeStatus="themeStatus" :themeLight="themeLight"
                        :themeDark="themeDark">Найти
           </main-button>
           <main-button class="btn drop" @click="resetFilters" :themeStatus="themeStatus" :themeLight="themeLight"

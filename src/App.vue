@@ -57,7 +57,7 @@ export default {
   methods: {
     async fetchServers() {
       try {
-        const res = await fetch('api/api/servers');
+        const res = await fetch('/api/servers');
         if (!res.ok) throw new Error('Ошибка загрузки серверов');
         this.servers = await res.json();
       } catch (error) {
@@ -67,7 +67,7 @@ export default {
     },
     async fetchBlocks() {
       try {
-        const res = await fetch('api/api/blocks');
+        const res = await fetch('/api/blocks');
         if (!res.ok) throw new Error('Ошибка загрузки блоков');
         this.groups = await res.json();
       } catch (error) {
@@ -77,7 +77,7 @@ export default {
     },
     async fetchErrorBlocks() {
       try {
-        const res = await fetch('api/api/servers/error_block');
+        const res = await fetch('/api/error_block');
         if (!res.ok) throw new Error('Ошибка загрузки error_block');
         this.errorBlocks = await res.json();
       } catch (error) {
@@ -87,7 +87,7 @@ export default {
     },
     async fetchServerParameter() {
       try {
-        const res = await fetch('api/api/blocks/server_parameter');
+        const res = await fetch('/api/server_parameter');
         if (!res.ok) throw new Error('Ошибка загрузки server_parameter');
         this.serverParameterData = await res.json();
       } catch (error) {
