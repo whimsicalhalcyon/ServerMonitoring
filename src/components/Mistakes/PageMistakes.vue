@@ -58,7 +58,9 @@ export default {
       filters : {
         group: '',
         error: '',
-      }
+      },
+      filteredServersData: [],
+      selectedErrors: []
     }
   },
   computed: {
@@ -73,8 +75,6 @@ export default {
     },
     filteredProblems() {
       let filtered = [...this.problems];
-
-      // Фильтрация по группе серверов
       if (this.filters.group) {
         filtered = filtered.filter(problem => {
           const server = this.findServerById(problem.idServer);
@@ -82,14 +82,12 @@ export default {
         });
       }
 
-      // Фильтрация по статусу
       if (this.filters.status && this.filters.status !== "Любое") {
         filtered = filtered.filter(problem => {
           return this.filters.status === "Ошибка" ? !problem.statusProblem : problem.statusProblem;
         });
       }
 
-      // Поиск по имени сервера
       if (this.currentSearch) {
         const searchTerm = this.currentSearch.toLowerCase();
         filtered = filtered.filter(problem => {
@@ -119,7 +117,6 @@ export default {
             serverCopy.errors = serverCopy.errors.filter(error => error.state);
           }
         }
-
         return serverCopy;
       }).filter(server => {
         return !this.filters.error ||
@@ -139,8 +136,21 @@ export default {
       });
     },
     searchServers() {
-      return this.sortedGroups.filter(item => item.hostName && item.hostName.toLowerCase().includes(this.currentSearch.toLowerCase()));
+      let filtered = this.sortedGroups.filter(item =>
+          item.hostName && item.hostName.toLowerCase().includes(this.currentSearch.toLowerCase())
+      );
+
+      if (this.checkedGroups.length > 0) {
+        filtered = filtered.filter(server => {
+          return server.errors && server.errors.some(error =>
+              this.checkedGroups.includes(error.importance)
+          );
+        });
+      }
+
+      return filtered;
     }
+
   },
   methods: {
     findServerById(serverId) {
@@ -220,30 +230,28 @@ export default {
         this.sortOptions.direction = 'asc';
       }
     },
-    applyFilters() {
-      this.appliedSearchTerm = this.currentSearch;
+    toggleCheckBox(type) {
+      const index = this.checkedGroups.indexOf(type);
+      if (index === -1) {
+        this.checkedGroups.push(type);
+      } else {
+        this.checkedGroups.splice(index, 1);
+      }
     },
 
     clearFilters() {
-      this.selectGroupPanel = {
-        status: '',
-        group: '',
-        startDate: '',
-        endDate: ''
-      };
-
+      this.filters.group = '';
+      this.filters.error = '';
       this.currentSearch = '';
-      this.currentIpSearch = ''
-      this.sortOptions = {
-        field: null,
-        direction: 'asc'
-      };
-
-      this.$refs.tableMistakes?.resetSort?.();
+      this.filteredServersData = [...this.problems];
+      this.selectedErrors = [];
     },
   },
   mounted() {
     console.log('page problems:', this.problems);
+    this.$watch('checkedGroups', (newVal) => {
+      console.log('checkedGroups changed:', newVal);
+    }, { deep: true });
   }
 }
 </script>
@@ -346,11 +354,15 @@ export default {
           </div>
 
           <div class="checkbox-group">
-            <ui-checkbox-interaction
-                :themeStatus="themeStatus"
-                :themeLight="themeLight"
-                :themeDark="themeDark">
-            </ui-checkbox-interaction>
+            <div v-for="option in importanceOptions" :key="option.value">
+              <input
+                  type="checkbox"
+                  :id="'imp-' + option.value"
+                  :value="option.value"
+                  v-model="checkedGroups"
+              >
+              <label :for="'imp-' + option.value">{{ option.label }}</label>
+            </div>
           </div>
         </div>
       </div>
