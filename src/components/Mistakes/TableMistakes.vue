@@ -273,7 +273,7 @@ export default {
         </th>
       </tr>
       </thead>
-      <tbody v-for="server in problems">
+      <tbody>
       <tr v-for="item in sortedProblems" :key="item.id">
         <td :style="cellStyle">
           {{item.createdAt

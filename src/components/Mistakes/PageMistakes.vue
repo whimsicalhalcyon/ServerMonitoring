@@ -109,23 +109,22 @@ export default {
         );
       }
 
-      if(this.filters.error ==='Ошибка') {
-        filtered = filtered.filter(server => {
-          server.errors.some(error => !error.state).sort((a, b) => {
-            const aErrors = a.errors.filter(e => !e.state).length;
-            const bErrors = b.errors.filter(e => !e.state).length;
-            return bErrors - aErrors;
-          })
-        })
-      } else if (this.filters.error === 'Решено') {
-        filtered = filtered.filter(server => {
-          server.errors.some(error => !error.state).sort((a, b) => {
-            const aResolved = a.errors.filter(e => e.state).length;
-            const bResolved = b.errors.filter(e => e.state).length;
-            return bResolved - aResolved;
-          })
-        })
-      }
+      filtered = filtered.map(server => {
+        const serverCopy = {...server};
+
+        if (this.filters.error && serverCopy.errors) {
+          if (this.filters.error === 'Ошибка') {
+            serverCopy.errors = serverCopy.errors.filter(error => !error.state);
+          } else if (this.filters.error === 'Решено') {
+            serverCopy.errors = serverCopy.errors.filter(error => error.state);
+          }
+        }
+
+        return serverCopy;
+      }).filter(server => {
+        return !this.filters.error ||
+            (server.errors && server.errors.length > 0);
+      });
 
       return filtered.sort((a, b) => {
         if (this.filters.group) {
@@ -138,8 +137,9 @@ export default {
         if (groupCompare !== 0) return groupCompare;
         return (a.hostName || '').localeCompare(b.hostName || '');
       });
-
-
+    },
+    searchServers() {
+      return this.sortedGroups.filter(item => item.hostName && item.hostName.toLowerCase().includes(this.currentSearch.toLowerCase()));
     }
   },
   methods: {
@@ -359,7 +359,7 @@ export default {
     <div class="table-mistakes">
       <table-mistakes
           ref="tableMistakes"
-          :problems="sortedGroups"
+          :problems="searchServers"
           :themeStatus="themeStatus"
           :themeLight="themeLight"
           :themeDark="themeDark"
