@@ -136,19 +136,23 @@ export default {
       });
     },
     searchServers() {
-      console.log(this.sortedGroups)
       let filtered = this.sortedGroups.filter(item =>
           item.hostName && item.hostName.toLowerCase().includes(this.currentSearch.toLowerCase())
       );
 
       if (this.checkedGroups.length > 0) {
         filtered = filtered.filter(server => {
-          return server.errors && server.errors.some(error => {
-            const importance = Number(error.importance);
-            return this.checkedGroups.includes(importance);
+          if (!server.errors) return false;
+
+          return server.errors.some(error => {
+            const errorImportance = Number(error.importance);
+            const isMatch = this.checkedGroups.includes(errorImportance);
+            return isMatch;
           });
         });
       }
+
+      console.log('Filtered servers:', filtered);
       return filtered;
     }
 
@@ -330,7 +334,6 @@ export default {
           </ui-input>
 
           <main-button
-              @click="applyFilters"
               :themeStatus="themeStatus"
               :themeLight="themeLight"
               :themeDark="themeDark">

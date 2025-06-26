@@ -32,15 +32,16 @@ export default {
   },
   methods: {
     toggleError(value) {
-      const selected = [...this.modelValue];
-      console.log(selected);
-      const index = selected.indexOf(value);
-      if (index > -1) {
-        selected.splice(index, 1);
+      const newValue = [...this.modelValue];
+      const index = newValue.indexOf(value);
+
+      if (index === -1) {
+        newValue.push(value);
       } else {
-        selected.push(value);
+        newValue.splice(index, 1);
       }
-      this.$emit('update:modelValue', selected);
+
+      this.$emit('update:modelValue', newValue);
     }
   }
 }
