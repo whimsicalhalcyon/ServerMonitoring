@@ -1,5 +1,4 @@
-<script>
-
+<<script>
 import UiInput from "@/components/UiInput.vue";
 import UiSelect from "@/components/UiSelect.vue";
 import MainButton from "@/components/MainButton.vue";
@@ -15,7 +14,7 @@ import {
   CategoryScale,
   LinearScale,
   PointElement,
-  Filler,
+  Filler, LogarithmicScale,
 } from "chart.js";
 
 ChartJS.register(
@@ -28,6 +27,31 @@ ChartJS.register(
     PointElement,
     Filler
 );
+
+
+const verticalLinePlugin = {
+  id: 'verticalLine',
+  afterDraw: function(chart) {
+    if (chart.tooltip?._active?.length) {
+      const ctx = chart.ctx;
+      const x = chart.tooltip._active[0].element.x;
+      const topY = chart.scales.y.top;
+      const bottomY = chart.scales.y.bottom;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x, topY);
+      ctx.lineTo(x, bottomY);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = chart.options.plugins.verticalLine.color;
+      ctx.setLineDash([5, 5]);
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+};
+
+ChartJS.register(verticalLinePlugin);
 export default {
   components: {
     UiSelect, UiInput, Graphic, MainButton, ModalWindow, Line
@@ -62,8 +86,8 @@ export default {
     return {
       openPanel: true,
       modalWindow: false,
-      valueDateStart: '',
-      valueDateEnd: '',
+      dateStart: '',
+      dateEnd: '',
       selectGroup: '',
       sortGroup: '',
       selectInterval: '',
@@ -79,7 +103,8 @@ export default {
       let date = new Date();
       const link = document.createElement('a');
       link.href = document.getElementById(id).toDataURL('image/png');
-      link.download = `${name}(${date.getHours() + ":" + date.getMinutes()}).png`;
+      link.download = `${name}(${(String(date.getHours()).length > 1 ? date.getHours(): '0' + date.getHours())
+      + ':' + (String(date.getMinutes()).length > 1 ? date.getMinutes(): '0' + date.getMinutes())}).png`;
       link.click();
     },
     togglePanel() {
@@ -89,16 +114,21 @@ export default {
       this.modalWindow = !this.modalWindow
     },
     searchElement() {
-      // console.log(this.selectGroup)
-      // console.log(this.sortGroup)
-      // console.log(this.inputSearch)
-      // console.log(this.dateH)
-      // console.log(this.indexTwo)
       this.selectGroup = document.querySelector('#selectGroup').value
       this.sortGroup = document.querySelector('#sortGroup').value
       this.selectInterval = document.querySelector('#selectInterval').value
       this.inputSearch = document.querySelector('#inputSearch').value
+      this.dateStart = document.querySelector('#dateStart').value
+      this.dateEnd = document.querySelector('#dateEnd').value
 
+    },
+    deleteFilter() {
+      this.selectGroup = 'Выбрать группу серверов'
+      this.sortGroup = 'Без фильтрации'
+      this.selectInterval = 'Без фильтрации'
+      this.inputSearch = ''
+      this.dateStart = ''
+      this.dateEnd = ''
     },
     chartData(server) {
       let cpuHelp = []
@@ -109,8 +139,6 @@ export default {
       let ram = []
       let memory = []
       let date = []
-      let time = []
-      let dateTime = []
 
       for (let item of server.metrics) {
         cpuHelp.push(item.cpu)
@@ -136,71 +164,42 @@ export default {
           cpu.push(cpuHelp[i])
           ram.push(ramHelp[i])
           memory.push(memoryHelp[i])
+
         }
       }
-      let c = []
-      let r = []
-      let m = []
-      let l = []
 
-      let currentTime = new Date()
-      if (this.selectInterval === 'Последние 5 минут') {
-        for (let i = 0; i < dateHelp.length; i++) {
-          let timer = new Date(dateHelp[i])
-          if ((currentTime.getHours() === timer.getHours() && (currentTime.getMinutes() >= timer.getMinutes() && currentTime.getMinutes() <= timer.getMinutes()+5))) {
-            time.push(date[i])
-            c.push(cpu[i])
-            r.push(ram[i])
-            m.push(memory[i])
-          }
-        }
-      }
-      else {
-        time = date
-        c = cpu
-        r = ram
-        m = memory
-      }
-
-
-      // let b = []
-      // if (this.selectInterval === 'Последние 5 минут') {
-      //   b = date.slice(date[date.length - 6], date[date.length - (date.length - 6)]);
-      // } else {
-      //   b = date
-      // }
       return {
-        labels: time,
+        labels: this.searchDate(this.filterDate(date), dateHelp),
         datasets: [
           {
             label: "загруженность CPU %",
-            data: c,
+            data: this.updateCpu(this.filterCpu(cpu), date),
             borderColor: "#F44336",
             backgroundColor: "rgba(244, 67, 54, 0.1)",
-            pointBackgroundColor: "rgba(0,0,0,0)",
-            pointBorderColor: "rgba(0,0,0,0)",
+            pointBackgroundColor: "#F44336",
+            pointBorderColor: "#F44336",
             pointHoverBorderColor: '#F44336',
             pointHoverBackgroundColor: '#F44336',
             fill: true,
           },
           {
             label: "используемая память %",
-            data: r,
+            data: this.updateRam(this.filterRam(ram), date),
             borderColor: "#FFCC00",
             backgroundColor: "rgba(255, 204, 0, 0.1)",
-            pointBackgroundColor: "rgba(0,0,0,0)",
-            pointBorderColor: "rgba(0,0,0,0)",
+            pointBackgroundColor: "#FFCC00",
+            pointBorderColor: "#FFCC00",
             pointHoverBorderColor: '#FFCC00',
             pointHoverBackgroundColor: '#FFCC00',
             fill: true,
           },
           {
             label: "занятое место на диске %",
-            data: m,
+            data: this.updateMemory(this.filterMemory(memory), date),
             borderColor: "#4CAF50",
             backgroundColor: "rgba(76, 175, 80, 0.1)",
-            pointBackgroundColor: "rgba(0,0,0,0)",
-            pointBorderColor: "rgba(0,0,0,0)",
+            pointBackgroundColor: "#4CAF50",
+            pointBorderColor: "#4CAF50",
             pointHoverBorderColor: '#4CAF50',
             pointHoverBackgroundColor: '#4CAF50',
             fill: true,
@@ -208,13 +207,332 @@ export default {
         ],
       };
     },
-    // re(date){
-    //   if (this.selectInterval === 'Последние 5 минут') {
-    //     return date.slice(date.length - 6, date.length - 1)
-    //   } else {
-    //     return date
-    //   }
-    // },
+    filterDate(date) {
+      if (this.selectInterval === 'Последние 5 минут') {
+        if (date.length >= 5) {
+          return date.slice(date.length - 5, date.length);
+        }
+        else {
+          return date.slice(date.length - date.length, date.length);
+        }
+      }
+      else if (this.selectInterval === 'Последние 15 минут') {
+        if (date.length >= 15) {
+          return date.slice(date.length - 15, date.length);
+        }
+        else {
+          return date.slice(date.length - date.length, date.length);
+        }
+      }
+      else if (this.selectInterval === 'Последние 30 минут') {
+        if (date.length >= 30) {
+          return date.slice(date.length - 30, date.length);
+        }
+        else {
+          return date.slice(date.length - date.length, date.length);
+        }
+      }
+      else if (this.selectInterval === 'Последний час') {
+        if (date.length >= 60) {
+          return date.slice(date.length - 60, date.length);
+        }
+        else {
+          return date.slice(date.length - date.length, date.length);
+        }
+      }
+      else {
+        return date
+      }
+    },
+    filterCpu(cpu) {
+      if (this.selectInterval === 'Последние 5 минут') {
+        if (cpu.length >= 5) {
+          return cpu.slice(cpu.length - 5, cpu.length);
+        }
+        else {
+          return cpu.slice(cpu.length - cpu.length, cpu.length);
+        }
+      }
+      else if (this.selectInterval === 'Последние 15 минут') {
+        if (cpu.length >= 15) {
+          return cpu.slice(cpu.length - 15, cpu.length);
+        }
+        else {
+          return cpu.slice(cpu.length - cpu.length, cpu.length);
+        }
+      }
+      else if (this.selectInterval === 'Последние 30 минут') {
+        if (cpu.length >= 30) {
+          return cpu.slice(cpu.length - 30, cpu.length);
+        }
+        else {
+          return cpu.slice(cpu.length - cpu.length, cpu.length);
+        }
+      }
+      else if (this.selectInterval === 'Последний час') {
+        if (cpu.length >= 60) {
+          return cpu.slice(cpu.length - 60, cpu.length);
+        }
+        else {
+          return cpu.slice(cpu.length - cpu.length, cpu.length);
+        }
+      }
+      else {
+        return cpu
+      }
+    },
+    filterRam(ram) {
+      if (this.selectInterval === 'Последние 5 минут') {
+        if (ram.length >= 5) {
+          return ram.slice(ram.length - 5, ram.length);
+        }
+        else {
+          return ram.slice(ram.length - ram.length, ram.length);
+        }
+      }
+      else if (this.selectInterval === 'Последние 15 минут') {
+        if (ram.length >= 15) {
+          return ram.slice(ram.length - 15, ram.length);
+        }
+        else {
+          return ram.slice(ram.length - ram.length, ram.length);
+        }
+      }
+      else if (this.selectInterval === 'Последние 30 минут') {
+        if (ram.length >= 30) {
+          return ram.slice(ram.length - 30, ram.length);
+        }
+        else {
+          return ram.slice(ram.length - ram.length, ram.length);
+        }
+      }
+      else if (this.selectInterval === 'Последний час') {
+        if (ram.length >= 60) {
+          return ram.slice(ram.length - 60, ram.length);
+        }
+        else {
+          return ram.slice(ram.length - ram.length, ram.length);
+        }
+      }
+      else {
+        return ram
+      }
+    },
+    filterMemory(memory) {
+      if (this.selectInterval === 'Последние 5 минут') {
+        if (memory.length >= 5) {
+          return memory.slice(memory.length - 5, memory.length);
+        }
+        else {
+          return memory.slice(memory.length - memory.length, memory.length);
+        }
+      }
+      else if (this.selectInterval === 'Последние 15 минут') {
+        if (memory.length >= 15) {
+          return memory.slice(memory.length - 15, memory.length);
+        }
+        else {
+          return memory.slice(memory.length - memory.length, memory.length);
+        }
+      }
+      else if (this.selectInterval === 'Последние 30 минут') {
+        if (memory.length >= 30) {
+          return memory.slice(memory.length - 30, memory.length);
+        }
+        else {
+          return memory.slice(memory.length - memory.length, memory.length);
+        }
+      }
+      else if (this.selectInterval === 'Последний час') {
+        if (memory.length >= 60) {
+          return memory.slice(memory.length - 60, memory.length);
+        }
+        else {
+          return memory.slice(memory.length - memory.length, memory.length);
+        }
+      }
+      else {
+        return memory
+      }
+    },
+    searchDate(date) {
+      if (this.dateStart !== '' && this.dateEnd === '') {
+        let time = new Date(this.dateStart);
+        time = (String(time.getDate()).length > 1 ? time.getDate(): '0' + time.getDate())
+        + '.'+ (String(time.getMonth()).length > 1 ? (time.getMonth()+1) : '0' + (time.getMonth()+1))
+        + '.'+ (String(time.getFullYear()).length > 1 ? time.getFullYear(): '0' + time.getFullYear())
+        + ' '+ (String(time.getHours()).length > 1 ? time.getHours(): '0' + time.getHours())
+        + ':' + (String(time.getMinutes()).length > 1 ? time.getMinutes(): '0' + time.getMinutes())
+        let indexEnd = date.length;
+        let indexStart = date.indexOf(time);
+        return date.slice(indexStart, indexEnd)
+      }
+      else if (this.dateStart === '' && this.dateEnd !== '') {
+        let time = new Date(this.dateEnd);
+        time = (String(time.getDate()).length > 1 ? time.getDate(): '0' + time.getDate())
+            + '.'+ (String(time.getMonth()).length > 1 ? (time.getMonth()+1) : '0' + (time.getMonth()+1))
+            + '.'+ (String(time.getFullYear()).length > 1 ? time.getFullYear(): '0' + time.getFullYear())
+            + ' '+ (String(time.getHours()).length > 1 ? time.getHours(): '0' + time.getHours())
+            + ':' + (String(time.getMinutes()).length > 1 ? time.getMinutes(): '0' + time.getMinutes())
+        let indexEnd = date.indexOf(time);
+        let indexStart = date[0];
+        return date.slice(indexStart, indexEnd)
+      }
+      else if (this.dateEnd !== '' && this.dateStart !== '') {
+        let timeStart = new Date(this.dateStart);
+        let timeEnd = new Date(this.dateEnd);
+        timeStart = (String(timeStart.getDate()).length > 1 ? timeStart.getDate(): '0' + timeStart.getDate())
+            + '.'+ (String(timeStart.getMonth()).length > 1 ? (timeStart.getMonth()+1) : '0' + (timeStart.getMonth()+1))
+            + '.'+ (String(timeStart.getFullYear()).length > 1 ? timeStart.getFullYear(): '0' + timeStart.getFullYear())
+            + ' '+ (String(timeStart.getHours()).length > 1 ? timeStart.getHours(): '0' + timeStart.getHours())
+            + ':' + (String(timeStart.getMinutes()).length > 1 ? timeStart.getMinutes(): '0' + timeStart.getMinutes())
+        timeEnd = (String(timeEnd.getDate()).length > 1 ? timeEnd.getDate(): '0' + timeEnd.getDate())
+            + '.'+ (String(timeEnd.getMonth()).length > 1 ? (timeEnd.getMonth()+1) : '0' + (timeEnd.getMonth()+1))
+            + '.'+ (String(timeEnd.getFullYear()).length > 1 ? timeEnd.getFullYear(): '0' + timeEnd.getFullYear())
+            + ' '+ (String(timeEnd.getHours()).length > 1 ? timeEnd.getHours(): '0' + timeEnd.getHours())
+            + ':' + (String(timeEnd.getMinutes()).length > 1 ? timeEnd.getMinutes(): '0' + timeEnd.getMinutes())
+        let indexStart = date.indexOf(timeStart);
+        let indexEnd = date.indexOf(timeEnd);
+        return date.slice(indexStart, indexEnd+1)
+      }
+      else {
+        return date;
+      }
+    },
+    updateCpu(cpu, date) {
+      if (this.dateStart !== '' && this.dateEnd === '') {
+        let time = new Date(this.dateStart);
+        time = (String(time.getDate()).length > 1 ? time.getDate(): '0' + time.getDate())
+            + '.'+ (String(time.getMonth()).length > 1 ? (time.getMonth()+1) : '0' + (time.getMonth()+1))
+            + '.'+ (String(time.getFullYear()).length > 1 ? time.getFullYear(): '0' + time.getFullYear())
+            + ' '+ (String(time.getHours()).length > 1 ? time.getHours(): '0' + time.getHours())
+            + ':' + (String(time.getMinutes()).length > 1 ? time.getMinutes(): '0' + time.getMinutes())
+        let indexEnd = date.length;
+        let indexStart = date.indexOf(time);
+        return cpu.slice(indexStart, indexEnd)
+      }
+      else if (this.dateStart === '' && this.dateEnd !== '') {
+        let time = new Date(this.dateEnd);
+        time = (String(time.getDate()).length > 1 ? time.getDate(): '0' + time.getDate())
+            + '.'+ (String(time.getMonth()).length > 1 ? (time.getMonth()+1) : '0' + (time.getMonth()+1))
+            + '.'+ (String(time.getFullYear()).length > 1 ? time.getFullYear(): '0' + time.getFullYear())
+            + ' '+ (String(time.getHours()).length > 1 ? time.getHours(): '0' + time.getHours())
+            + ':' + (String(time.getMinutes()).length > 1 ? time.getMinutes(): '0' + time.getMinutes())
+        let indexEnd = date.indexOf(time);
+        let indexStart = date[0];
+        return cpu.slice(indexStart, indexEnd)
+      }
+      else if (this.dateEnd !== '' && this.dateStart !== '') {
+        let timeStart = new Date(this.dateStart);
+        let timeEnd = new Date(this.dateEnd);
+        timeStart = (String(timeStart.getDate()).length > 1 ? timeStart.getDate(): '0' + timeStart.getDate())
+            + '.'+ (String(timeStart.getMonth()).length > 1 ? (timeStart.getMonth()+1) : '0' + (timeStart.getMonth()+1))
+            + '.'+ (String(timeStart.getFullYear()).length > 1 ? timeStart.getFullYear(): '0' + timeStart.getFullYear())
+            + ' '+ (String(timeStart.getHours()).length > 1 ? timeStart.getHours(): '0' + timeStart.getHours())
+            + ':' + (String(timeStart.getMinutes()).length > 1 ? timeStart.getMinutes(): '0' + timeStart.getMinutes())
+        timeEnd = (String(timeEnd.getDate()).length > 1 ? timeEnd.getDate(): '0' + timeEnd.getDate())
+            + '.'+ (String(timeEnd.getMonth()).length > 1 ? (timeEnd.getMonth()+1) : '0' + (timeEnd.getMonth()+1))
+            + '.'+ (String(timeEnd.getFullYear()).length > 1 ? timeEnd.getFullYear(): '0' + timeEnd.getFullYear())
+            + ' '+ (String(timeEnd.getHours()).length > 1 ? timeEnd.getHours(): '0' + timeEnd.getHours())
+            + ':' + (String(timeEnd.getMinutes()).length > 1 ? timeEnd.getMinutes(): '0' + timeEnd.getMinutes())
+        let indexStart = date.indexOf(timeStart);
+        let indexEnd = date.indexOf(timeEnd);
+        return cpu.slice(indexStart, indexEnd+1)
+      }
+      else {
+        return cpu;
+      }
+    },
+    updateRam(ram, date) {
+      if (this.dateStart !== '' && this.dateEnd === '') {
+        let time = new Date(this.dateStart);
+        time = (String(time.getDate()).length > 1 ? time.getDate(): '0' + time.getDate())
+            + '.'+ (String(time.getMonth()).length > 1 ? (time.getMonth()+1) : '0' + (time.getMonth()+1))
+            + '.'+ (String(time.getFullYear()).length > 1 ? time.getFullYear(): '0' + time.getFullYear())
+            + ' '+ (String(time.getHours()).length > 1 ? time.getHours(): '0' + time.getHours())
+            + ':' + (String(time.getMinutes()).length > 1 ? time.getMinutes(): '0' + time.getMinutes())
+        let indexEnd = date.length;
+        let indexStart = date.indexOf(time);
+        return ram.slice(indexStart, indexEnd)
+      }
+      else if (this.dateStart === '' && this.dateEnd !== '') {
+        let time = new Date(this.dateEnd);
+        time = (String(time.getDate()).length > 1 ? time.getDate(): '0' + time.getDate())
+            + '.'+ (String(time.getMonth()).length > 1 ? (time.getMonth()+1) : '0' + (time.getMonth()+1))
+            + '.'+ (String(time.getFullYear()).length > 1 ? time.getFullYear(): '0' + time.getFullYear())
+            + ' '+ (String(time.getHours()).length > 1 ? time.getHours(): '0' + time.getHours())
+            + ':' + (String(time.getMinutes()).length > 1 ? time.getMinutes(): '0' + time.getMinutes())
+        let indexEnd = date.indexOf(time);
+        let indexStart = date[0];
+        return ram.slice(indexStart, indexEnd)
+      }
+      else if (this.dateEnd !== '' && this.dateStart !== '') {
+        let timeStart = new Date(this.dateStart);
+        let timeEnd = new Date(this.dateEnd);
+        timeStart = (String(timeStart.getDate()).length > 1 ? timeStart.getDate(): '0' + timeStart.getDate())
+            + '.'+ (String(timeStart.getMonth()).length > 1 ? (timeStart.getMonth()+1) : '0' + (timeStart.getMonth()+1))
+            + '.'+ (String(timeStart.getFullYear()).length > 1 ? timeStart.getFullYear(): '0' + timeStart.getFullYear())
+            + ' '+ (String(timeStart.getHours()).length > 1 ? timeStart.getHours(): '0' + timeStart.getHours())
+            + ':' + (String(timeStart.getMinutes()).length > 1 ? timeStart.getMinutes(): '0' + timeStart.getMinutes())
+        timeEnd = (String(timeEnd.getDate()).length > 1 ? timeEnd.getDate(): '0' + timeEnd.getDate())
+            + '.'+ (String(timeEnd.getMonth()).length > 1 ? (timeEnd.getMonth()+1) : '0' + (timeEnd.getMonth()+1))
+            + '.'+ (String(timeEnd.getFullYear()).length > 1 ? timeEnd.getFullYear(): '0' + timeEnd.getFullYear())
+            + ' '+ (String(timeEnd.getHours()).length > 1 ? timeEnd.getHours(): '0' + timeEnd.getHours())
+            + ':' + (String(timeEnd.getMinutes()).length > 1 ? timeEnd.getMinutes(): '0' + timeEnd.getMinutes())
+        let indexStart = date.indexOf(timeStart);
+        let indexEnd = date.indexOf(timeEnd);
+        return ram.slice(indexStart, indexEnd+1)
+      }
+      else {
+        return ram;
+      }
+    },
+    updateMemory(memory, date) {
+      if (this.dateStart !== '' && this.dateEnd === '') {
+        let time = new Date(this.dateStart);
+        time = (String(time.getDate()).length > 1 ? time.getDate(): '0' + time.getDate())
+            + '.'+ (String(time.getMonth()).length > 1 ? (time.getMonth()+1) : '0' + (time.getMonth()+1))
+            + '.'+ (String(time.getFullYear()).length > 1 ? time.getFullYear(): '0' + time.getFullYear())
+            + ' '+ (String(time.getHours()).length > 1 ? time.getHours(): '0' + time.getHours())
+            + ':' + (String(time.getMinutes()).length > 1 ? time.getMinutes(): '0' + time.getMinutes())
+        let indexEnd = date.length;
+        let indexStart = date.indexOf(time);
+        return memory.slice(indexStart, indexEnd)
+      }
+      else if (this.dateStart === '' && this.dateEnd !== '') {
+        let time = new Date(this.dateEnd);
+        time = (String(time.getDate()).length > 1 ? time.getDate(): '0' + time.getDate())
+            + '.'+ (String(time.getMonth()).length > 1 ? (time.getMonth()+1) : '0' + (time.getMonth()+1))
+            + '.'+ (String(time.getFullYear()).length > 1 ? time.getFullYear(): '0' + time.getFullYear())
+            + ' '+ (String(time.getHours()).length > 1 ? time.getHours(): '0' + time.getHours())
+            + ':' + (String(time.getMinutes()).length > 1 ? time.getMinutes(): '0' + time.getMinutes())
+        let indexEnd = date.indexOf(time);
+        let indexStart = date[0];
+        return memory.slice(indexStart, indexEnd)
+      }
+      else if (this.dateEnd !== '' && this.dateStart !== '') {
+        let timeStart = new Date(this.dateStart);
+        let timeEnd = new Date(this.dateEnd);
+        timeStart = (String(timeStart.getDate()).length > 1 ? timeStart.getDate(): '0' + timeStart.getDate())
+            + '.'+ (String(timeStart.getMonth()).length > 1 ? (timeStart.getMonth()+1) : '0' + (timeStart.getMonth()+1))
+            + '.'+ (String(timeStart.getFullYear()).length > 1 ? timeStart.getFullYear(): '0' + timeStart.getFullYear())
+            + ' '+ (String(timeStart.getHours()).length > 1 ? timeStart.getHours(): '0' + timeStart.getHours())
+            + ':' + (String(timeStart.getMinutes()).length > 1 ? timeStart.getMinutes(): '0' + timeStart.getMinutes())
+        timeEnd = (String(timeEnd.getDate()).length > 1 ? timeEnd.getDate(): '0' + timeEnd.getDate())
+            + '.'+ (String(timeEnd.getMonth()).length > 1 ? (timeEnd.getMonth()+1) : '0' + (timeEnd.getMonth()+1))
+            + '.'+ (String(timeEnd.getFullYear()).length > 1 ? timeEnd.getFullYear(): '0' + timeEnd.getFullYear())
+            + ' '+ (String(timeEnd.getHours()).length > 1 ? timeEnd.getHours(): '0' + timeEnd.getHours())
+            + ':' + (String(timeEnd.getMinutes()).length > 1 ? timeEnd.getMinutes(): '0' + timeEnd.getMinutes())
+        let indexStart = date.indexOf(timeStart);
+        let indexEnd = date.indexOf(timeEnd);
+        return memory.slice(indexStart, indexEnd+1)
+      }
+      else {
+        return memory;
+      }
+    },
+
+
     searchGroup(array) {
       if (this.inputSearch !== '') {
         return array.filter(elem => elem.hostName.toLowerCase().includes(this.inputSearch.toLowerCase()))
@@ -224,14 +542,14 @@ export default {
       }
     },
     filterGroup(array) {
+      const validGroups = this.serversGroups.map(group => group.name);
       for (let group of this.serversGroups) {
-        if (this.selectGroup === 'app' || this.selectGroup === 'sc' || this.selectGroup === 'sstu' || this.selectGroup === 'app' || this.selectGroup === 'web' || this.selectGroup === 'medo') {
+        if (validGroups.includes(this.selectGroup)) {
           if (group.name === this.selectGroup) {
-            return array.filter(item => item.blockId === group.id)
+            return array.filter(item => item.blockId === group.id);
           }
-        }
-        else {
-          return array
+        } else {
+          return array;
         }
       }
     },
@@ -280,27 +598,29 @@ export default {
       }
     },
     chartOption() {
-      return  {
+      return {
         responsive: true,
-
+        maintainAspectRatio: true,
+        interaction: {
+          mode: 'index',
+          intersect: false,
+          axis: 'x'
+        },
         scales: {
           x: {
             ticks: {
               color: this.colorGraphic,
               callback: function(value, index, ticks) {
-                let last = ticks.length
-                let two = Math.floor(last / 2)
-                let twoN = Math.floor(last / 3) + 1
+                let last = ticks.length;
                 if (last % 2 === 0) {
-                  if (index === 0  || index === last - 1){
+                  if (index === 0 || index === last - 1) {
                     return this.chart.data.labels[index];
                   }
                 } else {
-                  if (index === 0 || index === last - 1){
+                  if (index === 0 || index === last - 1) {
                     return this.chart.data.labels[index];
                   }
                 }
-
                 return null;
               },
               autoSkip: false,
@@ -314,7 +634,7 @@ export default {
             ticks: {
               color: this.colorGraphic,
               callback: function(value) {
-                return value + ' %';
+                return value + '%';
               }
             },
             beginAtZero: true,
@@ -327,6 +647,35 @@ export default {
           },
         },
         plugins: {
+          verticalLine: {
+            enabled: true,
+            color: this.themeStatus ? this.themeLight.grid : this.themeDark.grid
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              title: (items) => items[0].label,
+              label: (context) => {
+                return `${context.dataset.label}: ${context.raw}%`;
+              }
+            },
+            displayColors: true,
+            usePointStyle: true,
+            boxPadding: 6,
+            bodySpacing: 4,
+            backgroundColor: this.themeStatus ? this.themeLight.tooltipBg : this.themeDark.tooltipBg,
+            titleColor: this.themeStatus ? this.themeLight.textColor : this.themeDark.textColor,
+            bodyColor: this.themeStatus ? this.themeLight.textColor : this.themeDark.textColor,
+            borderColor: this.themeStatus ? this.themeLight.borderColor : this.themeDark.borderColor,
+            borderWidth: 1,
+            caretSize: 0,
+            cornerRadius: 4,
+            padding: 8,
+            position: 'nearest',
+            xAlign: 'center',
+            yAlign: 'top'
+          },
           legend: {
             position: "bottom",
             align: "start",
@@ -352,16 +701,33 @@ export default {
               boxHeight: 8,
             },
           },
-          tooltip: {
-            callbacks: {
-              title: (items) => {
-                return items[0].label;
-              }
+        },
+        elements: {
+          line: {
+            tension: 0,
+            borderWidth: 2,
+          },
+          point: {
+            radius: 0,
+            hoverRadius: 3,
+            hoverBorderWidth: 2,
+            pointStyle: 'rect',
+            hoverBackgroundColor: (context) => {
+              const dataset = context.dataset;
+              return dataset.borderColor;
+            },
+            hoverBorderColor: (context) => {
+              const dataset = context.dataset;
+              return dataset.borderColor;
             }
-          }
+          },
+        },
+        hover: {
+          mode: 'index',
+          intersect: false,
         },
       };
-    },
+    }
   },
 
 }
@@ -386,12 +752,12 @@ export default {
         <div class="top">
           <ui-input id="inputSearch" v-model="inputSearch" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
           <ui-select id="selectGroup" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-            <option disabled selected>Выбрать сервера</option>
+            <option disabled selected>Выбрать группу серверов</option>
             <option>Все</option>
             <option v-for="group in serversGroups">{{group.name}}</option>
           </ui-select>
           <ui-select id="sortGroup" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-            <option disabled selected>Сортировка по имени</option>
+            <option disabled selected>Сортировка по имени хоста</option>
             <option>Без сортировки</option>
             <option>По возрастанию</option>
             <option>По убыванию</option>
@@ -403,16 +769,15 @@ export default {
             <option>Последние 15 минут</option>
             <option>Последние 30 минут</option>
             <option>Последний час</option>
-            <option>Последние 12 часов</option>
             <option>Последний день</option>
           </ui-select>
         </div>
         <div class="bottom">
-          <ui-input class="date" placeholder="дд.мм.гггг 00:00"  :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+          <ui-input class="date" id="dateStart" type="datetime-local"  :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
           </ui-input>
-          <ui-input class="date" placeholder="дд.мм.гггг 00:00" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
+          <ui-input class="date" id="dateEnd" type="datetime-local" placeholder="дд.мм.гггг 00:00" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
           <main-button class="btn" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" @click="searchElement">Найти</main-button>
-          <main-button class="btn btn-close" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">Сбросить</main-button>
+          <main-button class="btn btn-close" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" @click="deleteFilter">Сбросить</main-button>
           <ui-select class="select" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" :style="themeStatus ? {borderColor: themeLight.borderColor, background: themeLight.backgroundComponent}: {borderColor: themeDark.borderColor, background: themeDark.backgroundComponent}">
             <option disabled selected>Выбрать формат</option>
             <option>PDF</option>
@@ -433,7 +798,7 @@ export default {
 <!--            </svg>-->
 <!--          </button>-->
         </div>
-        <Line id="myChart"  :data="chartData(server)" :options="chartOption" :serversGroups="serversGroups" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></Line>
+        <Line id="myChart" v-on="nameAdd(server.hostName)"  :data="chartData(server)" :options="chartOption" :serversGroups="serversGroups" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></Line>
       </div>
     </div>
     <modal-window :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" v-model:openDialog="modalWindow"></modal-window>
