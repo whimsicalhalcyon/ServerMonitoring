@@ -142,13 +142,49 @@ export default {
 
       if (this.checkedGroups.length > 0) {
         filtered = filtered.filter(server => {
-          if (!server.errors) return false;
+          if (!server.errors || server.errors.length === 0) return false;
+
+          return server.errors.some(error =>
+              this.checkedGroups.includes(Number(error.importance))
+          );
+        }).map(server => {
+
+          const serverCopy = {...server};
+          serverCopy.errors = server.errors.filter(error =>
+              this.checkedGroups.includes(Number(error.importance))
+          );
+          return serverCopy;
+        });
+      }
+
+      if (this.selectGroupPanel.startDate || this.selectGroupPanel.endDate) {
+        const startDate = this.parseDateTime(this.selectGroupPanel.startDate);
+        const endDate = this.parseDateTime(this.selectGroupPanel.endDate);
+
+        filtered = filtered.filter(server => {
+          if (!server.errors || server.errors.length === 0) return false;
 
           return server.errors.some(error => {
-            const errorImportance = Number(error.importance);
-            const isMatch = this.checkedGroups.includes(errorImportance);
-            return isMatch;
+            const errorDate = new Date(error.createdAt);
+
+            const afterStart = !startDate || errorDate >= startDate;
+            const beforeEnd = !endDate || errorDate <= endDate;
+
+            return afterStart && beforeEnd;
           });
+        }).map(server => {
+          const serverCopy = {...server};
+          serverCopy.errors = server.errors.filter(error => {
+            const errorDate = new Date(error.createdAt);
+            const startDate = this.parseDateTime(this.selectGroupPanel.startDate);
+            const endDate = this.parseDateTime(this.selectGroupPanel.endDate);
+
+            const afterStart = !startDate || errorDate >= startDate;
+            const beforeEnd = !endDate || errorDate <= endDate;
+
+            return afterStart && beforeEnd;
+          });
+          return serverCopy;
         });
       }
 
@@ -248,8 +284,47 @@ export default {
       this.filters.group = '';
       this.filters.error = '';
       this.currentSearch = '';
+      this.selectGroupPanel.startDate = '';
+      this.selectGroupPanel.endDate = '';
+      this.checkedGroups = [];
       this.filteredServersData = [...this.problems];
       this.selectedErrors = [];
+    },
+    isValidDateTime(dateTimeString) {
+      const regex = /^(\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}|\d{4}-\d{2}-\d{2} \d{2}:\d{2})$/;
+      if (!regex.test(dateTimeString)) return false;
+
+      const date = new Date(dateTimeString.replace(/(\d{2})\.(\d{2})\.(\d{4})/, '$3-$2-$1'));
+      return !isNaN(date.getTime());
+    },
+
+    normalizeDateTime(dateTimeString) {
+      if (dateTimeString.includes('.')) {
+        const [datePart, timePart] = dateTimeString.split(' ');
+        const [day, month, year] = datePart.split('.');
+        return `${year}-${month}-${day} ${timePart}`;
+      }
+      return dateTimeString;
+    },
+
+    parseDateTime(dateTimeString) {
+      if (!dateTimeString) return null;
+      return new Date(this.normalizeDateTime(dateTimeString));
+    },
+
+    filterByDateTime() {
+      if (this.selectGroupPanel.startDate && !this.isValidDateTime(this.selectGroupPanel.startDate)) {
+        alert('Некорректная начальная дата/время. Используйте формат ДД.ММ.ГГГГ ЧЧ:ММ');
+        return;
+      }
+
+      if (this.selectGroupPanel.endDate && !this.isValidDateTime(this.selectGroupPanel.endDate)) {
+        alert('Некорректная конечная дата/время. Используйте формат ДД.ММ.ГГГГ ЧЧ:ММ');
+        return;
+      }
+
+      this.appliedSearchTerm = this.currentSearch;
+      this.$forceUpdate();//принудительное обновление данных
     },
   },
   mounted() {
@@ -334,6 +409,7 @@ export default {
           </ui-input>
 
           <main-button
+              @click="filterByDateTime"
               :themeStatus="themeStatus"
               :themeLight="themeLight"
               :themeDark="themeDark">
