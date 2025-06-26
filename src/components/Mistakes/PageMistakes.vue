@@ -142,12 +142,18 @@ export default {
 
       if (this.checkedGroups.length > 0) {
         filtered = filtered.filter(server => {
-          return server.errors && server.errors.some(error =>
-              this.checkedGroups.includes(error.importance)
-          );
+          const hasMatchingErrors = (errors) => {
+            return Array.isArray(errors) && errors.some(error =>
+                error.serverId === server.id &&
+                Number.isInteger(error.importance) &&
+                this.checkedGroups.includes(error.importance) && error.state === false
+            );
+          };
+          return hasMatchingErrors(server.errors) ||
+              (server.block && Array.isArray(server.block.servers) && server.errors.state === false &&
+                  server.block.servers.some(s => s && hasMatchingErrors(s.errors)));
         });
       }
-
       return filtered;
     }
 
@@ -354,15 +360,8 @@ export default {
           </div>
 
           <div class="checkbox-group">
-            <div v-for="option in importanceOptions" :key="option.value">
-              <input
-                  type="checkbox"
-                  :id="'imp-' + option.value"
-                  :value="option.value"
-                  v-model="checkedGroups"
-              >
-              <label :for="'imp-' + option.value">{{ option.label }}</label>
-            </div>
+            <ui-checkbox-interaction class="check" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" v-model="checkedGroups"></ui-checkbox-interaction>
+
           </div>
         </div>
       </div>
