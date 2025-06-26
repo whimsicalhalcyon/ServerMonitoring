@@ -187,8 +187,6 @@ export default {
       // this.modalEditWindow = !this.modalEditWindow;
 
       const block = this.groups.find(g => g.name === group);
-      console.log({id, ip, dns, group});
-      console.log(block);
       if (!block) {
         console.log('Группа не найдена:', group);
         return alert('Группа не найдена');
@@ -211,7 +209,7 @@ export default {
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(updated)
         });
-
+        this.isSelected = null;
         if (!res.ok) throw new Error('Ошибка обновления');
         await this.fetchServers();
         await this.fetchErrorBlocks();

@@ -12,7 +12,7 @@ export default {
     groups: {type: Array, default: () => []},
     serverParameterData: {type: Array, default: () => []},
   },
-  emits:['addBlock', 'addServer', 'update:openDialog', 'deleteBlock'],
+  emits: ['addBlock', 'addServer', 'update:openDialog', 'deleteBlock'],
   data() {
     return {
       addBlockModal: false,
@@ -22,16 +22,22 @@ export default {
   },
   computed: {
     blocks() {
-      // Проверяем, что serverParameterData является массивом
-      if (!Array.isArray(this.serverParameterData)) {
-        return [];
-      }
+      if (!Array.isArray(this.serverParameterData)) return [];
+
       return this.serverParameterData.map(group => ({
         id: group.id,
         name: group.name,
-        servers: Array.isArray(group.servers) ? group.servers.map(server => server.hostName) : []
+        servers: Array.isArray(group.servers)
+            ? [...group.servers]
+                .sort((a, b) => a.hostName.localeCompare(b.hostName)) // сортировка по А–Я
+                .map(server => server.hostName)
+            : []
       }));
-    }
+    },
+    thisGroups() {
+      return [...this.blocks].sort((a, b) => a.name.localeCompare(b.name));
+    },
+
   },
   methods: {
     hideWindow() {
@@ -87,8 +93,7 @@ export default {
       this.$emit('editServer', server);
     }
   },
-  watch: {
-  },
+  watch: {},
 }
 ;
 </script>
@@ -116,7 +121,7 @@ export default {
         <div v-if="blocks.length === 0" class="no-groups">
           Нет групп для отображения
         </div>
-        <div v-for="block in blocks" :key="block.id" class="block">
+        <div v-for="block in thisGroups" :key="block.id" class="block">
           <div class="block-header"
                @click="togglePanel(block.id)">
             <span>{{ block.name }}</span>

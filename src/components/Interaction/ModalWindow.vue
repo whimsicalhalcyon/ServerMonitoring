@@ -17,7 +17,26 @@ export default {
       default: () => [],
     },
     server: {type: Object, default: null},
-    isEditServer: {type: Boolean, default: false}
+    isEditServer: {type: Boolean, default: false},
+    showDeleteBtn: {
+      type: Boolean,
+      default: false,
+    },
+    showDeleteServer: {
+      type: Boolean,
+      default: false,
+    },
+    showAddBtn: {
+      type: Boolean,
+      default: false,
+    },
+    showCheckBox: {
+      type: Boolean,
+      default: false,
+    },
+    blocks:{
+      type: Array
+    }
   },
   emits: ['addBlock', 'addServer', 'update:openDialog', 'editServer'],
   data() {
@@ -26,6 +45,7 @@ export default {
       newServerIp: '',//добавление нового ip сервера
       newServerDns: '',//добавление нового доменного имени сервера
       selectedServerGroup: '',//выбранная группа сервера при добавлении
+      selectedServers: [],
       // editServerIp: '',
       // editServerDns: '',
       // selectedServerGroupEdit: '',
@@ -58,6 +78,18 @@ export default {
     }
   },
   methods: {
+    toggleExpand(index) {
+      this.blocks[index].isExpanded = !this.blocks[index].isExpanded;
+    },
+    pushArrayParametres(server, isChecked) {
+      if (isChecked) {
+        if (!this.selectedServers.includes(server)) {
+          this.selectedServers.push(server);
+        }
+      } else {
+        this.selectedServers = this.selectedServers.filter(s => s !== server);
+      }
+    },
     initializeEditFields() {
       console.log('Initializing fields with server:', this.server);
       this.newServerIp = this.server.ipAddres || '';
@@ -216,6 +248,25 @@ export default {
             </ui-select>
           </div>
         </div>
+        <div class="blocks-container" v-if="isAddServer">
+          <div v-for="(block, blockIndex) in blocks" :key="blockIndex" class="block">
+            <div class="block-header" @click="toggleExpand(blockIndex)">
+              <div class="btn-server">
+                <i :class="block.isExpanded ? 'fa fa-chevron-up' : 'fa fa-chevron-down'"></i>
+                <span>{{ selectedServers.join(', ') }}</span>
+              </div>
+            </div>
+            <div class="servers" v-show="block.isExpanded">
+              <div v-for="(server, serverIndex) in block.servers" :key="serverIndex" class="server-item">
+                <label class="server-content">
+                  <input v-if="showCheckBox" type="checkbox" class="server-checkbox" :value="server"
+                         @change="pushArrayParametres(server, $event.target.checked)">
+                  <span class="server-name">{{ server }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="dialog-buttons">
           <main-button @click="isEditServer ? saveEditServer() : addServer()" :themeStatus="themeStatus"
                        :themeLight="themeLight" :themeDark="themeDark">
@@ -232,6 +283,74 @@ export default {
 </template>
 
 <style scoped>
+.servers {
+  padding-left: 20px;
+  transition: all 0.3s ease;
+}
+
+.block-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.server-checkbox {
+  margin-right: 2%;
+}
+
+
+.block-header div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.delete-btn {
+  background: #F44336;
+  color: white;
+  border: none;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.lbl-check {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.add-btn {
+  margin-left: 10%;
+  background: #38bdf8;
+  color: white;
+  border: none;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.blocks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.server-item {
+  margin-bottom: 2%;
+}
+
+.btn-server {
+  margin-bottom: 2%;
+}
+
+.block {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+}
+
 .dialog-overlay {
   position: fixed;
   top: 0;
