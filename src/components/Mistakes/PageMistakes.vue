@@ -30,12 +30,6 @@ export default {
       openPanel: true,
       isSelected: null,
       appliedSearchTerm:'',
-      selectGroupPanel: {
-        status: '',
-        group: '',
-        startDate: '',
-        endDate:''
-      },
       currentSearch: '',
       currentIpSearch:'',
       checkedGroups: [],
@@ -58,6 +52,8 @@ export default {
       filters : {
         group: '',
         error: '',
+        startDate: '',
+        endDate:''
       },
       filteredServersData: [],
       selectedErrors: []
@@ -123,6 +119,8 @@ export default {
             (server.errors && server.errors.length > 0);
       });
 
+
+
       return filtered.sort((a, b) => {
         if (this.filters.group) {
           const aInGroup = a.block?.id === this.filters.group;
@@ -157,9 +155,9 @@ export default {
         });
       }
 
-      if (this.selectGroupPanel.startDate || this.selectGroupPanel.endDate) {
-        const startDate = this.parseDateTime(this.selectGroupPanel.startDate);
-        const endDate = this.parseDateTime(this.selectGroupPanel.endDate);
+      if (this.filters.startDate || this.filters.endDate) {
+        const startDate = this.parseDateTime(this.filters.startDate);
+        const endDate = this.parseDateTime(this.filters.endDate);
 
         filtered = filtered.filter(server => {
           if (!server.errors || server.errors.length === 0) return false;
@@ -176,8 +174,8 @@ export default {
           const serverCopy = {...server};
           serverCopy.errors = server.errors.filter(error => {
             const errorDate = new Date(error.createdAt);
-            const startDate = this.parseDateTime(this.selectGroupPanel.startDate);
-            const endDate = this.parseDateTime(this.selectGroupPanel.endDate);
+            const startDate = this.parseDateTime(this.filters.startDate);
+            const endDate = this.parseDateTime(this.filters.endDate);
 
             const afterStart = !startDate || errorDate >= startDate;
             const beforeEnd = !endDate || errorDate <= endDate;
@@ -284,8 +282,8 @@ export default {
       this.filters.group = '';
       this.filters.error = '';
       this.currentSearch = '';
-      this.selectGroupPanel.startDate = '';
-      this.selectGroupPanel.endDate = '';
+      this.filters.startDate = '';
+      this.filters.endDate = '';
       this.checkedGroups = [];
       this.filteredServersData = [...this.problems];
       this.selectedErrors = [];
@@ -313,12 +311,12 @@ export default {
     },
 
     filterByDateTime() {
-      if (this.selectGroupPanel.startDate && !this.isValidDateTime(this.selectGroupPanel.startDate)) {
+      if (this.filters.startDate && !this.isValidDateTime(this.filters.startDate)) {
         alert('Некорректная начальная дата/время. Используйте формат ДД.ММ.ГГГГ ЧЧ:ММ');
         return;
       }
 
-      if (this.selectGroupPanel.endDate && !this.isValidDateTime(this.selectGroupPanel.endDate)) {
+      if (this.filters.endDate && !this.isValidDateTime(this.filters.endDate)) {
         alert('Некорректная конечная дата/время. Используйте формат ДД.ММ.ГГГГ ЧЧ:ММ');
         return;
       }
@@ -393,16 +391,18 @@ export default {
           </ui-select>
 
           <ui-input
-              v-model="selectGroupPanel.startDate"
+              v-model="filters.startDate"
               placeholder="Начальная дата"
+              type="datetime-local"
               :themeStatus="themeStatus"
               :themeLight="themeLight"
               :themeDark="themeDark">
           </ui-input>
 
           <ui-input
-              v-model="selectGroupPanel.endDate"
+              v-model="filters.endDate"
               placeholder="Конечная дата"
+              type="datetime-local"
               :themeStatus="themeStatus"
               :themeLight="themeLight"
               :themeDark="themeDark">
