@@ -191,6 +191,7 @@ export default {
 
 <template>
   <div class="page"
+
        :style="themeStatusLight ? {background: this.themeLight.background}: {background: this.themeDark.background}">
     <menu-page
         :checkButton="checkButton"
