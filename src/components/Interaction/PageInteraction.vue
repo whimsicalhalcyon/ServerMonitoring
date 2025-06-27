@@ -307,6 +307,15 @@ export default {
   watch: {
     servers(newVal) {
       this.filteredServersData = [...newVal];
+
+      // Проверяем, существует ли выбранный сервер
+      if (this.isSelected) {
+        const stillExists = newVal.some(server => server.id === this.isSelected.id);
+        if (!stillExists) {
+          this.isSelected = null;
+          this.modalEditWindow = false; // Закрыть модалку, если была открыта
+        }
+      }
     },
     errorBlocks(newVal) {
       this.filteredServersData = [...newVal];

@@ -53,6 +53,13 @@ export default {
   },
   watch: {
     openDialog(newVal) {
+      if (newVal && (this.isAddBlock || this.isAddServer || this.isEditServer)) {
+        window.addEventListener('keydown', this.handleGlobalEnter);
+      } else {
+        window.removeEventListener('keydown', this.handleGlobalEnter);
+      }
+
+      // Очистка полей
       if (newVal && this.isEditServer && this.server) {
         this.initializeEditFields();
       } else if (newVal && (this.isAddBlock || this.isAddServer)) {
@@ -78,6 +85,11 @@ export default {
     }
   },
   methods: {
+    handleGlobalEnter(event) {
+      if (event.key === 'Enter') {
+        this.searchElement();
+      }
+    },
     searchElement() {
       if (this.isAddServer) {
         this.selectedServerGroup = document.querySelector('#group').value; //выбранная группа добавление/редактирование
@@ -215,12 +227,16 @@ export default {
       this.hideWindow();
     }
   },
+  beforeUnmount() {
+    window.removeEventListener('keydown', this.handleGlobalEnter);
+  }
 };
 </script>
 
 <template>
   <div v-if="openDialog" class="dialog-overlay">
     <div
+        ref="modalRoot"
         class="dialog-content"
         :class="{'dialog-content-add-block': isAddBlock, 'dialog-content-add-server': isAddServer || isEditServer}"
         :style="themeStatus
