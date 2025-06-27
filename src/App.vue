@@ -3,7 +3,7 @@ import menuPage from "@/components/MenuPage.vue";
 import PageInteraction from "@/components/Interaction/PageInteraction.vue";
 import pageMistakes from "@/components/Mistakes/PageMistakes.vue";
 import pageMonitor from "@/components/ServerCharts/PageMonitor.vue";
-import * as res from "node/stream/consumers.js";
+
 
 export default {
   components: {
@@ -15,7 +15,7 @@ export default {
       groups: [],
       errorBlocks: [],
       serverParameterData: [],
-      serverMetric: [],
+      serversGroups: [],
       isDataLoaded: false,
       openMonitor: false,
       openMistakes: false,
@@ -61,7 +61,7 @@ export default {
   methods: {
     async fetchMetric() {
       const resMetric = await fetch("/api/blocks/server_metric");
-      this.serverMetric = await resMetric.json();
+      this.serversGroups = await resMetric.json();
     },
     async fetchServers() {
       try {
@@ -237,6 +237,9 @@ export default {
         @changeTheme="changeToTheme"></page-interaction>
     <page-monitor
         class="height"
+        :serversGroups="serversGroups"
+        :servers="servers"
+        :parameters="parameters"
         v-if="openMonitor"
         :themeStatus="themeStatusLight"
         :themeLight="themeLight"

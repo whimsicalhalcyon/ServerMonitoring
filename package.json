@@ -30,6 +30,6 @@
     "vite": "^6.3.5",
     "vite-node": "^3.2.4",
     "vite-plugin-vue-devtools": "^7.7.2",
-    "vue-jest": "^3.0.7"
+    "vue-jest": "^5.0.0-alpha.10"
   }
 }
