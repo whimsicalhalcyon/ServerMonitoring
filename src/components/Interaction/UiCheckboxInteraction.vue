@@ -20,6 +20,7 @@ export default {
   },
   computed: {
     errorsData() {
+      // Синхронизация с Table.vue (importance: 0–5)
       return [
         {value: 0, label: 'Не классифицирована', color: '#BDBDBD'},
         {value: 1, label: 'Информация', color: '#4FC3F7'},
@@ -32,16 +33,15 @@ export default {
   },
   methods: {
     toggleError(value) {
-      const newValue = [...this.modelValue];
-      const index = newValue.indexOf(value);
-
-      if (index === -1) {
-        newValue.push(value);
+      const selected = [...this.modelValue];
+      console.log(selected);
+      const index = selected.indexOf(value);
+      if (index > -1) {
+        selected.splice(index, 1);
       } else {
-        newValue.splice(index, 1);
+        selected.push(value);
       }
-
-      this.$emit('update:modelValue', newValue);
+      this.$emit('update:modelValue', selected);
     }
   }
 }

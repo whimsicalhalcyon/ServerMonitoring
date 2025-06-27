@@ -1,33 +1,61 @@
 <script>
 import ModalWindow from '@/components/Interaction/ModalWindow.vue';
 import MainButton from '@/components/MainButton.vue';
-import SelectCheckbox from "@/components/ServerCharts/SelectCheckbox.vue";
-
 
 export default {
-  components: { ModalWindow, MainButton, SelectCheckbox },
+  components: {ModalWindow, MainButton},
   props: {
-    openDialog: { type: Boolean, default: false },
-    themeStatus: { type: Boolean, default: true },
-    themeLight: { type: Object, required: true },
-    themeDark: { type: Object, required: true },
+    openDialog: {type: Boolean, default: false},
+    themeStatus: {type: Boolean, default: true},
+    themeLight: {type: Object, required: true},
+    themeDark: {type: Object, required: true},
+    groups: {type: Array, default: () => []},
+    serverParameterData: {type: Array, default: () => []},
   },
+  emits: ['addBlock', 'addServer', 'update:openDialog', 'deleteBlock'],
   data() {
     return {
-      blocks: [
-        { name: 'app', servers: ['nn-lsed-app01.nnov.ru', 'nn-lsed-app02.nnov.ru', 'nn-lsed-app03.nnov.ru'], isExpanded: false },
-        { name: 'backup', servers: [], isExpanded: false },
-        { name: 'bl', servers: [], isExpanded: false },
-        { name: 'convert', servers: [], isExpanded: false },
-        { name: 'custom', servers: [], isExpanded: false },
-      ],
       addBlockModal: false,
       addServerModal: false,
+      expandedBlocks: new Set(),
     };
+  },
+  computed: {
+    blocks() {
+      if (!Array.isArray(this.serverParameterData)) return [];
+
+      return this.serverParameterData.map(group => ({
+        id: group.id,
+        name: group.name,
+        servers: Array.isArray(group.servers)
+            ? [...group.servers]
+                .sort((a, b) => a.hostName.localeCompare(b.hostName)) // сортировка по А–Я
+                .map(server => server.hostName)
+            : []
+      }));
+    },
+    thisGroups() {
+      return [...this.blocks].sort((a, b) => a.name.localeCompare(b.name));
+    },
+
   },
   methods: {
     hideWindow() {
       this.$emit('update:openDialog', false);
+      this.addBlockModal = false;
+      this.addServerModal = false;
+    }
+    ,
+    togglePanel(blockId) {
+      if (this.expandedBlocks.has(blockId)) {
+        this.expandedBlocks.delete(blockId);
+      } else {
+        this.expandedBlocks.add(blockId);
+      }
+      this.expandedBlocks = new Set(this.expandedBlocks); // Триггерим реактивность
+    },
+    isExpanded(blockId) {
+      return this.expandedBlocks.has(blockId);
     },
     openAddBlock() {
       this.addBlockModal = true;
@@ -35,17 +63,39 @@ export default {
     openAddServer() {
       this.addServerModal = true;
     },
-    toggleExpand(blockIndex) {
-      this.blocks[blockIndex].isExpanded = !this.blocks[blockIndex].isExpanded;
-    },
-    deleteBlock(blockIndex) {
-      if (window.confirm(`Вы точно хотите удалить блок ${this.blocks[blockIndex].name}?`)) {
-        this.blocks.splice(blockIndex, 1);
-        alert(`Блок ${this.blocks[blockIndex].name} удалён!`);
+    addBlock(blockName) {
+      if (this.groups.find(g => g.name === blockName)) {
+        alert('Группа с таким именем уже существует');
+        return;
       }
+      this.$emit('addBlock', blockName);
+
     },
+    addServer(server) {
+      // const block = this.blocks.find(b => b.name === serverName.group);
+      // if (block && !block.servers.includes(serverName.dns)) {
+      //   block.servers.push(serverName.dns);
+      // }
+      this.$emit('addServer', server);
+    },
+    deleteBlock(groupId) {
+      // if (groupId === null) {
+      //   alert('Нельзя удалить категорию "Без группы"');
+      //   return;
+      // }
+      const group = this.groups.find(g => g.id === groupId);
+      if (!group) return;
+      if (!window.confirm(`Вы точно хотите удалить группу ${group.name}?`)) return;
+      this.$emit('deleteBlock', groupId);
+      this.expandedBlocks.delete(groupId);
+    },
+    editServer(server) {
+      this.$emit('editServer', server);
+    }
   },
-};
+  watch: {},
+}
+;
 </script>
 
 <template>
@@ -67,31 +117,58 @@ export default {
           Добавить сервер
         </main-button>
       </div>
-      <select-checkbox
-          :blocks="blocks"
-          :show-delete-btn="false"
-          :show-delete-server="true"
-          :show-check-box="false"></select-checkbox>
+      <div class="blocks-container">
+        <div v-if="blocks.length === 0" class="no-groups">
+          Нет групп для отображения
+        </div>
+        <div v-for="block in thisGroups" :key="block.id" class="block">
+          <div class="block-header"
+               @click="togglePanel(block.id)">
+            <span>{{ block.name }}</span>
+            <div v-if="block.id !== null">
+              <i class="fa-solid fa-chevron-up " style="cursor: pointer;"
+                 :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+                 :class="isExpanded(block.id)? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+              <button @click.stop="deleteBlock(block.id)" class="delete-btn">Х</button>
+            </div>
+          </div>
+          <div class="servers" v-if="isExpanded(block.id)">
+            <div v-if="block.servers.length === 0" class="server-item">
+              Нет серверов
+            </div>
+            <div v-for="server in block.servers"
+                 :key="server" class="server-item">
+              {{ server }}
+            </div>
+          </div>
+        </div>
       </div>
       <div class="dialog-footer">
-        <main-button @click="hideWindow" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" class="drop">
+        <main-button @click="hideWindow" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"
+                     class="drop">
+          Отмена
         </main-button>
       </div>
       <modal-window
+          :groups="groups"
           v-model:openDialog="addBlockModal"
           :themeStatus="themeStatus"
           :themeLight="themeLight"
           :themeDark="themeDark"
           is-add-block
+          @addBlock="addBlock"
       />
       <modal-window
+          :groups="groups"
           v-model:openDialog="addServerModal"
           :themeStatus="themeStatus"
           :themeLight="themeLight"
           :themeDark="themeDark"
           is-add-server
+          @addServer="addServer"
       />
     </div>
+  </div>
 </template>
 
 <style scoped>
@@ -132,6 +209,19 @@ export default {
   gap: 10px;
 }
 
+.blocks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.block {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+}
 
 .block-header {
   font-weight: bold;
@@ -148,7 +238,25 @@ export default {
   gap: 10px;
 }
 
+.servers {
+  padding-left: 20px;
+  transition: all 0.3s ease;
+}
 
+.server-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+}
+
+.delete-btn {
+  background: #F44336;
+  color: white;
+  border: none;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
 
 .dialog-footer {
   margin-top: auto;

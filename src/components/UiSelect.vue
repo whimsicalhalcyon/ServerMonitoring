@@ -13,33 +13,24 @@ export default {
       type: Boolean,
       default: true
     },
-    modelValue: {
-      type: String
-    },
-
-  },
-  methods: {
-    changeModelValue(event) {
-      this.$emit('update:modelValue', event.target.value);
-    }
   }
 }
 </script>
 
 <template>
-  <select :value="modelValue" @change="changeModelValue"
+  <select
       :style="themeStatus ? {background: themeLight.backgroundFilter, color: themeLight.textColor}: {background: themeDark.backgroundFilter, color: themeDark.textColor}">
-      <slot></slot>
+    <slot></slot>
   </select>
 </template>
 
 <style scoped>
-  select {
-    border-radius: 8px;
-    width: 21.9%;
-    height: 40px;
-    padding: 0 0 0 13px;
-    cursor: pointer;
-  }
+select {
+  border-radius: 8px;
+  width: 21.9%;
+  height: 40px;
+  padding: 0 0 0 13px;
+  cursor: pointer;
+}
 
 </style>

@@ -4,7 +4,7 @@ import UiSelect from "@/components/UiSelect.vue";
 import UiInput from "@/components/UiInput.vue";
 import MainButton from "@/components/MainButton.vue";
 import MistakeCheckbox from "@/components/Mistakes/MistakeCheckbox.vue";
-import UiCheckboxInteraction from "@/components/UiCheckboxInteraction.vue";
+import UiCheckboxInteraction from "@/components/Interaction/UiCheckboxInteraction.vue";
 import TableMistakes from "@/components/Mistakes/TableMistakes.vue";
 import * as XLSX from "xlsx";
 

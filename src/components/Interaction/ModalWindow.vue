@@ -2,144 +2,336 @@
 import UiInput from '@/components/UiInput.vue';
 import UiSelect from '@/components/UiSelect.vue';
 import MainButton from '@/components/MainButton.vue';
-import SelectCheckbox from "@/components/ServerCharts/SelectCheckbox.vue";
 
 export default {
-  components: { UiInput, UiSelect, MainButton, SelectCheckbox },
+  components: {UiInput, UiSelect, MainButton},
   props: {
-    openDialog: { type: Boolean, default: false },
-    themeStatus: { type: Boolean, default: true },
-    themeLight: { type: Object, required: true },
-    themeDark: { type: Object, required: true },
-    isAddBlock: { type: Boolean, default: false },
-    isAddServer: { type: Boolean, default: false },
+    openDialog: {type: Boolean, default: false},
+    themeStatus: {type: Boolean, default: true},
+    themeLight: {type: Object, required: true},
+    themeDark: {type: Object, required: true},
+    isAddBlock: {type: Boolean, default: false},
+    isAddServer: {type: Boolean, default: false},
+    groups: {
+      type: Array,
+      default: () => [],
+    },
+    server: {type: Object, default: null},
+    isEditServer: {type: Boolean, default: false},
+    showDeleteBtn: {
+      type: Boolean,
+      default: false,
+    },
+    showDeleteServer: {
+      type: Boolean,
+      default: false,
+    },
+    showAddBtn: {
+      type: Boolean,
+      default: false,
+    },
+    showCheckBox: {
+      type: Boolean,
+      default: false,
+    },
+    blocks: {
+      type: Array
+    }
   },
+  emits: ['addBlock', 'addServer', 'update:openDialog', 'editServer'],
   data() {
     return {
-      selectOPen: false,
-      selectedOptionsArray: [],
-      selectOptions: [
-        {name: 'Выберите параметры', servers: ['Параметр 1', 'Параметр 2', 'Параметр 3'], isExpanded: false }
-      ]
+      newGroupName: '',//добавление нового блока (группы)
+      newServerIp: '',//добавление нового ip сервера
+      newServerDns: '',//добавление нового доменного имени сервера
+      selectedServerGroup: '',//выбранная группа сервера при добавлении
+      selectedServers: [],
+      // editServerIp: '',
+      // editServerDns: '',
+      // selectedServerGroupEdit: '',
+    }
+  },
+  watch: {
+    openDialog(newVal) {
+      if (newVal && (this.isAddBlock || this.isAddServer || this.isEditServer)) {
+        window.addEventListener('keydown', this.handleGlobalEnter);
+      } else {
+        window.removeEventListener('keydown', this.handleGlobalEnter);
+      }
+
+      // Очистка полей
+      if (newVal && this.isEditServer && this.server) {
+        this.initializeEditFields();
+      } else if (newVal && (this.isAddBlock || this.isAddServer)) {
+        this.newGroupName = '';
+        this.newServerIp = '';
+        this.newServerDns = '';
+        this.selectedServerGroup = '';
+      }
+    },
+    server: {
+      handler(newServer) {
+        if (this.isEditServer && this.openDialog && newServer) {
+          this.initializeEditFields();
+        }
+      },
+      deep: true,
+      immediate: true,
+    },
+  },
+  computed: {
+    thisGroups() {
+      return [...this.groups].sort((a, b) => a.name.localeCompare(b.name));
     }
   },
   methods: {
+    handleGlobalEnter(event) {
+      if (event.key === 'Enter') {
+        this.searchElement();
+      }
+    },
+    searchElement() {
+      if (this.isAddServer) {
+        this.selectedServerGroup = document.querySelector('#group').value; //выбранная группа добавление/редактирование
+        this.newServerIp = document.querySelector('#ip').value;
+        this.newServerDns = document.querySelector('#dns').value;
+        this.addServer();
+      } else if (this.isEditServer) {
+        this.selectedServerGroup = document.querySelector('#group').value; //выбранная группа добавление/редактирование
+        this.newServerIp = document.querySelector('#ip').value;
+        this.newServerDns = document.querySelector('#dns').value;
+        this.saveEditServer();
+      } else if (this.isAddBlock) {
+        this.newGroupName = document.querySelector('#newGroupAdd').value;
+        this.addBlock();
+      }
+    },
+    toggleExpand(index) {
+      this.blocks[index].isExpanded = !this.blocks[index].isExpanded;
+    },
+    pushArrayParametres(server, isChecked) {
+      if (isChecked) {
+        if (!this.selectedServers.includes(server)) {
+          this.selectedServers.push(server);
+        }
+      } else {
+        this.selectedServers = this.selectedServers.filter(s => s !== server);
+      }
+    },
+    initializeEditFields() {
+      console.log('Initializing fields with server:', this.server);
+      this.newServerIp = this.server.ipAddres || '';
+      this.newServerDns = this.server.hostName || '';
+
+      const group = this.groups.find(g => g.id === this.server.blockId);
+      this.selectedServerGroup = group ? group.name : '';
+
+      this.$nextTick(() => {
+        const ipInput = document.querySelector('#ip');
+        const dnsInput = document.querySelector('#dns');
+        const groupSelect = document.querySelector('#group');
+
+        if (ipInput) ipInput.value = this.newServerIp;
+        if (dnsInput) dnsInput.value = this.newServerDns;
+        if (groupSelect) groupSelect.value = this.selectedServerGroup;
+      });
+    },
     hideWindow() {
       this.$emit('update:openDialog', false);
+      // Очистка модели
+      this.newGroupName = '';
+      this.newServerIp = '';
+      this.newServerDns = '';
+      this.selectedServerGroup = '';
+
+      // Принудительно очищаем в DOM
+      const groupSelect = document.querySelector('#group');
+      const groupNameInput = document.querySelector('#newGroup');
+      const serverIpInput = document.querySelector('#ip');
+      const serverDnsInput = document.querySelector('#dns');
+
+
+      if (groupSelect) groupSelect.value = '';
+      if (groupNameInput) groupNameInput.value = '';
+      if (serverIpInput) serverIpInput.value = '';
+      if (serverDnsInput) serverDnsInput.value = '';
+
     },
     addBlock() {
-      const blockName = this.$refs.blockName.value;
-      if (blockName) {
-        this.$emit('addBlock', blockName);
-        this.hideWindow();
+      if (!this.newGroupName.trim()) {
+        alert('Введите название группы');
+        return;
       }
+      this.$emit('addBlock', this.newGroupName.trim());
+      this.hideWindow();
+    },
+    isValidIPv4(ip) {
+      const parts = ip.split('.');
+      if (parts.length !== 4) return false;
+
+      for (const part of parts) {
+        // Проверяем, что часть - число от 0 до 255 и не содержит ведущих нулей (кроме '0')
+        if (!/^\d+$/.test(part)) return false; // Только цифры
+        const num = Number(part);
+        if (num < 0 || num > 255) return false;
+        if (part.length > 1 && part.startsWith('0')) return false; // Запрет "01", "001" и т.п.
+      }
+      return true;
     },
     addServer() {
-      const ip = this.$refs.ip.value;
-      const dns = this.$refs.dns.value;
-      const group = this.$refs.group.value;
-      if (ip && dns && group) {
-        this.$emit('addServer', { ip, dns, group });
-        this.hideWindow();
+      if (!this.newServerIp || !this.isValidIPv4(this.newServerIp)) {
+        alert('Введите корректный IPv4 адрес');
+        return;
       }
-    },
-    toggleDropdown() {
-      this.$el.querySelector('.dropdown-content').classList.toggle('show');
-    },
-    handleCheckboxChange(option) {
-      if (this.selectedOptionsArray.includes(option)) {
-        this.selectedOptionsArray = this.selectedOptionsArray.filter((item) => item !== option);
-      } else {
-        this.selectedOptionsArray = [...this.selectedOptionsArray, option];
+      if (!this.newServerDns.trim()) {
+        alert('Введите доменное имя сервера');
+        return;
       }
-    },
-    showCheckboxes() {
-      let checkboxes = document.getElementById("checkboxes");
-      if (!this.selectOPen) {
-        checkboxes.style.display = "block";
-        this.selectOPen = true;
-      } else {
-        checkboxes.style.display = "none";
-        this.selectOPen = false;
+      if (!this.selectedServerGroup) {
+        alert('Выберите группу для сервера');
+        return;
       }
+      this.$emit('addServer', {
+        ip: this.newServerIp,
+        dns: this.newServerDns.trim(),
+        group: this.selectedServerGroup,
+      });
+      this.hideWindow();
+    },
+    saveEditServer() {
+      console.log('saveEditServer called with:', {
+        ip: this.newServerIp,
+        dns: this.newServerDns,
+        group: this.selectedServerGroup,
+        serverId: this.server?.id
+      });
+      console.log(this.newServerIp);
+      if (!this.newServerIp || !this.isValidIPv4(this.newServerIp)) {
+        alert('Введите корректный IPv4 адрес');
+        return;
+      }
+      if (!this.newServerDns.trim()) {
+        alert('Введите доменное имя сервера');
+        return;
+      }
+      if (!this.selectedServerGroup) {
+        alert('Выберите группу для сервера');
+        return;
+      }
+      this.$emit('editServer', {
+        id: this.server.id,
+        ip: this.newServerIp,
+        dns: this.newServerDns.trim(),
+        group: this.selectedServerGroup,
+      });
+      this.hideWindow();
     }
   },
+  beforeUnmount() {
+    window.removeEventListener('keydown', this.handleGlobalEnter);
+  }
 };
 </script>
 
 <template>
   <div v-if="openDialog" class="dialog-overlay">
     <div
+        ref="modalRoot"
         class="dialog-content"
-        :class="{'dialog-content-add-block': isAddBlock, 'dialog-content-add-server': isAddServer}"
+        :class="{'dialog-content-add-block': isAddBlock, 'dialog-content-add-server': isAddServer || isEditServer}"
         :style="themeStatus
         ? { background: themeLight.backgroundComponent, color: themeLight.textColor }
         : { background: themeDark.backgroundComponent, color: themeDark.textColor }"
     >
       <template v-if="isAddBlock">
-        <h1 class="dialog-title" :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }">
+        <h1 class="dialog-title"
+            :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }">
           Добавить блок
         </h1>
         <div class="dialog-inputs">
           <div class="dialog-field">
-            <label class="dialog-label" for="group"
+            <label class="dialog-label" for="newGroup"
                    :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
             >Группа:</label>
-            <ui-select id="group" ref="group" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-              <option>APP</option>
-              <option>APP2006</option>
-              <option>IvanZolo2004</option>
-            </ui-select>
+            <ui-input id="newGroupAdd" placeholder=""
+                      :themeStatus="themeStatus"
+                      :themeLight="themeLight"
+                      :themeDark="themeDark"></ui-input>
           </div>
         </div>
         <div class="dialog-buttons">
-          <main-button @click="addBlock" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+          <main-button @click="searchElement" :themeStatus="themeStatus" :themeLight="themeLight"
+                       :themeDark="themeDark">
             Сохранить
           </main-button>
-          <main-button @click="hideWindow" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" class="drop">
+          <main-button @click="hideWindow" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"
+                       class="drop">
             Отмена
           </main-button>
         </div>
       </template>
-      <template v-if="isAddServer">
-        <h1 class="dialog-title" :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }">
-          Добавление сервера
+      <template v-if="isAddServer || isEditServer">
+        <h1 class="dialog-title"
+            :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }">
+          {{ isEditServer ? 'Редактирование сервера' : 'Добавление сервера' }}
         </h1>
         <div class="dialog-inputs">
           <div class="dialog-field">
             <label class="dialog-label" for="ip"
                    :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
             >IP-адрес:</label>
-            <ui-input id="ip" ref="ip" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" />
+            <ui-input id="ip" placeholder="" :themeStatus="themeStatus"
+                      :themeLight="themeLight"
+                      :themeDark="themeDark"/>
           </div>
           <div class="dialog-field">
             <label class="dialog-label" for="dns"
                    :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
             >Доменное имя:</label>
-            <ui-input id="dns" ref="dns" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" />
+            <ui-input id="dns" placeholder="" :themeStatus="themeStatus"
+                      :themeLight="themeLight"
+                      :themeDark="themeDark"/>
           </div>
           <div class="dialog-field">
             <label class="dialog-label" for="group"
                    :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
             >Группа:</label>
-            <ui-select id="group" ref="group" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
-              <option>APP</option>
-              <option>APP2006</option>
-              <option>IvanZolo2004</option>
+            <ui-select id="group"
+                       :themeStatus="themeStatus"
+                       :themeLight="themeLight" :themeDark="themeDark">
+              <option disabled value="">Выбрать группу</option>
+              <option v-for="group in thisGroups" :key="group.id" :value="group.name">
+                {{ group.name }}
+              </option>
             </ui-select>
           </div>
-          <select-checkbox
-              :blocks="selectOptions"
-              :show-delete-btn="true"
-              :show-delete-server="false"
-              :show-add-btn="true"
-              :show-check-box="true"></select-checkbox>
+        </div>
+        <div class="blocks-container" v-if="isAddServer">
+          <div v-for="(block, blockIndex) in blocks" :key="blockIndex" class="block">
+            <div class="block-header" @click="toggleExpand(blockIndex)">
+              <div class="btn-server">
+                <i :class="block.isExpanded ? 'fa fa-chevron-up' : 'fa fa-chevron-down'"></i>
+                <span>{{ selectedServers.join(', ') }}</span>
+              </div>
+            </div>
+            <div class="servers" v-show="block.isExpanded">
+              <div v-for="(server, serverIndex) in block.servers" :key="serverIndex" class="server-item">
+                <label class="server-content">
+                  <input v-if="showCheckBox" type="checkbox" class="server-checkbox" :value="server"
+                         @change="pushArrayParametres(server, $event.target.checked)">
+                  <span class="server-name">{{ server }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="dialog-buttons">
-          <main-button @click="addServer" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
+          <main-button @click="searchElement" :themeStatus="themeStatus"
+                       :themeLight="themeLight" :themeDark="themeDark">
             Сохранить
           </main-button>
-          <main-button @click="hideWindow" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" class="drop">
+          <main-button @click="hideWindow" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"
+                       class="drop">
             Отмена
           </main-button>
         </div>
@@ -149,6 +341,74 @@ export default {
 </template>
 
 <style scoped>
+.servers {
+  padding-left: 20px;
+  transition: all 0.3s ease;
+}
+
+.block-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.server-checkbox {
+  margin-right: 2%;
+}
+
+
+.block-header div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.delete-btn {
+  background: #F44336;
+  color: white;
+  border: none;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.lbl-check {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.add-btn {
+  margin-left: 10%;
+  background: #38bdf8;
+  color: white;
+  border: none;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.blocks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.server-item {
+  margin-bottom: 2%;
+}
+
+.btn-server {
+  margin-bottom: 2%;
+}
+
+.block {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+}
+
 .dialog-overlay {
   position: fixed;
   top: 0;
@@ -233,4 +493,5 @@ select {
 button {
   width: 48%;
 }
+
 </style>
