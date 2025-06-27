@@ -82,6 +82,7 @@ export default {
         default: return 'Неизвестно';
       }
     },
+
     exportToExcel() {
       const wb = XLSX.utils.book_new();
 
