@@ -30,8 +30,7 @@ export default {
       openPanel: true,
       isSelected: null,
       appliedSearchTerm:'',
-      currentSearch: '',
-      currentIpSearch:'',
+
       checkedGroups: [],
       optionProblem: [
         {name: 'all', value: 'Любое'},
@@ -53,143 +52,22 @@ export default {
         group: '',
         error: '',
         startDate: '',
-        endDate:''
+        endDate:'',
+        search: ''
       },
+      currentSearch: '',
       filteredServersData: [],
-      selectedErrors: []
+      selectedErrors: [],
+
+      dateStart: '',
+      dateEnd: '',
+      selectGroup:'',
+      sortGroup:'',
+      selectMistake:'',
+      inputSearch: '',
+      nameServer:'',
+      errorFinal: []
     }
-  },
-  computed: {
-    uniqueGroups() {
-      const groups = new Map();
-      this.problems.forEach(server => {
-        if (server.block && server.block.id) {
-          groups.set(server.block.id, server.block);
-        }
-      });
-      return Array.from(groups.values());
-    },
-    filteredProblems() {
-      let filtered = [...this.problems];
-      if (this.filters.group) {
-        filtered = filtered.filter(problem => {
-          const server = this.findServerById(problem.idServer);
-          return server && server.idServerGroup === this.filters.group;
-        });
-      }
-
-      if (this.filters.status && this.filters.status !== "Любое") {
-        filtered = filtered.filter(problem => {
-          return this.filters.status === "Ошибка" ? !problem.statusProblem : problem.statusProblem;
-        });
-      }
-
-      if (this.currentSearch) {
-        const searchTerm = this.currentSearch.toLowerCase();
-        filtered = filtered.filter(problem => {
-          const server = this.findServerById(problem.idServer);
-          return server && server.nameServer.toLowerCase().includes(searchTerm);
-        });
-      }
-
-      return filtered;
-    },
-    sortedGroups() {
-      let filtered = [...this.problems];
-
-      if (this.filters.group) {
-        filtered = filtered.filter(server =>
-            server.block?.id === this.filters.group
-        );
-      }
-
-      filtered = filtered.map(server => {
-        const serverCopy = {...server};
-
-        if (this.filters.error && serverCopy.errors) {
-          if (this.filters.error === 'Ошибка') {
-            serverCopy.errors = serverCopy.errors.filter(error => !error.state);
-          } else if (this.filters.error === 'Решено') {
-            serverCopy.errors = serverCopy.errors.filter(error => error.state);
-          }
-        }
-        return serverCopy;
-      }).filter(server => {
-        return !this.filters.error ||
-            (server.errors && server.errors.length > 0);
-      });
-
-
-
-      return filtered.sort((a, b) => {
-        if (this.filters.group) {
-          const aInGroup = a.block?.id === this.filters.group;
-          const bInGroup = b.block?.id === this.filters.group;
-          if (aInGroup && !bInGroup) return -1;
-          if (!aInGroup && bInGroup) return 1;
-        }
-        const groupCompare = (a.block?.name || '').localeCompare(b.block?.name || '');
-        if (groupCompare !== 0) return groupCompare;
-        return (a.hostName || '').localeCompare(b.hostName || '');
-      });
-    },
-    searchServers() {
-      let filtered = this.sortedGroups.filter(item =>
-          item.hostName && item.hostName.toLowerCase().includes(this.currentSearch.toLowerCase())
-      );
-
-      if (this.checkedGroups.length > 0) {
-        filtered = filtered.filter(server => {
-          if (!server.errors || server.errors.length === 0) return false;
-
-          return server.errors.some(error =>
-              this.checkedGroups.includes(Number(error.importance))
-          );
-        }).map(server => {
-
-          const serverCopy = {...server};
-          serverCopy.errors = server.errors.filter(error =>
-              this.checkedGroups.includes(Number(error.importance))
-          );
-          return serverCopy;
-        });
-      }
-
-      if (this.filters.startDate || this.filters.endDate) {
-        const startDate = this.parseDateTime(this.filters.startDate);
-        const endDate = this.parseDateTime(this.filters.endDate);
-
-        filtered = filtered.filter(server => {
-          if (!server.errors || server.errors.length === 0) return false;
-
-          return server.errors.some(error => {
-            const errorDate = new Date(error.createdAt);
-
-            const afterStart = !startDate || errorDate >= startDate;
-            const beforeEnd = !endDate || errorDate <= endDate;
-
-            return afterStart && beforeEnd;
-          });
-        }).map(server => {
-          const serverCopy = {...server};
-          serverCopy.errors = server.errors.filter(error => {
-            const errorDate = new Date(error.createdAt);
-            const startDate = this.parseDateTime(this.filters.startDate);
-            const endDate = this.parseDateTime(this.filters.endDate);
-
-            const afterStart = !startDate || errorDate >= startDate;
-            const beforeEnd = !endDate || errorDate <= endDate;
-
-            return afterStart && beforeEnd;
-          });
-          return serverCopy;
-        });
-      }
-
-      console.log('Filtered servers:', filtered);
-      return filtered;
-    }
-
   },
   methods: {
     findServerById(serverId) {
@@ -279,14 +157,15 @@ export default {
     },
 
     clearFilters() {
-      this.filters.group = '';
-      this.filters.error = '';
-      this.currentSearch = '';
-      this.filters.startDate = '';
-      this.filters.endDate = '';
-      this.checkedGroups = [];
-      this.filteredServersData = [...this.problems];
-      this.selectedErrors = [];
+      this.filters = {
+        group: '',
+        error: '',
+        startDate: '',
+        endDate: '',
+        checkedGroups: []
+      };
+      this.currentSearch =''
+      this.errorFinal = this.problems;
     },
     isValidDateTime(dateTimeString) {
       const regex = /^(\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}|\d{4}-\d{2}-\d{2} \d{2}:\d{2})$/;
@@ -295,35 +174,125 @@ export default {
       const date = new Date(dateTimeString.replace(/(\d{2})\.(\d{2})\.(\d{4})/, '$3-$2-$1'));
       return !isNaN(date.getTime());
     },
-
-    normalizeDateTime(dateTimeString) {
-      if (dateTimeString.includes('.')) {
-        const [datePart, timePart] = dateTimeString.split(' ');
-        const [day, month, year] = datePart.split('.');
-        return `${year}-${month}-${day} ${timePart}`;
-      }
-      return dateTimeString;
-    },
-
-    parseDateTime(dateTimeString) {
-      if (!dateTimeString) return null;
-      return new Date(this.normalizeDateTime(dateTimeString));
-    },
-
     filterByDateTime() {
-      if (this.filters.startDate && !this.isValidDateTime(this.filters.startDate)) {
-        alert('Некорректная начальная дата/время. Используйте формат ДД.ММ.ГГГГ ЧЧ:ММ');
-        return;
-      }
+      try {
+        if (this.filters.startDate && !this.isValidDateTime(this.filters.startDate)) {
+          throw new Error('Некорректная начальная дата/время');
+        }
 
-      if (this.filters.endDate && !this.isValidDateTime(this.filters.endDate)) {
-        alert('Некорректная конечная дата/время. Используйте формат ДД.ММ.ГГГГ ЧЧ:ММ');
-        return;
-      }
+        if (this.filters.endDate && !this.isValidDateTime(this.filters.endDate)) {
+          throw new Error('Некорректная конечная дата/время');
+        }
 
-      this.appliedSearchTerm = this.currentSearch;
-      this.$forceUpdate();//принудительное обновление данных
+        let filtered = [...this.problems];
+        filtered = this.applyGroupFilter(filtered);
+        filtered = this.applyErrorStatusFilter(filtered);
+        filtered = this.applySearchFilter(filtered);
+        filtered = this.applyImportanceFilter(filtered);
+        filtered = this.applyDateFilter(filtered);
+
+        this.errorFinal = filtered;
+        return this.errorFinal;
+
+      } catch (error) {
+        console.error('Ошибка фильтрации:', error);
+        return this.errorFinal;
+      }
     },
+    applySearchFilter(filtered) {
+      return filtered.filter(elem => elem.hostName.toLowerCase().includes(this.inputSearch.toLowerCase()))
+    },
+    applyGroupFilter(filtered) {
+      if (!this.filters.group || this.filters.group === "Все") {
+        return filtered;
+      }
+      return filtered.filter(server =>
+          server.block?.id === this.filters.group
+      );
+    },
+
+    applyErrorStatusFilter(filtered) {
+      if (this.filters.error) {
+        return filtered.map(server => {
+          if (!server.errors) return server;
+
+          const serverCopy = {...server};
+          if (this.filters.error === 'Ошибка') {
+            serverCopy.errors = serverCopy.errors.filter(e => !e.state);
+          } else if (this.filters.error === 'Решено') {
+            serverCopy.errors = serverCopy.errors.filter(e => e.state);
+          }
+          return serverCopy;
+        }).filter(server =>
+            !this.filters.error || (server.errors && server.errors.length > 0)
+        );
+      }
+      return filtered;
+    },
+
+    applyImportanceFilter(filtered) {
+      if (this.checkedGroups.length > 0) {
+        return filtered.filter(server => {
+          if (!server.errors || server.errors.length === 0) return false;
+          return server.errors.some(error =>
+              this.checkedGroups.includes(Number(error.importance))
+          );
+        }).map(server => ({
+          ...server,
+          errors: server.errors.filter(error =>
+              this.checkedGroups.includes(Number(error.importance))
+          )
+        }));
+      }
+      return filtered;
+    },
+    parseDateTime(dateString) {
+      if (!dateString) return null;
+      // Обрабатываем оба формата: datetime-local и строковый
+      return new Date(dateString.includes('T') ? dateString :
+          dateString.replace(/(\d{2})\.(\d{2})\.(\d{4})/, '$3-$2-$1'));
+    },
+
+    applyDateFilter(filtered) {
+      const startDate = this.parseDateTime(this.filters.startDate);
+      const endDate = this.parseDateTime(this.filters.endDate);
+
+      if (!startDate && !endDate) return filtered;
+
+      return filtered.filter(server => {
+        if (!server.errors || server.errors.length === 0) return false;
+
+        return server.errors.some(error => {
+          const errorDate = new Date(error.createdAt);
+          return (!startDate || errorDate >= startDate) &&
+              (!endDate || errorDate <= endDate);
+        });
+      });
+    },
+
+    uniqueGroups() {
+      if (this.serverGroup.length > 0) {
+        return this.serverGroup;
+      }
+      const blocks = this.problems.filter(server => server.block).map(server => server.block);
+      return [...new Set(blocks)];
+    },
+
+  },
+  computed: {
+    thisGroups() {
+      const uniqueGroups = [];
+      const seenIds = new Set();
+
+      this.problems.forEach(server => {
+        if (server.block && !seenIds.has(server.block.id)) {
+          seenIds.add(server.block.id);
+          uniqueGroups.push(server.block);
+        }
+      });
+
+      return uniqueGroups.sort((a, b) => a.name.localeCompare(b.name));
+    }
   },
   mounted() {
     console.log('page problems:', this.problems);
@@ -348,6 +317,7 @@ export default {
       <div class="panel" v-if="openPanel" :style="themeStatus ? {background: themeLight.backgroundComponent} : {background: themeDark.backgroundComponent}">
         <div class="top">
           <ui-input
+              id="inputIp"
               v-model="currentSearch"
               placeholder="Поиск по имени сервера"
               :themeStatus="themeStatus"
@@ -368,18 +338,19 @@ export default {
         <div class="line" :style="themeStatus ? {borderColor: themeLight.borderColor} : {borderColor: themeDark.borderColor}"></div>
 
         <div class="bottom">
-          <ui-select
-              v-model="filters.group"
-              :themeStatus="themeStatus"
-              :themeLight="themeLight"
-              :themeDark="themeDark">
-            <option value="">Все группы серверов</option>
-            <option v-for="group in uniqueGroups" :key="group.id" :value="group.id">
-              {{group.name}}
+          <ui-select id="filterSelectGroup" class="select"
+                     :themeStatus="themeStatus"
+                     :themeLight="themeLight" :themeDark="themeDark"
+                     v-model="filters.group">
+            <option disabled value="">Выбрать группу</option>
+            <option value="Все">Все</option>
+            <option v-for="group in thisGroups" :key="group.id" :value="group.id">
+              {{ group.name }}
             </option>
           </ui-select>
 
           <ui-select
+              id="selectError"
               v-model="filters.error"
               :themeStatus="themeStatus"
               :themeLight="themeLight"
@@ -389,8 +360,8 @@ export default {
               {{option.value }}
             </option>
           </ui-select>
-
           <ui-input
+              id="inputStartDate"
               v-model="filters.startDate"
               placeholder="Начальная дата"
               type="datetime-local"
@@ -400,6 +371,8 @@ export default {
           </ui-input>
 
           <ui-input
+              id="inputEndDate"
+              @change="filterByDateTime"
               v-model="filters.endDate"
               placeholder="Конечная дата"
               type="datetime-local"
@@ -443,7 +416,7 @@ export default {
     <div class="table-mistakes">
       <table-mistakes
           ref="tableMistakes"
-          :problems="searchServers"
+          :problems="errorFinal.length > 0 ? errorFinal : problems"
           :themeStatus="themeStatus"
           :themeLight="themeLight"
           :themeDark="themeDark"

@@ -330,11 +330,12 @@ export default {
 
 <style scoped>
 .table-container {
-  font-size: 15px;
+  font-size: 14px;
   overflow: hidden;
   border-radius: 8px;
   background: v-bind('currTheme.backgroundComponent');
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  width: 100%;
 }
 
 .custom-table {
@@ -342,57 +343,77 @@ export default {
   border-collapse: separate;
   border-spacing: 0;
   text-align: left;
+  table-layout: fixed;
 }
 
 th {
-  font-weight: normal;
-  padding: 12px 10px;
+  font-weight: 500;
+  padding: 8px 10px;
+  height: 36px;
+  position: sticky;
+  top: 0;
+  background: v-bind('currTheme.backgroundFilter');
+}
+
+thead {
+  height: 50px;
 }
 
 td {
-  padding: 12px 16px;
+  padding: 8px 10px;
+  height: 50px;
   color: v-bind('currTheme.textColor');
   background: v-bind('currTheme.backgroundComponent');
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+
+th:nth-child(1), td:nth-child(1) { width: 12%; } /* Время */
+th:nth-child(2), td:nth-child(2) { width: 10%; } /* Важность */
+th:nth-child(3), td:nth-child(3) { width: 12%; } /* Время восстановления */
+th:nth-child(4), td:nth-child(4) { width: 8%; }  /* Состояние */
+th:nth-child(5), td:nth-child(5) { width: 15%; } /* Имя сервера */
+th:nth-child(6), td:nth-child(6) { width: 30%; } /* Проблема */
+th:nth-child(7), td:nth-child(7) { width: 13%; } /* Длительность */
 
 tbody tr:nth-child(even) td {
   background-color: rgba(0, 0, 0, 0.02);
 }
 
-tbody tr:last-child td {
-  border-bottom: none;
+tbody tr:hover td {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
+/* Скругленные углы */
 th:first-child {
   border-top-left-radius: 12px;
 }
-
 th:last-child {
   border-top-right-radius: 12px;
 }
-
 tbody tr:last-child td:first-child {
   border-bottom-left-radius: 12px;
 }
-
 tbody tr:last-child td:last-child {
   border-bottom-right-radius: 12px;
 }
 
-tbody tr:hover td {
-  background-color: rgba(0, 0, 0, 0.03);
-}
-
-th:not(:last-child),
-td:not(:last-child) {
-  border-right: none;
-}
-
 .header-table {
-  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 100%;
 }
 
+.fa-chevron-up, .fa-chevron-down {
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+.status, .name-mistake {
+  white-space: nowrap;
+}
 </style>
+

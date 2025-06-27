@@ -119,13 +119,13 @@ export default {
       // оригинальные подключения
       // const res=await fetch('/api/servers');
       // this.servers=await res.json();
-      // const resTwo=await fetch('/api/servers/error_block');
-      // this.problems=await resTwo.json();
+      const resTwo=await fetch('/api/servers/error_block');
+      this.problems=await resTwo.json();
 
 
       // тестовые подключения
-      const res = await fetch('/src/components/error_block.json');
-      this.problems = await res.json();
+      // const res = await fetch('/src/components/error_block.json');
+      // this.problems = await res.json();
       console.log(this.problems);
       // const resProblem = await fetch('/src/problems.json');
       // this.problems =  await resProblem.json();
