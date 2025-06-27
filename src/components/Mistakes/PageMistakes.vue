@@ -202,11 +202,11 @@ export default {
     },
     applySearchFilter(filtered) {
       if (this.currentSearch !== '') {
-        return filtered.filter(elem => elem.hostName.toLowerCase().includes(this.inputSearch.toLowerCase()))
+        return filtered.filter(elem =>
+            elem.hostName.toLowerCase().includes(this.currentSearch.toLowerCase())
+        );
       }
-      else {
-        return filtered
-      }
+      return filtered;
     },
     applyGroupFilter(filtered) {
       if (!this.filters.group || this.filters.group === "Все") {
@@ -324,6 +324,7 @@ export default {
         <div class="top">
           <ui-input
               id="inputIp"
+              @input="filterByDateTime"
               v-model="currentSearch"
               placeholder="Поиск по имени сервера"
               :themeStatus="themeStatus"
