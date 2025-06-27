@@ -214,7 +214,6 @@ export default {
       const searchTerm = this.currentSearch.toLowerCase();
 
       return filtered.filter(item => {
-        // Проверяем основной сервер
         if (item.hostName && item.hostName.toLowerCase().includes(searchTerm)) {
           return true;
         }
