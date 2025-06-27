@@ -486,6 +486,7 @@ export default {
   z-index: 1000;
   padding-bottom: 1.1%;
 }
+
 .themes {
   cursor: pointer;
   width: 30px;
