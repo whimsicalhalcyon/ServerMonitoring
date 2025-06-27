@@ -53,7 +53,6 @@ const verticalLinePlugin = {
 ChartJS.register(verticalLinePlugin);
 
 
-
 export default {
 
   components: {
@@ -99,9 +98,6 @@ export default {
     }
   },
   methods: {
-    math(a, b) {
-      return a + b;
-    },
     nameAdd(name) {
       this.nameServer = name;
     },
@@ -732,7 +728,7 @@ export default {
 
 </script>
 
-<template @keydown="enterSearch">
+<template>
   <div class="main" style="width: 100%" >
     <div class="main-top" :style="themeStatus ? {background: themeLight.background}: {background: themeDark.background}">
       <div class="text">
@@ -748,7 +744,7 @@ export default {
       </div>
       <div class="panel" v-if="openPanel" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
         <div class="top">
-          <ui-input id="inputSearch" v-model="inputSearch" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
+          <ui-input @keydown.enter="searchElement" id="inputSearch" v-model="inputSearch" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark"></ui-input>
           <ui-select id="selectGroup" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark">
             <option disabled selected>Выбрать группу серверов</option>
             <option>Все</option>
