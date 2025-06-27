@@ -5,6 +5,7 @@ import MainButton from "@/components/MainButton.vue";
 import ModalWindow from "@/components/ServerCharts/Components/ModalWindow.vue";
 import Graphic from "@/components/ServerCharts/Components/Graphic.vue";
 import { Line } from "vue-chartjs";
+
 import {
   Chart as ChartJS,
   Title,
@@ -16,6 +17,7 @@ import {
   PointElement,
   Filler, LogarithmicScale,
 } from "chart.js";
+import {log10} from "chart.js/helpers";
 
 ChartJS.register(
     Title,
@@ -27,8 +29,6 @@ ChartJS.register(
     PointElement,
     Filler
 );
-
-
 const verticalLinePlugin = {
   id: 'verticalLine',
   afterDraw: function(chart) {
@@ -50,11 +50,14 @@ const verticalLinePlugin = {
     }
   }
 };
-
 ChartJS.register(verticalLinePlugin);
+
+
+
 export default {
+
   components: {
-    UiSelect, UiInput, Graphic, MainButton, ModalWindow, Line
+    UiSelect, UiInput, Graphic, MainButton, ModalWindow, Line,
   },
   props: {
     serversGroups: {
@@ -96,6 +99,9 @@ export default {
     }
   },
   methods: {
+    math(a, b) {
+      return a + b;
+    },
     nameAdd(name) {
       this.nameServer = name;
     },
@@ -120,7 +126,7 @@ export default {
       this.inputSearch = document.querySelector('#inputSearch').value
       this.dateStart = document.querySelector('#dateStart').value
       this.dateEnd = document.querySelector('#dateEnd').value
-
+      this.myTest(1, 5)
     },
     deleteFilter() {
       this.selectGroup = 'Выбрать группу серверов'
@@ -139,14 +145,12 @@ export default {
       let ram = []
       let memory = []
       let date = []
-
       for (let item of server.metrics) {
         cpuHelp.push(item.cpu)
         ramHelp.push(item.ram)
         memoryHelp.push(item.strorage)
         dateHelp.push(item.createdAt)
       }
-
       for (let i = 0; i < dateHelp.length; i++) {
         let start = new Date()
         start = start.getDate()
@@ -167,7 +171,6 @@ export default {
 
         }
       }
-
       return {
         labels: this.searchDate(this.filterDate(date), dateHelp),
         datasets: [
@@ -531,8 +534,6 @@ export default {
         return memory;
       }
     },
-
-
     searchGroup(array) {
       if (this.inputSearch !== '') {
         return array.filter(elem => elem.hostName.toLowerCase().includes(this.inputSearch.toLowerCase()))
@@ -570,9 +571,7 @@ export default {
       this.selectInterval = document.querySelector('#selectInterval').value
       this.inputSearch = document.querySelector('#inputSearch').value
     },
-
   },
-
   computed: {
     dataGraphic() {
       let array = []
@@ -729,7 +728,6 @@ export default {
       };
     }
   },
-
 }
 
 </script>
@@ -803,12 +801,12 @@ export default {
     </div>
     <modal-window :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" v-model:openDialog="modalWindow"></modal-window>
   </div>
+<!--  <test :math="math"></test>-->
 </template>
 
 <style scoped>
 
 .themes {
-  
   cursor: pointer;
   width: 30px;
   height: 30px;
@@ -843,7 +841,6 @@ export default {
   display: flex;
   gap: 1.1%
 }
-
 .main .main-top .panel .bottom .date {
   width: 14.95%;
 }
