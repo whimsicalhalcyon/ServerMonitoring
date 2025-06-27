@@ -142,16 +142,16 @@ export default {
               valA = a.hostName || '';
               valB = b.hostName || '';
               return dir
-                  ? valA.localeCompare(valB, 'ru')
-                  : valB.localeCompare(valA, 'ru');
+                  ? valA.localeCompare(valB, )
+                  : valB.localeCompare(valA, );
             }
 
             if (column === 'group') {
               valA = a.block?.name || '';
               valB = b.block?.name || '';
               return dir
-                  ? valA.localeCompare(valB, 'ru')
-                  : valB.localeCompare(valA, 'ru');
+                  ? valA.localeCompare(valB, )
+                  : valB.localeCompare(valA, );
             }
 
             if (column === 'ip') {

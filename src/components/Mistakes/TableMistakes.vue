@@ -25,7 +25,7 @@ export default {
     isSelected: {
       type: Number,
     },
-    problems : {
+    problems: {
       type: Array,
 
     },
@@ -34,39 +34,47 @@ export default {
   data() {
     return {
       sortColumn: {
-        time:false,
+        time: false,
         importance: false,
         recoveryTime: false,
         state: false,
-        serverName:false,
+        serverName: false,
         problem: false,
         duration: false
       },
       sortConfig: {
         column: null,
-        ascending: 'asc'
+        direction: null
       }
     }
 
   },
   methods: {
+    getDurationInMinutes(start, end) {
+      const startDate = new Date(start);
+      const endDate = end ? new Date(end) : new Date();
+
+      const diff = endDate - startDate;
+      return Math.max(0, Math.floor(diff / 60000)); // Вернёт длительность в минутах
+    },
     toggleSelect(index) {
       this.$emit('update:isSelected', this.isSelected === index ? null : index);
     },
     togglepanel(column) {
       if (this.sortConfig.column === column) {
-        this.sortConfig.direction = this.sortConfig.direction === 'asc' ? 'desc' : 'asc';
+        // Переключаем порядок по кругу
+        if (this.sortConfig.direction === null) {
+          this.sortConfig.direction = 'asc';
+        } else if (this.sortConfig.direction === 'asc') {
+          this.sortConfig.direction = 'desc';
+        } else {
+          this.sortConfig.column = null;
+          this.sortConfig.direction = null;
+        }
       } else {
+        // Если колонка новая — активируем её с начальной сортировкой
         this.sortConfig.column = column;
         this.sortConfig.direction = 'asc';
-      }
-
-      Object.keys(this.sortColumn).forEach(key => {
-        this.sortColumn[key] = false;
-      });
-
-      if (this.sortConfig.column) {
-        this.sortColumn[this.sortConfig.column] = true;
       }
     },
 
@@ -130,19 +138,16 @@ export default {
     }
   },
   computed: {
-    currTheme()
-    {
+    currTheme() {
       return this.themeStatus ? this.themeLight : this.themeDark;
     },
-    cellStyle()
-    {
+    cellStyle() {
       return {
         color: this.currTheme.textColor,
         // borderColor: this.currTheme.borderColor
       }
     },
-    tableData()
-    {
+    tableData() {
       const statuses = ['Критическая', 'Высокая', 'Средняя'];
       const states = ['Ошибка', 'Решено'];
       const problems = 'Zabbix agent is not available (for 3m)';
@@ -158,9 +163,8 @@ export default {
         duration: Date.now()
       }))
     }
-  ,
-    sortedProblems()
-    {
+    ,
+    sortedProblems() {
       const allErrors = [];
       this.problems.forEach(server => {
         if (!server.errors) return;
@@ -227,48 +231,91 @@ export default {
         <th :style="cellStyle">
           <div class="header-table">
             <span>Время</span>
-            <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-               :class="[sortConfig.column === 'time'? (sortConfig.direction === 'asc' ? 'fa-chevron-up' : 'fa-chevron-down'): 'fa-chevron-down']" @click="togglepanel('time')"></i>
+            <i class="fa-solid" style="cursor: pointer;"
+               :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+               :class="{
+    'fa-sort': sortConfig.column !== 'time' || sortConfig.direction === null,
+    'fa-sort-up': sortConfig.column === 'time' && sortConfig.direction === 'asc',
+    'fa-sort-down': sortConfig.column === 'time' && sortConfig.direction === 'desc'
+  }" @click="togglepanel('time')"></i>
           </div>
         </th>
         <th :style="cellStyle">
           <div class="header-table">
             <span>Важность</span>
-            <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-               :class="[sortConfig.column === 'importance'? (sortConfig.direction === 'asc' ? 'fa-chevron-up' : 'fa-chevron-down'): 'fa-chevron-down']" @click="togglepanel('importance')"></i>
+            <i class="fa-solid " style="cursor: pointer;"
+               :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+               :class="{
+    'fa-sort': sortConfig.column !== 'importance' || sortConfig.direction === null,
+    'fa-sort-up': sortConfig.column === 'importance' && sortConfig.direction === 'asc',
+    'fa-sort-down': sortConfig.column === 'importance' && sortConfig.direction === 'desc'
+  }"
+               @click="togglepanel('importance')"></i>
           </div>
         </th>
         <th :style="cellStyle">
-        <div class="header-table">
-          <span>Время восстановления</span>
-          <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-              :class="[sortConfig.column === 'recoveryTime'? (sortConfig.direction === 'asc' ? 'fa-chevron-up' : 'fa-chevron-down'): 'fa-chevron-down']" @click="togglepanel('recoveryTime')"></i>
-        </div></th>
+          <div class="header-table">
+            <span>Время восстановления</span>
+            <i class="fa-solid " style="cursor: pointer;"
+               :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+               :class="{
+    'fa-sort': sortConfig.column !== 'recoveryTime' || sortConfig.direction === null,
+    'fa-sort-up': sortConfig.column === 'recoveryTime' && sortConfig.direction === 'asc',
+    'fa-sort-down': sortConfig.column === 'recoveryTime' && sortConfig.direction === 'desc'
+  }"
+               @click="togglepanel('recoveryTime')"></i>
+          </div>
+        </th>
         <th :style="cellStyle">
           <div class="header-table">
             <span>Состояние</span>
-            <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-               :class="[sortConfig.column === 'state'? (sortConfig.direction === 'asc' ? 'fa-chevron-up' : 'fa-chevron-down'): 'fa-chevron-down']" @click="togglepanel('state')"></i>
+            <i class="fa-solid" style="cursor: pointer;"
+               :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+               :class="{
+    'fa-sort': sortConfig.column !== 'state' || sortConfig.direction === null,
+    'fa-sort-up': sortConfig.column === 'state' && sortConfig.direction === 'asc',
+    'fa-sort-down': sortConfig.column === 'state' && sortConfig.direction === 'desc'
+  }"
+               @click="togglepanel('state')"></i>
           </div>
         </th>
         <th :style="cellStyle">
-        <div class="header-table">
-          <span>Имя сервера</span>
-          <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-             :class="[sortConfig.column === 'serverName'? (sortConfig.direction === 'asc' ? 'fa-chevron-up' : 'fa-chevron-down'): 'fa-chevron-down']" @click="togglepanel('serverName')"></i>
-        </div></th>
+          <div class="header-table">
+            <span>Имя сервера</span>
+            <i class="fa-solid" style="cursor: pointer;"
+               :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+               :class="{
+    'fa-sort': sortConfig.column !== 'serverName' || sortConfig.direction === null,
+    'fa-sort-up': sortConfig.column === 'serverName' && sortConfig.direction === 'asc',
+    'fa-sort-down': sortConfig.column === 'serverName' && sortConfig.direction === 'desc'
+  }"
+               @click="togglepanel('serverName')"></i>
+          </div>
+        </th>
         <th :style="cellStyle">
           <div class="header-table">
             <span>Проблема</span>
-            <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-               :class="[sortConfig.column === 'problem'? (sortConfig.direction === 'asc' ? 'fa-chevron-up' : 'fa-chevron-down'): 'fa-chevron-down']" @click="togglepanel('problem')"></i>
+            <i class="fa-solid" style="cursor: pointer;"
+               :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+               :class="{
+    'fa-sort': sortConfig.column !== 'problem' || sortConfig.direction === null,
+    'fa-sort-up': sortConfig.column === 'problem' && sortConfig.direction === 'asc',
+    'fa-sort-down': sortConfig.column === 'problem' && sortConfig.direction === 'desc'
+  }"
+               @click="togglepanel('problem')"></i>
           </div>
         </th>
         <th class="rounded-tr" :style="cellStyle">
           <div class="header-table">
             <span>Длительность</span>
-            <i class="fa-solid fa-chevron-up " style="cursor: pointer;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
-                :class="[sortConfig.column === 'duration'? (sortConfig.direction === 'asc' ? 'fa-chevron-up' : 'fa-chevron-down'): 'fa-chevron-down']" @click="togglepanel('duration')"></i>
+            <i class="fa-solid " style="cursor: pointer;"
+               :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
+               :class="{
+    'fa-sort': sortConfig.column !== 'duration' || sortConfig.direction === null,
+    'fa-sort-up': sortConfig.column === 'duration' && sortConfig.direction === 'asc',
+    'fa-sort-down': sortConfig.column === 'duration' && sortConfig.direction === 'desc'
+  }"
+               @click="togglepanel('duration')"></i>
           </div>
         </th>
       </tr>
@@ -276,10 +323,12 @@ export default {
       <tbody>
       <tr v-for="item in sortedProblems" :key="item.id">
         <td :style="cellStyle">
-          {{item.createdAt
-            ? item.createdAt.split('T')[0].split('-').reverse().join('.') + ' ' +
-            item.createdAt.split('T')[1].substring(0,8)
-            : '-' }}
+          {{
+            item.createdAt
+                ? item.createdAt.split('T')[0].split('-').reverse().join('.') + ' ' +
+                item.createdAt.split('T')[1].substring(0, 8)
+                : '-'
+          }}
         </td>
 
         <td class="name-mistake"
@@ -292,18 +341,22 @@ export default {
                  item.importance === 1 ? '#4FC3F7' :
                  '#4CAF50'
         }">
-          {{ item.importance === 5 ? 'Критическая' :
-            item.importance === 4 ? 'Высокая' :
-                item.importance === 3 ? 'Средняя' :
-                    item.importance === 2 ? 'Предупреждение' :
-                        item.importance === 1 ? 'Информация' : 'Не классифицирована' }}
+          {{
+            item.importance === 5 ? 'Критическая' :
+                item.importance === 4 ? 'Высокая' :
+                    item.importance === 3 ? 'Средняя' :
+                        item.importance === 2 ? 'Предупреждение' :
+                            item.importance === 1 ? 'Информация' : 'Не классифицирована'
+          }}
         </td>
 
         <td :style="cellStyle" v-if="item.finishedAt">
-          {{ item.finishedAt
-            ? item.finishedAt.split('T')[0].split('-').reverse().join('.') + ' ' +
-            item.finishedAt.split('T')[1].substring(0,8)
-            : '-' }}
+          {{
+            item.finishedAt
+                ? item.finishedAt.split('T')[0].split('-').reverse().join('.') + ' ' +
+                item.finishedAt.split('T')[1].substring(0, 8)
+                : '-'
+          }}
         </td>
         <td :style="cellStyle" style="text-align:center" v-else>
           -
