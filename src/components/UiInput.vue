@@ -12,7 +12,7 @@ export default {
     themeStatus: {
       type: Boolean,
       default: true
-    }
+    },
   },
 }
 </script>

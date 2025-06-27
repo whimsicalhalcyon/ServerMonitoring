@@ -10,9 +10,11 @@ export default {
   },
   data() {
     return {
-      servers:[],
-      problems:[],
-      serverGroup: [],
+      servers: [],
+      groups: [],
+      errorBlocks: [],
+      serverParameterData: [],
+      isDataLoaded: false,
       openMonitor: false,
       openMistakes: false,
       openInteraction: false,
@@ -54,7 +56,47 @@ export default {
       isSelected: null,
     }
   },
-  methods : {
+  methods: {
+    async fetchServers() {
+      try {
+        const res = await fetch('/api/api/servers');
+        if (!res.ok) throw new Error('Ошибка загрузки серверов');
+        this.servers = await res.json();
+      } catch (error) {
+        console.log(error);
+        alert('Ошибка загрузки серверов');
+      }
+    },
+    async fetchBlocks() {
+      try {
+        const res = await fetch('/api/api/blocks');
+        if (!res.ok) throw new Error('Ошибка загрузки блоков');
+        this.groups = await res.json();
+      } catch (error) {
+        console.log(error);
+        alert('Ошибка загрузки блоков');
+      }
+    },
+    async fetchErrorBlocks() {
+      try {
+        const res = await fetch('/api/api/servers/error_block');
+        if (!res.ok) throw new Error('Ошибка загрузки error_block');
+        this.errorBlocks = await res.json();
+      } catch (error) {
+        console.log(error);
+        alert('Ошибка загрузки error_block');
+      }
+    },
+    async fetchServerParameter() {
+      try {
+        const res = await fetch('/api/api/blocks/server_parameter');
+        if (!res.ok) throw new Error('Ошибка загрузки server_parameter');
+        this.serverParameterData = await res.json();
+      } catch (error) {
+        console.log(error);
+        alert('Ошибка загрузки server_parameter');
+      }
+    },
     openMonitorWindow(status) {
       this.openMonitor = status;
       this.openMistakes = false;
@@ -91,6 +133,28 @@ export default {
     },
     checkPage(buttonId) {
       this.checkButton = buttonId;
+    loadPageState() {
+      const pageState = localStorage.getItem('pageState');
+      if (pageState) {
+        const state = JSON.parse(pageState);
+        this.openMonitor = state.openMonitor;
+        this.openMistakes = state.openMistakes;
+        this.openInteraction = state.openInteraction;
+        this.checkButton = state.checkButton;
+      }
+    },
+    async fetchServers(){
+      // оригинальные подключения
+      // const res=await fetch('/api/servers');
+      // this.servers=await res.json();
+      // const resTwo=await fetch('/api/servers/error_block');
+      // this.problems=await resTwo.json();
+
+
+
+      const res = await fetch('/src/components/error_block.json');
+      this.problems = await res.json();
+      console.log(this.problems);
 
       switch (buttonId) {
         case 1:
@@ -115,46 +179,35 @@ export default {
         this.checkButton = state.checkButton;
       }
     },
-    async fetchServers(){
-      // оригинальные подключения
-      // const res=await fetch('/api/servers');
-      // this.servers=await res.json();
-      // const resTwo=await fetch('/api/servers/error_block');
-      // this.problems=await resTwo.json();
-
-
-
-      const res = await fetch('/src/components/error_block.json');
-      this.problems = await res.json();
-      console.log(this.problems);
-
-    },
-  },
+  }
+  ,
   created() {
     // добавление страницы в локал сторадж, чтобы она при перезагрузке не пропадала
-    this.loadPageState()
-  },
-
-
-  watch: {
-    openMonitor(newValue) {
-      localStorage.setItem('monitorState', JSON.stringify(newValue));
-    },
-  },
+    this.loadPageState();
+  }
+  ,
+  // watch: {
+  //   openMonitor(newValue) {
+  //     localStorage.setItem('monitorState', JSON.stringify(newValue));
+  //   },
+  //   serverParameterData(newValue) {
+  //     console.log('ОТ родителя:', newValue);
+  //   }
+  // }
+  // ,
   computed: {
     themeLocal() {
-      if (localStorage.getItem('theme') === 'true') {
-        this.themeStatusLight = true
-      } else {
-        this.themeStatusLight = false
-      }
-    }
-  },
+      return localStorage.getItem('theme') === 'true';
+    },
+  }
+  ,
   mounted() {
-    this.themeLocal
+    this.fetchBlocks();
     this.fetchServers();
+    this.fetchErrorBlocks();
+    this.fetchServerParameter();
+    this.isDataLoaded = true;
   },
-
 }
 </script>
 
@@ -176,8 +229,16 @@ export default {
         :themeDark="themeDark"
         @changeTheme="changeToTheme"></page-monitor>
     <page-interaction
-        v-bind:servers="servers"
-        v-if="openInteraction"
+        :fetch-servers="fetchServers"
+        :fetch-blocks="fetchBlocks"
+        :fetch-error-blocks="fetchErrorBlocks"
+        :fetch-server-parameter="fetchServerParameter"
+        :isDataLoaded="isDataLoaded"
+        :groups="groups"
+        :servers="servers"
+        :errorBlocks="errorBlocks"
+        :serverParameterData="serverParameterData"
+        v-show="openInteraction"
         :themeStatus="themeStatusLight"
         :themeLight="themeLight"
         :themeDark="themeDark"
@@ -197,6 +258,7 @@ export default {
 .page {
   display: flex;
   gap: 20px;
+
   padding-right: 20px;
 }
 </style>
