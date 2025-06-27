@@ -1,18 +1,22 @@
-<script >
-import pageMonitor from "@/components/ServerCharts/PageMonitor.vue";
+<script>
 import menuPage from "@/components/MenuPage.vue";
+import PageInteraction from "@/components/Interaction/PageInteraction.vue";
 import pageMistakes from "@/components/Mistakes/PageMistakes.vue";
-import pageInteraction from "@/components/Interaction/PageInteraction.vue";
+import pageMonitor from "@/components/ServerCharts/PageMonitor.vue";
+
 
 export default {
   components: {
-    pageMonitor, menuPage, pageMistakes, pageInteraction
+    menuPage, PageInteraction, pageMistakes, pageMonitor
   },
   data() {
     return {
-      servers:[],
-      problems:[],
-      serverGroup: [],
+      servers: [],
+      groups: [],
+      errorBlocks: [],
+      serverParameterData: [],
+      serversGroups: [],
+      isDataLoaded: false,
       openMonitor: false,
       openMistakes: false,
       openInteraction: false,
@@ -20,7 +24,7 @@ export default {
         background: '#f5f5f5',
         backgroundComponent: '#ffffff',
         backgroundFilter: '#E0E0E0',
-        backgroundButton:'#4FC3F7',
+        backgroundButton: '#4FC3F7',
         textColor: '#212121',
         textFilter: '#ffffff',
         textButton: '#ffffff',
@@ -37,7 +41,7 @@ export default {
         background: '#2D2D30',
         backgroundComponent: '#1E1E1E',
         backgroundFilter: '#3F3F46',
-        backgroundButton:'#007ACC',
+        backgroundButton: '#007ACC',
         textColor: '#E0E0E0',
         textFilter: '#ffffff',
         textButton: '#ffffff',
@@ -54,7 +58,55 @@ export default {
       isSelected: null,
     }
   },
-  methods : {
+  methods: {
+    async fetchMetric() {
+      const resMetric = await fetch("/api/blocks/server_metric");
+      this.serversGroups = await resMetric.json();
+    },
+    async fetchServers() {
+      try {
+        const res = await fetch('/api/servers');
+        if (!res.ok) throw new Error('Ошибка загрузки серверов');
+        this.servers = await res.json();
+        setInterval(this.fetchServers, 60000);
+      } catch (error) {
+        console.log(error);
+        alert('Ошибка загрузки серверов');
+      }
+    },
+    async fetchBlocks() {
+      try {
+        const res = await fetch('/api/blocks');
+        if (!res.ok) throw new Error('Ошибка загрузки блоков');
+        this.groups = await res.json();
+        setInterval(this.fetchBlocks, 60000);
+      } catch (error) {
+        console.log(error);
+        alert('Ошибка загрузки блоков');
+      }
+    },
+    async fetchErrorBlocks() {
+      try {
+        const res = await fetch('/api/servers/error_block');
+        if (!res.ok) throw new Error('Ошибка загрузки error_block');
+        this.errorBlocks = await res.json();
+        setInterval(this.fetchErrorBlocks, 60000);
+      } catch (error) {
+        console.log(error);
+        alert('Ошибка загрузки error_block');
+      }
+    },
+    async fetchServerParameter() {
+      try {
+        const res = await fetch('/api/blocks/server_parameter');
+        if (!res.ok) throw new Error('Ошибка загрузки server_parameter');
+        this.serverParameterData = await res.json();
+        setInterval(this.fetchServerParameter, 60000);
+      } catch (error) {
+        console.log(error);
+        alert('Ошибка загрузки server_parameter');
+      }
+    },
     openMonitorWindow(status) {
       this.openMonitor = status;
       this.openMistakes = false;
@@ -133,15 +185,18 @@ export default {
   },
   created() {
     // добавление страницы в локал сторадж, чтобы она при перезагрузке не пропадала
-    this.loadPageState()
-  },
-
-
-  watch: {
-    openMonitor(newValue) {
-      localStorage.setItem('monitorState', JSON.stringify(newValue));
-    },
-  },
+    this.loadPageState();
+  }
+  ,
+  // watch: {
+  //   openMonitor(newValue) {
+  //     localStorage.setItem('monitorState', JSON.stringify(newValue));
+  //   },
+  //   serverParameterData(newValue) {
+  //     console.log('ОТ родителя:', newValue);
+  //   }
+  // }
+  // ,
   computed: {
     themeLocal() {
       if (localStorage.getItem('theme') === 'true') {
@@ -149,19 +204,28 @@ export default {
       } else {
         this.themeStatusLight = false
       }
-    }
+    },
   },
   mounted() {
     this.themeLocal
+    this.fetchBlocks();
     this.fetchServers();
+    this.fetchErrorBlocks();
+    this.fetchServerParameter();
+    this.isDataLoaded = true;
+    this.fetchMetric()
+    setInterval(this.fetchMetric, 60000);
   },
 
 }
 </script>
 
 <template>
-  <div class="page" :style="themeStatusLight ? {background: this.themeLight.background}: {background: this.themeDark.background}">
+  <div class="page"
+
+       :style="themeStatusLight ? {background: this.themeLight.background}: {background: this.themeDark.background}">
     <menu-page
+        class="height"
         :checkButton="checkButton"
         @button-clicked="checkPage"
         :open-interaction="openInteraction"
@@ -169,22 +233,34 @@ export default {
         :open-monitor="openMonitor"
         :themeStatus="themeStatusLight"
         :themeLight="themeLight"
-        :themeDark="themeDark" ></menu-page>
+        :themeDark="themeDark"></menu-page>
+    <page-interaction
+        class="height"
+        :fetch-servers="fetchServers"
+        :fetch-blocks="fetchBlocks"
+        :fetch-error-blocks="fetchErrorBlocks"
+        :fetch-server-parameter="fetchServerParameter"
+        :isDataLoaded="isDataLoaded"
+        :groups="groups"
+        :servers="servers"
+        :errorBlocks="errorBlocks"
+        :serverParameterData="serverParameterData"
+        v-show="openInteraction"
+        :themeStatus="themeStatusLight"
+        :themeLight="themeLight"
+        :themeDark="themeDark"
+        @changeTheme="changeToTheme"></page-interaction>
     <page-monitor
+        class="height"
+        :serversGroups="serversGroups"
+        :servers="servers"
         v-if="openMonitor"
         :themeStatus="themeStatusLight"
         :themeLight="themeLight"
         :themeDark="themeDark"
         @changeTheme="changeToTheme"></page-monitor>
-    <page-interaction
-        v-bind:servers="servers"
-        v-if="openInteraction"
-        :themeStatus="themeStatusLight"
-        :themeLight="themeLight"
-        :themeDark="themeDark"
-        @changeTheme="changeToTheme"></page-interaction>
     <page-mistakes
-        v-bind:problems="problems"
+        v-bind:problems="errorBlocks"
         v-if="openMistakes"
         :themeStatus="themeStatusLight"
         :themeLight="themeLight"
@@ -199,5 +275,9 @@ export default {
   display: flex;
   gap: 20px;
   padding-right: 20px;
+}
+
+.height {
+  min-height: 100vh;
 }
 </style>

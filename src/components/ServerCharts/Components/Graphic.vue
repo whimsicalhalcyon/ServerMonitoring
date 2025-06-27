@@ -29,6 +29,10 @@ export default {
   },
 
   props: {
+    serversGroups: {
+      type: Array,
+      required: true,
+    },
     themeLight: {
       type: Object,
       required: true
