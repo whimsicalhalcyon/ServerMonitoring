@@ -202,7 +202,6 @@ export default {
     },
     applySearchFilter(filtered) {
       if (this.currentSearch !== '') {
-        console.log(filtered.filter(elem => elem.hostName.toLowerCase().includes(this.inputSearch.toLowerCase())))
         return filtered.filter(elem => elem.hostName.toLowerCase().includes(this.inputSearch.toLowerCase()))
       }
       else {
