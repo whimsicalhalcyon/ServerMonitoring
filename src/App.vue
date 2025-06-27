@@ -201,19 +201,33 @@ export default {
     },
   }
   ,
+      if (localStorage.getItem('theme') === 'true') {
+        this.themeStatusLight = true
+      } else {
+        this.themeStatusLight = false
+      }
+    },
+
+
+  },
   mounted() {
     this.fetchBlocks();
     this.fetchServers();
     this.fetchErrorBlocks();
     this.fetchServerParameter();
     this.isDataLoaded = true;
+    this.themeLocal
+    this.fetchServers()
+    setInterval(this.fetchServers, 60000)
   },
+
 }
 </script>
 
 <template>
   <div class="page" :style="themeStatusLight ? {background: this.themeLight.background}: {background: this.themeDark.background}">
     <menu-page
+        class="height"
         :checkButton="checkButton"
         @button-clicked="checkPage"
         :open-interaction="openInteraction"
@@ -223,6 +237,10 @@ export default {
         :themeLight="themeLight"
         :themeDark="themeDark" ></menu-page>
     <page-monitor
+        class="height"
+        :serversGroups="serversGroups"
+        :servers="servers"
+        :parameters="parameters"
         v-if="openMonitor"
         :themeStatus="themeStatusLight"
         :themeLight="themeLight"
@@ -239,12 +257,16 @@ export default {
         :errorBlocks="errorBlocks"
         :serverParameterData="serverParameterData"
         v-show="openInteraction"
+        class="height"
+        v-bind:servers="servers"
+        v-if="openInteraction"
         :themeStatus="themeStatusLight"
         :themeLight="themeLight"
         :themeDark="themeDark"
         @changeTheme="changeToTheme"></page-interaction>
     <page-mistakes
         v-bind:problems="problems"
+        class="height"
         v-if="openMistakes"
         :themeStatus="themeStatusLight"
         :themeLight="themeLight"

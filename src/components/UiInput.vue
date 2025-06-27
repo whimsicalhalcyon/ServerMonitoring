@@ -1,6 +1,10 @@
 <script>
+import {valueOrDefault} from "chart.js/helpers";
+
 export default {
+  methods: {valueOrDefault},
   props: {
+
     themeLight: {
       type: Object,
       required: true
