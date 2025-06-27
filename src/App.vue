@@ -3,6 +3,7 @@ import menuPage from "@/components/MenuPage.vue";
 import PageInteraction from "@/components/Interaction/PageInteraction.vue";
 import pageMistakes from "@/components/Mistakes/PageMistakes.vue";
 import pageMonitor from "@/components/ServerCharts/PageMonitor.vue";
+import * as res from "node/stream/consumers.js";
 
 export default {
   components: {
@@ -14,6 +15,7 @@ export default {
       groups: [],
       errorBlocks: [],
       serverParameterData: [],
+      serverMetric: [],
       isDataLoaded: false,
       openMonitor: false,
       openMistakes: false,
@@ -57,6 +59,10 @@ export default {
     }
   },
   methods: {
+    async fetchMetric() {
+      const resMetric = await fetch("/api/blocks/server_metric");
+      this.serverMetric = await resMetric.json();
+    },
     async fetchServers() {
       try {
         const res = await fetch('/api/servers');
@@ -179,15 +185,22 @@ export default {
   // ,
   computed: {
     themeLocal() {
-      return localStorage.getItem('theme') === 'true';
+      if (localStorage.getItem('theme') === 'true') {
+        this.themeStatusLight = true
+      } else {
+        this.themeStatusLight = false
+      }
     },
   },
   mounted() {
+    this.themeLocal
     this.fetchBlocks();
     this.fetchServers();
     this.fetchErrorBlocks();
     this.fetchServerParameter();
     this.isDataLoaded = true;
+    this.fetchMetric()
+    setInterval(this.fetchMetric, 60000);
   },
 }
 </script>
@@ -197,6 +210,7 @@ export default {
 
        :style="themeStatusLight ? {background: this.themeLight.background}: {background: this.themeDark.background}">
     <menu-page
+        class="height"
         :checkButton="checkButton"
         @button-clicked="checkPage"
         :open-interaction="openInteraction"
@@ -206,6 +220,7 @@ export default {
         :themeLight="themeLight"
         :themeDark="themeDark"></menu-page>
     <page-interaction
+        class="height"
         :fetch-servers="fetchServers"
         :fetch-blocks="fetchBlocks"
         :fetch-error-blocks="fetchErrorBlocks"
@@ -221,6 +236,7 @@ export default {
         :themeDark="themeDark"
         @changeTheme="changeToTheme"></page-interaction>
     <page-monitor
+        class="height"
         v-if="openMonitor"
         :themeStatus="themeStatusLight"
         :themeLight="themeLight"
@@ -242,5 +258,8 @@ export default {
   display: flex;
   gap: 20px;
   padding-right: 20px;
+}
+.height {
+  min-height: 100vh;
 }
 </style>
