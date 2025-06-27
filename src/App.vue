@@ -14,6 +14,7 @@ export default {
       servers: [],
       groups: [],
       errorBlocks: [],
+      parameters:[],
       serverParameterData: [],
       serversGroups: [],
       isDataLoaded: false,
@@ -221,53 +222,52 @@ export default {
 </script>
 
 <template>
-  <div class="page"
-
-       :style="themeStatusLight ? {background: this.themeLight.background}: {background: this.themeDark.background}">
-    <menu-page
-        class="height"
-        :checkButton="checkButton"
-        @button-clicked="checkPage"
-        :open-interaction="openInteraction"
-        :open-mistakes="openMistakes"
-        :open-monitor="openMonitor"
-        :themeStatus="themeStatusLight"
-        :themeLight="themeLight"
-        :themeDark="themeDark"></menu-page>
-    <page-interaction
-        class="height"
-        :fetch-servers="fetchServers"
-        :fetch-blocks="fetchBlocks"
-        :fetch-error-blocks="fetchErrorBlocks"
-        :fetch-server-parameter="fetchServerParameter"
-        :isDataLoaded="isDataLoaded"
-        :groups="groups"
-        :servers="servers"
-        :errorBlocks="errorBlocks"
-        :serverParameterData="serverParameterData"
-        v-show="openInteraction"
-        :themeStatus="themeStatusLight"
-        :themeLight="themeLight"
-        :themeDark="themeDark"
-        @changeTheme="changeToTheme"></page-interaction>
-    <page-monitor
-        class="height"
-        :serversGroups="serversGroups"
-        :servers="servers"
-        v-if="openMonitor"
-        :themeStatus="themeStatusLight"
-        :themeLight="themeLight"
-        :themeDark="themeDark"
-        @changeTheme="changeToTheme"></page-monitor>
-    <page-mistakes
-        v-bind:problems="errorBlocks"
-        v-if="openMistakes"
-        :themeStatus="themeStatusLight"
-        :themeLight="themeLight"
-        :themeDark="themeDark"
-        @changeTheme="changeToTheme"></page-mistakes>
+  <div class="page" :style="themeStatusLight ? {background: this.themeLight.background}: {background: this.themeDark.background}">
+    <router-view/>
+  <menu-page
+      class="height"
+      :checkButton="checkButton"
+      @button-clicked="checkPage"
+      :open-interaction="openInteraction"
+      :open-mistakes="openMistakes"
+      :open-monitor="openMonitor"
+      :themeStatus="themeStatusLight"
+      :themeLight="themeLight"
+      :themeDark="themeDark"></menu-page>
+  <page-interaction
+      class="height"
+      :fetch-servers="fetchServers"
+      :fetch-blocks="fetchBlocks"
+      :fetch-error-blocks="fetchErrorBlocks"
+      :fetch-server-parameter="fetchServerParameter"
+      :isDataLoaded="isDataLoaded"
+      :groups="groups"
+      :servers="servers"
+      :errorBlocks="errorBlocks"
+      :serverParameterData="serverParameterData"
+      v-if="openInteraction"
+      :themeStatus="themeStatusLight"
+      :themeLight="themeLight"
+      :themeDark="themeDark"
+      @changeTheme="changeToTheme"></page-interaction>
+  <page-monitor
+      class="height"
+      :serversGroups="serversGroups"
+      :servers="servers"
+      :parameters="parameters"
+      v-if="openMonitor"
+      :themeStatus="themeStatusLight"
+      :themeLight="themeLight"
+      :themeDark="themeDark"
+      @changeTheme="changeToTheme"></page-monitor>
+  <page-mistakes
+      v-bind:problems="errorBlocks"
+      v-if="openMistakes"
+      :themeStatus="themeStatusLight"
+      :themeLight="themeLight"
+      :themeDark="themeDark"
+      @changeTheme="changeToTheme"></page-mistakes>
   </div>
-
 </template>
 
 <style scoped>

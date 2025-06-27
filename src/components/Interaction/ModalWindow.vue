@@ -2,9 +2,10 @@
 import UiInput from '@/components/UiInput.vue';
 import UiSelect from '@/components/UiSelect.vue';
 import MainButton from '@/components/MainButton.vue';
+import SelectCheckbox from "@/components/ServerCharts/SelectCheckbox.vue";
 
 export default {
-  components: {UiInput, UiSelect, MainButton},
+  components: {UiInput, UiSelect, MainButton, SelectCheckbox},
   props: {
     openDialog: {type: Boolean, default: false},
     themeStatus: {type: Boolean, default: true},
@@ -46,6 +47,11 @@ export default {
       newServerDns: '',//добавление нового доменного имени сервера
       selectedServerGroup: '',//выбранная группа сервера при добавлении
       selectedServers: [],
+      // selectOPen:false,
+      selectedoptionsArray:[],
+      selectOptions:[
+        {name:'Выберете парамтеры',servers:['Параметр 1','Параметр 2','Параметр 3'],isExpanded:false}
+      ]
       // editServerIp: '',
       // editServerDns: '',
       // selectedServerGroupEdit: '',
@@ -306,25 +312,9 @@ export default {
             </ui-select>
           </div>
         </div>
-        <div class="blocks-container" v-if="isAddServer">
-          <div v-for="(block, blockIndex) in blocks" :key="blockIndex" class="block">
-            <div class="block-header" @click="toggleExpand(blockIndex)">
-              <div class="btn-server">
-                <i :class="block.isExpanded ? 'fa fa-chevron-up' : 'fa fa-chevron-down'"></i>
-                <span>{{ selectedServers.join(', ') }}</span>
-              </div>
-            </div>
-            <div class="servers" v-show="block.isExpanded">
-              <div v-for="(server, serverIndex) in block.servers" :key="serverIndex" class="server-item">
-                <label class="server-content">
-                  <input v-if="showCheckBox" type="checkbox" class="server-checkbox" :value="server"
-                         @change="pushArrayParametres(server, $event.target.checked)">
-                  <span class="server-name">{{ server }}</span>
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
+        <select-checkbox :blocks="selectOptions" :show-add-btn="true" :show-delete-btn="true" :show-delete-server="false"
+                         :show-check-box="true" :themeStatus="themeStatus"
+                         :themeLight="themeLight" :themeDark="themeDark"></select-checkbox>
         <div class="dialog-buttons">
           <main-button @click="searchElement" :themeStatus="themeStatus"
                        :themeLight="themeLight" :themeDark="themeDark">
