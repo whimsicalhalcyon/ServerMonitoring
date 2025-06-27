@@ -106,6 +106,7 @@ export default {
       );
       if (exists) return alert('Сервер уже существует');
 
+
       const payload = {
         hostName: dns?.trim(),
         ipAddres: ip?.trim(),
