@@ -83,16 +83,17 @@ export default {
       if (exists) return alert('Группа уже существует');
 
       try {
-        const res = await fetch('/api/blocks', {
+        const res = await fetch('/api/api/blocks', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({name})
         });
         if (!res.ok) throw new Error('Ошибка при добавлении');
+        await this.fetchServers();
         await this.fetchBlocks();
         await this.fetchServerParameter();
       } catch (error) {
-        console.error(error);
+        console.log(error);
         alert('Ошибка при добавлении группы');
       }
     },
@@ -106,10 +107,10 @@ export default {
       if (exists) return alert('Сервер уже существует');
 
       const payload = {
-        hostName: dns,
-        ipAddres: ip,
+        hostName: dns?.trim(),
+        ipAddres: ip?.trim(),
         blockId: targetGroup.id,
-        state: true,
+        // state: true,
         // errors: [],
         // metrics: [],
         // serverParameters: [],
@@ -120,7 +121,7 @@ export default {
         console.log('targetGroup:', targetGroup);
         console.log('exists', exists);
         console.log('payload for addServer:', payload);
-        const res = await fetch('/api/servers', {
+        const res = await fetch('/api/api/servers', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(payload)
@@ -145,7 +146,7 @@ export default {
         //   await fetch(`/api/blocks/${s.id}`, {method: 'DELETE'});
         // }
 
-        const res = await fetch(`/api/blocks/${groupId}`, {method: 'DELETE'});
+        const res = await fetch(`/api/api/blocks/${groupId}`, {method: 'DELETE'});
         if (!res.ok) throw new Error('Ошибка удаления группы');
         await this.fetchBlocks();
         await this.fetchServers();
@@ -166,7 +167,7 @@ export default {
       try {
         if (confirmed) {
           this.isSelected = null;
-          const res = await fetch(`/api/servers/${serverId}`, {method: 'DELETE'});
+          const res = await fetch(`/api/api/servers/${serverId}`, {method: 'DELETE'});
           if (!res.ok) throw new Error('Ошибка удаления');
           await this.fetchServers();
           await this.fetchErrorBlocks();
@@ -212,7 +213,7 @@ export default {
         block: null,
       };
       try {
-        const res = await fetch(`/api/servers/${id}`, {
+        const res = await fetch(`/api/api/servers/${id}`, {
           method: 'PUT',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(updated)

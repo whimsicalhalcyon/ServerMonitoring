@@ -79,16 +79,18 @@ export default {
   },
   methods: {
     searchElement() {
-      this.selectedServerGroup = document.querySelector('#group').value; //выбранная группа добавление/редактирование
-      this.newServerIp = document.querySelector('#ip').value;
-      this.newServerDns = document.querySelector('#dns').value;
-
       if (this.isAddServer) {
+        this.selectedServerGroup = document.querySelector('#group').value; //выбранная группа добавление/редактирование
+        this.newServerIp = document.querySelector('#ip').value;
+        this.newServerDns = document.querySelector('#dns').value;
         this.addServer();
       } else if (this.isEditServer) {
+        this.selectedServerGroup = document.querySelector('#group').value; //выбранная группа добавление/редактирование
+        this.newServerIp = document.querySelector('#ip').value;
+        this.newServerDns = document.querySelector('#dns').value;
         this.saveEditServer();
       } else if (this.isAddBlock) {
-        this.newGroupName = document.querySelector('#newGroup').value;
+        this.newGroupName = document.querySelector('#newGroupAdd').value;
         this.addBlock();
       }
     },
@@ -235,7 +237,7 @@ export default {
             <label class="dialog-label" for="newGroup"
                    :style="themeStatus ? { color: themeLight.textColor } : { color: themeDark.textColor }"
             >Группа:</label>
-            <ui-input id="newGroup" placeholder=""
+            <ui-input id="newGroupAdd" placeholder=""
                       :themeStatus="themeStatus"
                       :themeLight="themeLight"
                       :themeDark="themeDark"></ui-input>
