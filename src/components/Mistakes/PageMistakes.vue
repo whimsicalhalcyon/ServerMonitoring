@@ -428,7 +428,7 @@ export default {
 
         <div class="bottom-checkbox">
           <div class="textLeft">
-            <p :style="themeStatus ? {color: themeLight.textCheckbox} : {color: themeDark.textCheckbox}">
+            <p style="margin-bottom: 10px" :style="themeStatus ? {color: themeLight.textCheckbox} : {color: themeDark.textCheckbox}">
               Тип ошибки:
             </p>
           </div>

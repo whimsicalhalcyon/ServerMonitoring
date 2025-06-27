@@ -239,7 +239,6 @@ export default {
         class="height"
         :serversGroups="serversGroups"
         :servers="servers"
-        :parameters="parameters"
         v-if="openMonitor"
         :themeStatus="themeStatusLight"
         :themeLight="themeLight"
@@ -262,6 +261,7 @@ export default {
   gap: 20px;
   padding-right: 20px;
 }
+
 .height {
   min-height: 100vh;
 }
