@@ -177,8 +177,7 @@ export default {
     themeLocal() {
       return localStorage.getItem('theme') === 'true';
     },
-  }
-  ,
+  },
   mounted() {
     this.fetchBlocks();
     this.fetchServers();
