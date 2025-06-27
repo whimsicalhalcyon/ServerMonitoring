@@ -59,9 +59,10 @@ export default {
   methods: {
     async fetchServers() {
       try {
-        const res = await fetch('/api/api/servers');
+        const res = await fetch('/api/servers');
         if (!res.ok) throw new Error('Ошибка загрузки серверов');
         this.servers = await res.json();
+        setInterval(this.fetchServers, 60000);
       } catch (error) {
         console.log(error);
         alert('Ошибка загрузки серверов');
@@ -69,9 +70,10 @@ export default {
     },
     async fetchBlocks() {
       try {
-        const res = await fetch('/api/api/blocks');
+        const res = await fetch('/api/blocks');
         if (!res.ok) throw new Error('Ошибка загрузки блоков');
         this.groups = await res.json();
+        setInterval(this.fetchBlocks, 60000);
       } catch (error) {
         console.log(error);
         alert('Ошибка загрузки блоков');
@@ -79,9 +81,10 @@ export default {
     },
     async fetchErrorBlocks() {
       try {
-        const res = await fetch('/api/api/servers/error_block');
+        const res = await fetch('/api/servers/error_block');
         if (!res.ok) throw new Error('Ошибка загрузки error_block');
         this.errorBlocks = await res.json();
+        setInterval(this.fetchErrorBlocks, 60000);
       } catch (error) {
         console.log(error);
         alert('Ошибка загрузки error_block');
@@ -89,9 +92,10 @@ export default {
     },
     async fetchServerParameter() {
       try {
-        const res = await fetch('/api/api/blocks/server_parameter');
+        const res = await fetch('/api/blocks/server_parameter');
         if (!res.ok) throw new Error('Ошибка загрузки server_parameter');
         this.serverParameterData = await res.json();
+        setInterval(this.fetchServerParameter, 60000);
       } catch (error) {
         console.log(error);
         alert('Ошибка загрузки server_parameter');
