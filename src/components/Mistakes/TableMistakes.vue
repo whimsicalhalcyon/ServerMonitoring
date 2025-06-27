@@ -1,7 +1,7 @@
 <script>
 
 import MistakeCheckbox from "@/components/Mistakes/MistakeCheckbox.vue";
-import UiCheckboxInteraction from "@/components/UiCheckboxInteraction.vue";
+import UiCheckboxInteraction from "@/components/Interaction/UiCheckboxInteraction.vue";
 
 export default {
   components: {
