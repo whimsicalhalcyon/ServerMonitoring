@@ -6,6 +6,7 @@ import MainButton from "@/components/MainButton.vue";
 import UiCheckboxInteraction from "@/components/Interaction/UiCheckboxInteraction.vue";
 import ModalWindowMain from '@/components/Interaction/ModalWindowMain.vue';
 import ModalWindow from "@/components/Interaction/ModalWindow.vue";
+import * as XLSX from "xlsx";
 
 export default {
   components: {
@@ -70,6 +71,64 @@ export default {
     }
   },
   methods: {
+    getErrorTitle(importance) {
+      switch (importance) {
+        case 0: return 'Не классифицирована';
+        case 1: return 'Информация';
+        case 2: return 'Предупреждение';
+        case 3: return 'Средняя';
+        case 4: return 'Высокая';
+        case 5: return 'Критическая';
+        default: return 'Неизвестно';
+      }
+    },
+    exportToExcel() {
+      const wb = XLSX.utils.book_new();
+
+      const excelData = this.filteredServersData.map(server => {
+        const errorCounts = {};
+
+        // Считаем активные ошибки (state: false) из server.errors
+        if (Array.isArray(server.errors)) {
+          server.errors.forEach(error => {
+            if (error.state === false && Number.isInteger(error.importance)) {
+              errorCounts[error.importance] = (errorCounts[error.importance] || 0) + 1;
+            }
+          });
+        }
+
+        // Также считаем ошибки из server.block.servers
+        if (server.block?.servers && Array.isArray(server.block.servers)) {
+          server.block.servers.forEach(innerServer => {
+            if (innerServer?.errors && Array.isArray(innerServer.errors)) {
+              innerServer.errors.forEach(error => {
+                if (error.serverId === server.id && error.state === false && Number.isInteger(error.importance)) {
+                  errorCounts[error.importance] = (errorCounts[error.importance] || 0) + 1;
+                }
+              });
+            }
+          });
+        }
+
+        const errorSummary = Object.entries(errorCounts)
+            .map(([importance, count]) => `${this.getErrorTitle(+importance)}: ${count}`)
+            .join(', ') || 'Нет ошибок';
+
+        return {
+          'DNS-имя': server.hostName || '',
+          'IP-адрес': server.ipAddres || '',
+          'Состояние': server.state ? 'Активировано' : 'Деактивировано',
+          'Группа': server.block?.name || '',
+          'Ошибки': errorSummary
+        };
+      });
+
+      const ws = XLSX.utils.json_to_sheet(excelData);
+      XLSX.utils.book_append_sheet(wb, ws, 'Ошибки по серверам');
+
+      const fileName = `server_blocks_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+    },
     searchElement(){
       this.selectGroupPanel.status = document.querySelector('#filterSelectState').value;
       this.selectGroupPanel.group = document.querySelector('#filterSelectGroup').value;
@@ -346,7 +405,7 @@ export default {
             <main-button @click="toggleWindow" class="btn" :themeStatus="themeStatus" :themeLight="themeLight"
                          :themeDark="themeDark">Добавить узел
             </main-button>
-            <main-button :themeStatus="themeStatus" :themeLight="themeLight"
+            <main-button @click="exportToExcel" :themeStatus="themeStatus" :themeLight="themeLight"
                          :themeDark="themeDark" style="width: 5%;"><i class="fa-solid fa-file-excel"></i></main-button>
           </div>
           <div class="top-right"
@@ -374,14 +433,14 @@ export default {
         <div class="bottom-top">
           <ui-select id="filterSelectState" class="select" :themeStatus="themeStatus"
                      :themeLight="themeLight" :themeDark="themeDark">
-            <option disabled value="">Выбрать состояние</option>
+            <option disabled selected value="">Выбрать состояние</option>
             <option value="Все">Все</option>
             <option>Активировано</option>
             <option>Деактивировано</option>
           </ui-select>
           <ui-select id="filterSelectGroup" class="select" :themeStatus="themeStatus"
                      :themeLight="themeLight" :themeDark="themeDark">
-            <option disabled value="">Выбрать группу</option>
+            <option disabled selected value="">Выбрать группу</option>
             <option value="Все">Все</option>
             <option v-for="group in thisGroups" :key="group.id" :value="group.name">
               {{ group.name }}
