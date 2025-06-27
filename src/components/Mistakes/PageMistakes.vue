@@ -84,22 +84,29 @@ export default {
       const wb = XLSX.utils.book_new();
 
       const excelData = this.problems.map(problem => {
-        const server = this.findServerById(problem.idServer);
-        const duration = this.calculateDuration(problem.createdAt, problem.finishedAt);
+        const server = this.findServerById(problem.idServer) || {};
 
+        const createdAt = problem.createdAt ? this.formatDate(problem.createdAt) : '-';
+        const finishedAt = problem.finishedAt && problem.finishedAt !== '-'
+            ? this.formatDate(problem.finishedAt)
+            : '-';
+        const duration = this.calculateDuration(problem.createdAt, problem.finishedAt);
         const durationFormatted = this.formatDuration(duration);
 
         return {
-          'Сервер': server ? server.hostName : 'Неизвестно',
-          'Важность': problem.message,
-          'Дата возникновения': this.formatDate(problem.createdAt),
-          'Дата решения': problem.finishedAt === '-' ? '-' : this.formatDate(problem.finishedAt),
+          'Имя сервера': server.hostName || '-',
+          'Сообщение ошибки': problem.message || '-',
+          'Важность': this.importanceOptions.find(opt => opt.value === problem.importance)?.label || problem.importance || '-',
+          'Время возникновения': createdAt,
+          'Время решения': finishedAt,
           'Статус': problem.state ? 'Решено' : 'Ошибка',
           'Продолжительность': durationFormatted,
+
         };
       });
 
       const ws = XLSX.utils.json_to_sheet(excelData);
+
 
       XLSX.utils.book_append_sheet(wb, ws, "Ошибки серверов");
 
@@ -184,13 +191,13 @@ export default {
         if (this.filters.endDate && !this.isValidDateTime(this.filters.endDate)) {
           throw new Error('Некорректная конечная дата/время');
         }
-
+        console.log('Current search:', this.currentSearch);
         let filtered = [...this.problems];
         filtered = this.applyGroupFilter(filtered);
         filtered = this.applyErrorStatusFilter(filtered);
-        filtered = this.applySearchFilter(filtered);
         filtered = this.applyImportanceFilter(filtered);
         filtered = this.applyDateFilter(filtered);
+        filtered = this.applySearchFilter(filtered);
 
         this.errorFinal = filtered;
         return this.errorFinal;
@@ -201,12 +208,21 @@ export default {
       }
     },
     applySearchFilter(filtered) {
-      if (this.currentSearch !== '') {
-        return filtered.filter(elem =>
-            elem.hostName.toLowerCase().includes(this.currentSearch.toLowerCase())
-        );
+      if (!this.currentSearch || this.currentSearch.trim() === '') {
+        return filtered;
       }
-      return filtered;
+      const searchTerm = this.currentSearch.toLowerCase();
+
+      return filtered.filter(item => {
+        // Проверяем основной сервер
+        if (item.hostName && item.hostName.toLowerCase().includes(searchTerm)) {
+          return true;
+        }
+        if(item.ipAddres && item.ipAddres.toLowerCase().includes(searchTerm)) {
+          return true
+        }
+        return false;
+      });
     },
     applyGroupFilter(filtered) {
       if (!this.filters.group || this.filters.group === "Все") {
@@ -254,25 +270,49 @@ export default {
     },
     parseDateTime(dateString) {
       if (!dateString) return null;
-      // Обрабатываем оба формата: datetime-local и строковый
-      return new Date(dateString.includes('T') ? dateString :
-          dateString.replace(/(\d{2})\.(\d{2})\.(\d{4})/, '$3-$2-$1'));
+
+      try {
+        if (dateString.includes('T')) {
+          return new Date(dateString);
+        }
+
+        if (dateString.match(/\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}/)) {
+          return new Date(dateString.replace(/(\d{2})\.(\d{2})\.(\d{4})/, '$3-$2-$1'));
+        }
+
+        return null;
+      } catch (e) {
+        console.error('Ошибка парсинга даты:', e);
+        return null;
+      }
+    },
+    validateDates() {
+      if (this.filters.startDate && this.filters.endDate) {
+        const start = this.parseDateTime(this.filters.startDate);
+        const end = this.parseDateTime(this.filters.endDate);
+
+        if (start && end && start > end) {
+          alert('Конечная дата не может быть раньше начальной');
+          this.filters.endDate = '';
+        }
+      }
+      this.filterByDateTime();
     },
 
-    applyDateFilter(filtered) {
-      const startDate = this.parseDateTime(this.filters.startDate);
-      const endDate = this.parseDateTime(this.filters.endDate);
+    applyDateFilter(items) {
+      if (!this.dateStart && !this.dateEnd) {
+        return items;
+      }
+      const startTimestamp = this.dateStart ? new Date(this.dateStart).getTime() : null;
+      const endTimestamp = this.dateEnd ? new Date(this.dateEnd).getTime() : null;
 
-      if (!startDate && !endDate) return filtered;
+      return items.filter(item => {
+        const itemDate = new Date(item.createdAt).getTime();
 
-      return filtered.filter(server => {
-        if (!server.errors || server.errors.length === 0) return false;
+        const afterStart = !startTimestamp || itemDate >= startTimestamp;
+        const beforeEnd = !endTimestamp || itemDate <= endTimestamp;
 
-        return server.errors.some(error => {
-          const errorDate = new Date(error.createdAt);
-          return (!startDate || errorDate >= startDate) &&
-              (!endDate || errorDate <= endDate);
-        });
+        return afterStart && beforeEnd;
       });
     },
 
@@ -322,15 +362,13 @@ export default {
 
       <div class="panel" v-if="openPanel" :style="themeStatus ? {background: themeLight.backgroundComponent} : {background: themeDark.backgroundComponent}">
         <div class="top">
-          <ui-input
+          <input
+              class="search"
               id="inputIp"
-              @input="filterByDateTime"
+              :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"
               v-model="currentSearch"
-              placeholder="Поиск по имени сервера"
-              :themeStatus="themeStatus"
-              :themeLight="themeLight"
-              :themeDark="themeDark">
-          </ui-input>
+              placeholder="Поиск по имени сервера">
+          </input>
 
           <main-button
               style="width: 4%;"
@@ -374,18 +412,19 @@ export default {
               type="datetime-local"
               :themeStatus="themeStatus"
               :themeLight="themeLight"
-              :themeDark="themeDark">
+              :themeDark="themeDark"
+           @change="validateDates">
           </ui-input>
 
           <ui-input
               id="inputEndDate"
-              @change="filterByDateTime"
               v-model="filters.endDate"
               placeholder="Конечная дата"
               type="datetime-local"
               :themeStatus="themeStatus"
               :themeLight="themeLight"
-              :themeDark="themeDark">
+              :themeDark="themeDark"
+           @change="validateDates">
           </ui-input>
 
           <main-button
@@ -423,7 +462,7 @@ export default {
     <div class="table-mistakes">
       <table-mistakes
           ref="tableMistakes"
-          :problems="errorFinal.length > 0 ? errorFinal : problems"
+          :problems="errorFinal.length > 0 ? errorFinal.sort() : problems.sort()"
           :themeStatus="themeStatus"
           :themeLight="themeLight"
           :themeDark="themeDark"
@@ -476,6 +515,15 @@ export default {
 .main .panel .bottom {
   display: flex;
   gap: 1.1%
+}
+
+.search {
+  background: rgba(33, 33, 33, 0);
+  border-radius: 8px;
+  width: 31%;
+  height: 40px;
+  border: 1px solid;
+  padding: 0 14px 0 14px;
 }
 
 .line {
