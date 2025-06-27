@@ -228,7 +228,7 @@ export default {
         return filtered;
       }
       return filtered.filter(server =>
-          server.block?.id === this.filters.group
+          String(server.block?.id) === String(this.filters.group)
       );
     },
 
