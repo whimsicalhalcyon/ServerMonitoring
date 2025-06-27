@@ -162,6 +162,7 @@ export default {
         error: '',
         startDate: '',
         endDate: '',
+
         checkedGroups: []
       };
       this.currentSearch =''
@@ -200,7 +201,13 @@ export default {
       }
     },
     applySearchFilter(filtered) {
-      return filtered.filter(elem => elem.hostName.toLowerCase().includes(this.inputSearch.toLowerCase()))
+      if (this.currentSearch !== '') {
+        console.log(filtered.filter(elem => elem.hostName.toLowerCase().includes(this.inputSearch.toLowerCase())))
+        return filtered.filter(elem => elem.hostName.toLowerCase().includes(this.inputSearch.toLowerCase()))
+      }
+      else {
+        return filtered
+      }
     },
     applyGroupFilter(filtered) {
       if (!this.filters.group || this.filters.group === "Все") {
