@@ -68,6 +68,12 @@
       "ipAddres": "22.22.22.22",
       "blockId": "e90c",
       "state": true
+    },
+    {
+      "id": "facf",
+      "hostName": "nn-lsed-vikaSashaServer.nn.ru",
+      "ipAddres": "0.0.0.0",
+      "blockId": "e90c"
     }
   ],
   "blocks": [

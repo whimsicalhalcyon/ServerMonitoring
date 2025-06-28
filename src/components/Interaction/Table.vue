@@ -142,16 +142,16 @@ export default {
               valA = a.hostName || '';
               valB = b.hostName || '';
               return dir
-                  ? valA.localeCompare(valB, 'ru')
-                  : valB.localeCompare(valA, 'ru');
+                  ? valA.localeCompare(valB, )
+                  : valB.localeCompare(valA, );
             }
 
             if (column === 'group') {
               valA = a.block?.name || '';
               valB = b.block?.name || '';
               return dir
-                  ? valA.localeCompare(valB, 'ru')
-                  : valB.localeCompare(valA, 'ru');
+                  ? valA.localeCompare(valB, )
+                  : valB.localeCompare(valA, );
             }
 
             if (column === 'ip') {
@@ -233,7 +233,7 @@ export default {
    }" @click="togglepanel('group')"></i>
           </div>
         </th>
-        <th class="rounded-tr" :style="cellStyle">Графики</th>
+<!--        <th class="rounded-tr" :style="cellStyle">Графики</th>-->
       </tr>
       </thead>
       <tbody>
@@ -282,7 +282,7 @@ export default {
         <!--          <div class="error" style="background-color: #F44336;" title="Высокая">8</div>-->
         <!--          <div class="error" style="background-color: #B71C1C;" title="Критическая">2</div>-->
         <td :style="cellStyle">{{ item.block?.name }}</td>
-        <td :style="cellStyle"><a :style="{color:currTheme.backgroundButton}" href="" class="link">Открыть</a></td>
+<!--        <td :style="cellStyle"><a :style="{color:currTheme.backgroundButton}" href="" class="link">Открыть</a></td>-->
       </tr>
       </tbody>
     </table>
