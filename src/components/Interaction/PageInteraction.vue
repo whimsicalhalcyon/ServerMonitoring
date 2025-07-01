@@ -83,7 +83,7 @@ export default {
       if (exists) return alert('Группа уже существует');
 
       try {
-        const res = await fetch('/api/api/blocks', {
+        const res = await fetch('/api/blocks', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({name})
@@ -105,9 +105,6 @@ export default {
           s.hostName === dns && s.ipAddres === ip && s.blockId === targetGroup.id
       );
       if (exists) return alert('Сервер уже существует');
-
-
-
       const payload = {
         hostName: dns?.trim(),
         ipAddres: ip?.trim(),
@@ -118,17 +115,12 @@ export default {
         // serverParameters: [],
         // block: null
       };
-
       try {
-        console.log('targetGroup:', targetGroup);
-        console.log('exists', exists);
-        console.log('payload for addServer:', payload);
-        const res = await fetch('/api/api/servers', {
+        const res = await fetch('/api/servers', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(payload)
         });
-
         if (!res.ok) throw new Error('Ошибка при добавлении');
         await this.fetchServers();
         await this.fetchErrorBlocks();
@@ -148,7 +140,7 @@ export default {
         //   await fetch(`/api/blocks/${s.id}`, {method: 'DELETE'});
         // }
 
-        const res = await fetch(`/api/api/blocks/${groupId}`, {method: 'DELETE'});
+        const res = await fetch(`/api/blocks/${groupId}`, {method: 'DELETE'});
         if (!res.ok) throw new Error('Ошибка удаления группы');
         await this.fetchBlocks();
         await this.fetchServers();
@@ -164,12 +156,11 @@ export default {
       const serverId = this.isSelected?.id;
 
       if (!serverId) return;
-      console.log(serverId);
       const confirmed = window.confirm(`Вы точно хотите удалить ${serverName}?`);
       try {
         if (confirmed) {
           this.isSelected = null;
-          const res = await fetch(`/api/api/servers/${serverId}`, {method: 'DELETE'});
+          const res = await fetch(`/api/servers/${serverId}`, {method: 'DELETE'});
           if (!res.ok) throw new Error('Ошибка удаления');
           await this.fetchServers();
           await this.fetchErrorBlocks();
@@ -181,28 +172,15 @@ export default {
       }
     },
     async editServer({id, ip, dns, group}) {
-      // id = this.isSelected?.id;
-      // ip = this.isSelected?.ipAddres;
-      // dns = this.isSelected?.hostName;
-      // group = this.isSelected.block?.name;
-      // console.log(this.isSelected);
-
       if (!this.isDataLoaded) {
         alert('Данные ещё загружаются, пожалуйста, подождите');
         return;
       }
-      // if (!this.isSelected) {
-      //   alert('Выберите сервер для редактирования');
-      //   return;
-      // }
-      // this.modalEditWindow = !this.modalEditWindow;
-
       const block = this.groups.find(g => g.name === group);
       if (!block) {
         console.log('Группа не найдена:', group);
         return alert('Группа не найдена');
       }
-
       const updated = {
         id: id,
         hostName: dns,
@@ -239,19 +217,16 @@ export default {
     },
     filteredServers() {
       let filtered = [...this.errorBlocks];
-
       if (this.selectGroupPanel.group && this.selectGroupPanel.group !== 'Все') {
         filtered = filtered.filter(server =>
             server.block?.name === this.selectGroupPanel.group
         );
       }
-
       if (this.selectGroupPanel.status && this.selectGroupPanel.status !== 'Все') {
         filtered = filtered.filter(server =>
             server.state.toString() === (this.selectGroupPanel.status === 'Активировано' ? 'true' : 'false')
         );
       }
-
       if (this.selectedErrors.length > 0) {
         filtered = filtered.filter(server => {
           const hasMatchingErrors = (errors) => {
@@ -266,7 +241,6 @@ export default {
                   server.block.servers.some(s => s && hasMatchingErrors(s.errors)));
         });
       }
-
       if (this.searchValue.trim() !== '') {
         const searchLower = this.searchValue.toLowerCase();
         filtered = filtered.filter(server =>
@@ -274,7 +248,6 @@ export default {
                 server.ipAddres?.toLowerCase().includes(searchLower))
         );
       }
-
       this.filteredServersData = filtered;
     },
     resetFilters() {

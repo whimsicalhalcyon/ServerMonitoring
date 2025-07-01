@@ -74,6 +74,12 @@
       "hostName": "nn-lsed-vikaSashaServer.nn.ru",
       "ipAddres": "0.0.0.0",
       "blockId": "e90c"
+    },
+    {
+      "id": "9161",
+      "hostName": "nn-lsed-newServer.nnov",
+      "ipAddres": "0.0.0.0",
+      "blockId": "7fc12c7b-bdcc-425a-bb0e-6f24842fb863"
     }
   ],
   "blocks": [

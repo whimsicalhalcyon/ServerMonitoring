@@ -76,11 +76,11 @@ export default {
         case 1:
           return 'Информация';
         case 2:
-          return 'Предупреждение';       // Средняя
+          return 'Предупреждение';
         case 3:
-          return 'Средняя';       // Предупреждение
+          return 'Средняя';
         case 4:
-          return 'Высокая';       // Информация
+          return 'Высокая';
         case 5:
           return 'Критическая';
       }
@@ -129,9 +129,7 @@ export default {
     },
     sortedErrorBlocks() {
       let sorted = [...this.errorBlocks];
-
       const sorters = ['dns', 'ip', 'group'];
-
       sorters.forEach(column => {
         const dir = this.sortDirections[column];
         if (dir !== null) {
@@ -153,7 +151,6 @@ export default {
                   ? valA.localeCompare(valB, )
                   : valB.localeCompare(valA, );
             }
-
             if (column === 'ip') {
               const ipToNumber = ip => ip.split('.')
                   .reduce((acc, octet) => (acc << 8) + parseInt(octet), 0);
@@ -166,7 +163,6 @@ export default {
           });
         }
       });
-
       return sorted;
     }
     // filteredErrors() {

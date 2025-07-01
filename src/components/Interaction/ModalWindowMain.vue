@@ -69,7 +69,6 @@ export default {
         return;
       }
       this.$emit('addBlock', blockName);
-
     },
     addServer(server) {
       // const block = this.blocks.find(b => b.name === serverName.group);
