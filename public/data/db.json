@@ -1,0 +1,895 @@
+{
+  "servers": [
+    {
+      "id": "bc354209-388f-43d7-bd76-22b2b755daa0",
+      "hostName": "sdsdsd",
+      "ipAddres": "10.10.130.25",
+      "blockId": "8fa17e8a-494f-4e59-9201-e4022c7ed202",
+      "state": true,
+      "errors": [],
+      "metrics": [],
+      "serverParameters": [],
+      "block": null
+    },
+    {
+      "id": "bc694321-5254-495c-ba1a-f33d8f6fb0f9",
+      "hostName": "SASHA",
+      "ipAddres": "0.0.0.0",
+      "blockId": "e90c",
+      "state": true,
+      "errors": [],
+      "metrics": [],
+      "serverParameters": [],
+      "block": null
+    },
+    {
+      "id": "efbc6f6e-ef1f-4646-8db3-d7a04bbc0fd9",
+      "hostName": "nn-lsed-app12.nnov.ru",
+      "ipAddres": "3.3.3.3",
+      "blockId": "e90c",
+      "state": true,
+      "errors": [],
+      "metrics": [],
+      "serverParameters": [],
+      "block": null
+    },
+    {
+      "id": "62ebb691-154c-4a88-9b01-a943993c454c",
+      "hostName": "12345677889456.nnov.ru",
+      "ipAddres": "6.6.6.6",
+      "blockId": "8fa17e8a-494f-4e59-9201-e4022c7ed202",
+      "state": true,
+      "errors": [],
+      "metrics": [],
+      "serverParameters": [],
+      "block": null
+    },
+    {
+      "id": "a7608838-bb01-46c0-be7c-0d17c604998b",
+      "hostName": "new1210210923-2323",
+      "ipAddres": "1.2.3.5",
+      "blockId": "0eb42069-4b1e-4b54-9bbb-a8103c3f9f19",
+      "state": true,
+      "block": null,
+      "errors": [],
+      "metrics": [],
+      "serverParameters": []
+    },
+    {
+      "id": "1a85",
+      "hostName": "vika",
+      "ipAddres": "22.22.22.22",
+      "blockId": "3ce2",
+      "state": true
+    },
+    {
+      "id": "7da5",
+      "hostName": "vika",
+      "ipAddres": "22.22.22.22",
+      "blockId": "e90c",
+      "state": true
+    },
+    {
+      "id": "facf",
+      "hostName": "nn-lsed-vikaSashaServer.nn.ru",
+      "ipAddres": "0.0.0.0",
+      "blockId": "e90c"
+    },
+    {
+      "id": "9161",
+      "hostName": "nn-lsed-newServer.nnov",
+      "ipAddres": "0.0.0.0",
+      "blockId": "7fc12c7b-bdcc-425a-bb0e-6f24842fb863"
+    }
+  ],
+  "blocks": [
+    {
+      "id": "7fc12c7b-bdcc-425a-bb0e-6f24842fb863",
+      "name": "app",
+      "servers": []
+    },
+    {
+      "id": "3777bef9-f81c-465c-882c-c31a965710ae",
+      "name": "web",
+      "servers": []
+    },
+    {
+      "id": "8fa17e8a-494f-4e59-9201-e4022c7ed202",
+      "name": "medo",
+      "servers": []
+    },
+    {
+      "id": "3ce2",
+      "name": "new"
+    },
+    {
+      "id": "909a",
+      "name": "new2"
+    },
+    {
+      "id": "e90c",
+      "name": "vikasahsa"
+    }
+  ],
+  "error_block": [
+    {
+      "id": "522f025a-4c72-4138-aa31-32cdcd24d3c1",
+      "hostName": "nn-lsed-medo.nnov.ru",
+      "ipAddres": "10.10.130.21",
+      "blockId": "8fa17e8a-494f-4e59-9201-e4022c7ed202",
+      "state": false,
+      "block": {
+        "id": "8fa17e8a-494f-4e59-9201-e4022c7ed202",
+        "name": "medo",
+        "servers": [
+          null
+        ]
+      },
+      "errors": [],
+      "metrics": [],
+      "serverParameters": []
+    },
+    {
+      "id": "612098c6-399d-433a-bc1c-4a877a1314f7",
+      "hostName": "nn-lsed-web01.nnov.ru",
+      "ipAddres": "10.10.130.172",
+      "blockId": "3777bef9-f81c-465c-882c-c31a965710ae",
+      "state": true,
+      "block": {
+        "id": "3777bef9-f81c-465c-882c-c31a965710ae",
+        "name": "web",
+        "servers": [
+          null,
+          {
+            "id": "62ebb691-154c-4a88-9b01-a943993c454c",
+            "hostName": "nn-lsed-web15.nnov.ru",
+            "ipAddres": "10.10.130.254",
+            "blockId": "3777bef9-f81c-465c-882c-c31a965710ae",
+            "state": true,
+            "block": null,
+            "errors": [
+              {
+                "id": "85be627f-f834-43ba-a93f-8ce8fade10d0",
+                "createdAt": "2025-06-24T12:36:46.944541",
+                "finishedAt": "2025-06-24T12:37:55.564811",
+                "importance": 5,
+                "state": true,
+                "serverId": "62ebb691-154c-4a88-9b01-a943993c454c",
+                "message": "Файл запуска программы найден",
+                "server": null
+              }
+            ],
+            "metrics": [],
+            "serverParameters": []
+          }
+        ]
+      },
+      "errors": [
+        {
+          "id": "2f2ad58a-f13b-44eb-8125-3b447c59371a",
+          "createdAt": "2025-06-25T10:30:08.248331",
+          "finishedAt": "2025-06-25T13:35:10.755223",
+          "importance": 4,
+          "state": true,
+          "serverId": "612098c6-399d-433a-bc1c-4a877a1314f7",
+          "message": "Проблема с нагрузкой диска была решена",
+          "server": null
+        },
+        {
+          "id": "83881006-1957-46f6-8ac3-b85ada300762",
+          "createdAt": "2025-06-24T17:48:55.762545",
+          "finishedAt": "2025-06-24T17:56:51.859318",
+          "importance": 5,
+          "state": true,
+          "serverId": "612098c6-399d-433a-bc1c-4a877a1314f7",
+          "message": "Файл запуска программы найден",
+          "server": null
+        },
+        {
+          "id": "87f75da5-19f0-406f-ac5e-6fcd7d28b020",
+          "createdAt": "2025-06-25T10:12:17.534019",
+          "finishedAt": null,
+          "importance": 2,
+          "state": false,
+          "serverId": "612098c6-399d-433a-bc1c-4a877a1314f7",
+          "message": "Проблема с синхронизацией времени",
+          "server": null
+        },
+        {
+          "id": "7efd21f7-ebad-409d-90b2-a35c2eade1f0",
+          "createdAt": "2025-06-24T18:01:22.543987",
+          "finishedAt": null,
+          "importance": 5,
+          "state": true,
+          "serverId": "612098c6-399d-433a-bc1c-4a877a1314f7",
+          "message": "STORAGE => 90",
+          "server": null
+        }
+      ],
+      "metrics": [],
+      "serverParameters": []
+    },
+    {
+      "id": "62ebb691-154c-4a88-9b01-a943993c454c",
+      "hostName": "nn-lsed-web15.nnov.ru",
+      "ipAddres": "10.10.130.254",
+      "blockId": "3777bef9-f81c-465c-882c-c31a965710ae",
+      "state": true,
+      "block": {
+        "id": "3777bef9-f81c-465c-882c-c31a965710ae",
+        "name": "web",
+        "servers": [
+          {
+            "id": "612098c6-399d-433a-bc1c-4a877a1314f7",
+            "hostName": "nn-lsed-web01.nnov.ru",
+            "ipAddres": "10.10.130.172",
+            "blockId": "3777bef9-f81c-465c-882c-c31a965710ae",
+            "state": true,
+            "block": null,
+            "errors": [
+              {
+                "id": "2f2ad58a-f13b-44eb-8125-3b447c59371a",
+                "createdAt": "2025-06-25T10:30:08.248331",
+                "finishedAt": "2025-06-25T13:35:10.755223",
+                "importance": 4,
+                "state": true,
+                "serverId": "612098c6-399d-433a-bc1c-4a877a1314f7",
+                "message": "Проблема с нагрузкой диска была решена",
+                "server": null
+              },
+              {
+                "id": "83881006-1957-46f6-8ac3-b85ada300762",
+                "createdAt": "2025-06-24T17:48:55.762545",
+                "finishedAt": "2025-06-24T17:56:51.859318",
+                "importance": 5,
+                "state": true,
+                "serverId": "612098c6-399d-433a-bc1c-4a877a1314f7",
+                "message": "Файл запуска программы найден",
+                "server": null
+              },
+              {
+                "id": "87f75da5-19f0-406f-ac5e-6fcd7d28b020",
+                "createdAt": "2025-06-25T10:12:17.534019",
+                "finishedAt": null,
+                "importance": 2,
+                "state": false,
+                "serverId": "612098c6-399d-433a-bc1c-4a877a1314f7",
+                "message": "Проблема с синхронизацией времени",
+                "server": null
+              },
+              {
+                "id": "7efd21f7-ebad-409d-90b2-a35c2eade1f0",
+                "createdAt": "2025-06-24T18:01:22.543987",
+                "finishedAt": null,
+                "importance": 5,
+                "state": true,
+                "serverId": "612098c6-399d-433a-bc1c-4a877a1314f7",
+                "message": "STORAGE => 90",
+                "server": null
+              }
+            ],
+            "metrics": [],
+            "serverParameters": []
+          },
+          null
+        ]
+      },
+      "errors": [
+        {
+          "id": "85be627f-f834-43ba-a93f-8ce8fade10d0",
+          "createdAt": "2025-06-24T12:36:46.944541",
+          "finishedAt": "2025-06-24T12:37:55.564811",
+          "importance": 5,
+          "state": true,
+          "serverId": "62ebb691-154c-4a88-9b01-a943993c454c",
+          "message": "Файл запуска программы найден",
+          "server": null
+        }
+      ],
+      "metrics": [],
+      "serverParameters": []
+    },
+    {
+      "id": "bc354209-388f-43d7-bd76-22b2b755daa0",
+      "hostName": "nn-lsed-sc.nnov.ru",
+      "ipAddres": "10.10.130.6",
+      "blockId": null,
+      "state": true,
+      "block": {
+        "id": "06ee6f54-cacb-4dc5-8db8-09cf2f8c5d14",
+        "name": "sc",
+        "servers": [
+          null
+        ]
+      },
+      "errors": [
+        {
+          "id": "65584254-ec20-46d3-99cb-94120831421d",
+          "createdAt": "2025-06-25T10:58:17.279343",
+          "finishedAt": null,
+          "importance": 3,
+          "state": false,
+          "serverId": "bc354209-388f-43d7-bd76-22b2b755daa0",
+          "message": "STORAGE => 70",
+          "server": null
+        },
+        {
+          "id": "600d81ba-5388-4dac-99cc-fb8975429a2a",
+          "createdAt": "2025-06-25T10:23:41.254779",
+          "finishedAt": "2025-06-25T10:58:17.279343",
+          "importance": 5,
+          "state": true,
+          "serverId": "bc354209-388f-43d7-bd76-22b2b755daa0",
+          "message": "Файл запуска программы найден",
+          "server": null
+        },
+        {
+          "id": "7896f439-6fef-468b-a8c9-44c01c11ccf0",
+          "createdAt": "2025-06-23T12:41:47.118703",
+          "finishedAt": null,
+          "importance": 3,
+          "state": true,
+          "serverId": "bc354209-388f-43d7-bd76-22b2b755daa0",
+          "message": "STORAGE => 70",
+          "server": null
+        },
+        {
+          "id": "83b48166-0ca8-4c92-b14c-b608a00c1187",
+          "createdAt": "2025-06-25T11:37:37.892996",
+          "finishedAt": null,
+          "importance": 2,
+          "state": false,
+          "serverId": "bc354209-388f-43d7-bd76-22b2b755daa0",
+          "message": "Айпи не соответсвует требованиям",
+          "server": null
+        },
+        {
+          "id": "0586e604-996d-4860-b8e5-a057b9d63b62",
+          "createdAt": "2025-06-23T12:40:31.25568",
+          "finishedAt": "2025-06-23T12:41:47.099464",
+          "importance": 5,
+          "state": true,
+          "serverId": "bc354209-388f-43d7-bd76-22b2b755daa0",
+          "message": "Файл запуска программы найден",
+          "server": null
+        }
+      ],
+      "metrics": [],
+      "serverParameters": []
+    },
+    {
+      "id": "bc694321-5254-495c-ba1a-f33d8f6fb0f9",
+      "hostName": "nn-lsed-sstu.nnov.ru",
+      "ipAddres": "10.10.130.22",
+      "blockId": null,
+      "state": true,
+      "block": {
+        "id": "c0148ec3-3e7c-415b-8201-11445f960045",
+        "name": "sstu",
+        "servers": [
+          null
+        ]
+      },
+      "errors": [],
+      "metrics": [],
+      "serverParameters": []
+    },
+    {
+      "id": "efbc6f6e-ef1f-4646-8db3-d7a04bbc0fd9",
+      "hostName": "nn-lsed-app10.nnov.ru",
+      "ipAddres": "10.10.130.177",
+      "blockId": "7fc12c7b-bdcc-425a-bb0e-6f24842fb863",
+      "state": true,
+      "block": {
+        "id": "7fc12c7b-bdcc-425a-bb0e-6f24842fb863",
+        "name": "app",
+        "servers": [
+          null,
+          {
+            "id": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+            "hostName": "nn-lsed-app09.nnov.ru",
+            "ipAddres": "10.10.130.238",
+            "blockId": "7fc12c7b-bdcc-425a-bb0e-6f24842fb863",
+            "state": true,
+            "block": null,
+            "errors": [
+              {
+                "id": "9187d829-89a3-4d79-856a-08ee686117bf",
+                "createdAt": "2025-06-24T12:40:12.678649",
+                "finishedAt": "2025-06-24T12:45:50.897121",
+                "importance": 2,
+                "state": true,
+                "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+                "message": "Проблема была решена",
+                "server": null
+              },
+              {
+                "id": "640c6350-0fdb-44ff-a169-aefac2e44aff",
+                "createdAt": "2025-06-24T10:49:43.439",
+                "finishedAt": "2025-06-24T12:40:12.519475",
+                "importance": 5,
+                "state": true,
+                "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+                "message": "Файл запуска программы найден",
+                "server": null
+              },
+              {
+                "id": "9a9bde82-b3e2-4f48-8557-69338d403d6e",
+                "createdAt": "2025-06-25T13:47:38.004618",
+                "finishedAt": "2025-06-25T13:48:46.025291",
+                "importance": 2,
+                "state": true,
+                "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+                "message": "Проблема с нагрузкой центрального процессора была решена",
+                "server": null
+              },
+              {
+                "id": "9a387e8c-a3b0-4dc0-a52b-c5f13bef264c",
+                "createdAt": "2025-06-25T13:26:07.7642",
+                "finishedAt": "2025-06-25T13:27:16.011699",
+                "importance": 2,
+                "state": true,
+                "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+                "message": "Проблема с нагрузкой центрального процессора была решена",
+                "server": null
+              },
+              {
+                "id": "b70271a6-d4b2-4761-96be-25a6fcb9f856",
+                "createdAt": "2025-06-25T09:44:33.685232",
+                "finishedAt": "2025-06-25T09:56:57.212038",
+                "importance": 1,
+                "state": true,
+                "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+                "message": "Проблема была решена",
+                "server": null
+              },
+              {
+                "id": "6b7019cf-f9e0-4c2e-af67-8d22991dec48",
+                "createdAt": "2025-06-25T12:57:55.7607",
+                "finishedAt": "2025-06-25T12:59:03.258323",
+                "importance": 2,
+                "state": true,
+                "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+                "message": "Проблема с нагрузкой центрального процессора была решена",
+                "server": null
+              },
+              {
+                "id": "2ff2d61f-4bf5-4d5a-8511-5770bf147fbf",
+                "createdAt": "2025-06-25T12:16:08.781856",
+                "finishedAt": "2025-06-25T12:17:16.2636",
+                "importance": 2,
+                "state": true,
+                "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+                "message": "Проблема с нагрузкой центрального процессора была решена",
+                "server": null
+              },
+              {
+                "id": "ba727cae-bdf7-4549-a633-f08a4b337906",
+                "createdAt": "2025-06-25T10:58:17.279343",
+                "finishedAt": "2025-06-25T10:59:25.268736",
+                "importance": 2,
+                "state": true,
+                "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+                "message": "Проблема с нагрузкой центрального процессора была решена",
+                "server": null
+              },
+              {
+                "id": "d4a6db7e-0274-481b-b548-0ea30215cf3d",
+                "createdAt": "2025-06-25T10:32:18.022031",
+                "finishedAt": "2025-06-25T10:33:27.503044",
+                "importance": 2,
+                "state": true,
+                "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+                "message": "Проблема с нагрузкой центрального процессора была решена",
+                "server": null
+              },
+              {
+                "id": "5a7ad4c0-95e8-4304-b243-f4efbdfcc3e8",
+                "createdAt": "2025-06-25T13:11:26.028629",
+                "finishedAt": "2025-06-25T13:12:33.510283",
+                "importance": 2,
+                "state": true,
+                "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+                "message": "Проблема с нагрузкой центрального процессора была решена",
+                "server": null
+              },
+              {
+                "id": "e91fd392-c613-4d12-bb11-eb745b028d51",
+                "createdAt": "2025-06-24T16:33:29.233389",
+                "finishedAt": "2025-06-24T16:42:30.917701",
+                "importance": 1,
+                "state": true,
+                "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+                "message": "Проблема была решена",
+                "server": null
+              },
+              {
+                "id": "d48cb149-c45a-4c27-b9ff-d254190ff699",
+                "createdAt": "2025-06-24T14:28:15.259555",
+                "finishedAt": "2025-06-24T14:51:55.553475",
+                "importance": 1,
+                "state": true,
+                "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+                "message": "Проблема была решена",
+                "server": null
+              },
+              {
+                "id": "aea2e35d-c458-4cb7-ab18-e2e92220c564",
+                "createdAt": "2025-06-25T14:41:57.769768",
+                "finishedAt": "2025-06-25T14:43:07.771924",
+                "importance": 2,
+                "state": true,
+                "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+                "message": "Проблема с нагрузкой центрального процессора была решена",
+                "server": null
+              },
+              {
+                "id": "a6f11825-1fdf-45c9-bab3-ac2d29ab8fc3",
+                "createdAt": "2025-06-25T13:58:57.51434",
+                "finishedAt": "2025-06-25T14:00:05.256198",
+                "importance": 2,
+                "state": true,
+                "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+                "message": "Проблема с нагрузкой центрального процессора была решена",
+                "server": null
+              }
+            ],
+            "metrics": [],
+            "serverParameters": []
+          }
+        ]
+      },
+      "errors": [
+        {
+          "id": "196a5993-df77-4daa-b12f-2c07d2d4c4d9",
+          "createdAt": "2025-06-24T10:50:51.254327",
+          "finishedAt": "2025-06-24T11:14:32.223437",
+          "importance": 5,
+          "state": true,
+          "serverId": "efbc6f6e-ef1f-4646-8db3-d7a04bbc0fd9",
+          "message": "Файл запуска программы найден",
+          "server": null
+        },
+        {
+          "id": "7dff932d-6321-4a5e-a526-88ec67268e4b",
+          "createdAt": "2025-06-25T11:06:11.508901",
+          "finishedAt": "2025-06-25T11:07:18.99961",
+          "importance": 5,
+          "state": true,
+          "serverId": "efbc6f6e-ef1f-4646-8db3-d7a04bbc0fd9",
+          "message": "Файл запуска программы найден",
+          "server": null
+        },
+        {
+          "id": "2d3f1c17-5d80-4d76-bb51-58aff9a95da5",
+          "createdAt": "2025-06-25T10:12:17.534019",
+          "finishedAt": null,
+          "importance": 2,
+          "state": false,
+          "serverId": "efbc6f6e-ef1f-4646-8db3-d7a04bbc0fd9",
+          "message": "Проблема с синхронизацией времени",
+          "server": null
+        },
+        {
+          "id": "8bc167b6-ab5c-4845-8ebf-2a45eea9a805",
+          "createdAt": "2025-06-24T11:14:32.432069",
+          "finishedAt": null,
+          "importance": 2,
+          "state": true,
+          "serverId": "efbc6f6e-ef1f-4646-8db3-d7a04bbc0fd9",
+          "message": "Sync: 0   ",
+          "server": null
+        }
+      ],
+      "metrics": [],
+      "serverParameters": []
+    },
+    {
+      "id": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+      "hostName": "nn-lsed-app09.nnov.ru",
+      "ipAddres": "10.10.130.238",
+      "blockId": "7fc12c7b-bdcc-425a-bb0e-6f24842fb863",
+      "state": true,
+      "block": {
+        "id": "7fc12c7b-bdcc-425a-bb0e-6f24842fb863",
+        "name": "app",
+        "servers": [
+          {
+            "id": "efbc6f6e-ef1f-4646-8db3-d7a04bbc0fd9",
+            "hostName": "nn-lsed-app10.nnov.ru",
+            "ipAddres": "10.10.130.177",
+            "blockId": "7fc12c7b-bdcc-425a-bb0e-6f24842fb863",
+            "state": true,
+            "block": null,
+            "errors": [
+              {
+                "id": "196a5993-df77-4daa-b12f-2c07d2d4c4d9",
+                "createdAt": "2025-06-24T10:50:51.254327",
+                "finishedAt": "2025-06-24T11:14:32.223437",
+                "importance": 5,
+                "state": true,
+                "serverId": "efbc6f6e-ef1f-4646-8db3-d7a04bbc0fd9",
+                "message": "Файл запуска программы найден",
+                "server": null
+              },
+              {
+                "id": "7dff932d-6321-4a5e-a526-88ec67268e4b",
+                "createdAt": "2025-06-25T11:06:11.508901",
+                "finishedAt": "2025-06-25T11:07:18.99961",
+                "importance": 5,
+                "state": true,
+                "serverId": "efbc6f6e-ef1f-4646-8db3-d7a04bbc0fd9",
+                "message": "Файл запуска программы найден",
+                "server": null
+              },
+              {
+                "id": "2d3f1c17-5d80-4d76-bb51-58aff9a95da5",
+                "createdAt": "2025-06-25T10:12:17.534019",
+                "finishedAt": null,
+                "importance": 2,
+                "state": false,
+                "serverId": "efbc6f6e-ef1f-4646-8db3-d7a04bbc0fd9",
+                "message": "Проблема с синхронизацией времени",
+                "server": null
+              },
+              {
+                "id": "8bc167b6-ab5c-4845-8ebf-2a45eea9a805",
+                "createdAt": "2025-06-24T11:14:32.432069",
+                "finishedAt": null,
+                "importance": 2,
+                "state": true,
+                "serverId": "efbc6f6e-ef1f-4646-8db3-d7a04bbc0fd9",
+                "message": "Sync: 0   ",
+                "server": null
+              }
+            ],
+            "metrics": [],
+            "serverParameters": []
+          },
+          null
+        ]
+      },
+      "errors": [
+        {
+          "id": "9187d829-89a3-4d79-856a-08ee686117bf",
+          "createdAt": "2025-06-24T12:40:12.678649",
+          "finishedAt": "2025-06-24T12:45:50.897121",
+          "importance": 2,
+          "state": true,
+          "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+          "message": "Проблема была решена",
+          "server": null
+        },
+        {
+          "id": "640c6350-0fdb-44ff-a169-aefac2e44aff",
+          "createdAt": "2025-06-24T10:49:43.439",
+          "finishedAt": "2025-06-24T12:40:12.519475",
+          "importance": 5,
+          "state": true,
+          "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+          "message": "Файл запуска программы найден",
+          "server": null
+        },
+        {
+          "id": "9a9bde82-b3e2-4f48-8557-69338d403d6e",
+          "createdAt": "2025-06-25T13:47:38.004618",
+          "finishedAt": "2025-06-25T13:48:46.025291",
+          "importance": 2,
+          "state": true,
+          "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+          "message": "Проблема с нагрузкой центрального процессора была решена",
+          "server": null
+        },
+        {
+          "id": "9a387e8c-a3b0-4dc0-a52b-c5f13bef264c",
+          "createdAt": "2025-06-25T13:26:07.7642",
+          "finishedAt": "2025-06-25T13:27:16.011699",
+          "importance": 2,
+          "state": true,
+          "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+          "message": "Проблема с нагрузкой центрального процессора была решена",
+          "server": null
+        },
+        {
+          "id": "b70271a6-d4b2-4761-96be-25a6fcb9f856",
+          "createdAt": "2025-06-25T09:44:33.685232",
+          "finishedAt": "2025-06-25T09:56:57.212038",
+          "importance": 1,
+          "state": true,
+          "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+          "message": "Проблема была решена",
+          "server": null
+        },
+        {
+          "id": "6b7019cf-f9e0-4c2e-af67-8d22991dec48",
+          "createdAt": "2025-06-25T12:57:55.7607",
+          "finishedAt": "2025-06-25T12:59:03.258323",
+          "importance": 2,
+          "state": true,
+          "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+          "message": "Проблема с нагрузкой центрального процессора была решена",
+          "server": null
+        },
+        {
+          "id": "2ff2d61f-4bf5-4d5a-8511-5770bf147fbf",
+          "createdAt": "2025-06-25T12:16:08.781856",
+          "finishedAt": "2025-06-25T12:17:16.2636",
+          "importance": 2,
+          "state": true,
+          "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+          "message": "Проблема с нагрузкой центрального процессора была решена",
+          "server": null
+        },
+        {
+          "id": "ba727cae-bdf7-4549-a633-f08a4b337906",
+          "createdAt": "2025-06-25T10:58:17.279343",
+          "finishedAt": "2025-06-25T10:59:25.268736",
+          "importance": 2,
+          "state": true,
+          "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+          "message": "Проблема с нагрузкой центрального процессора была решена",
+          "server": null
+        },
+        {
+          "id": "d4a6db7e-0274-481b-b548-0ea30215cf3d",
+          "createdAt": "2025-06-25T10:32:18.022031",
+          "finishedAt": "2025-06-25T10:33:27.503044",
+          "importance": 2,
+          "state": true,
+          "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+          "message": "Проблема с нагрузкой центрального процессора была решена",
+          "server": null
+        },
+        {
+          "id": "5a7ad4c0-95e8-4304-b243-f4efbdfcc3e8",
+          "createdAt": "2025-06-25T13:11:26.028629",
+          "finishedAt": "2025-06-25T13:12:33.510283",
+          "importance": 2,
+          "state": true,
+          "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+          "message": "Проблема с нагрузкой центрального процессора была решена",
+          "server": null
+        },
+        {
+          "id": "e91fd392-c613-4d12-bb11-eb745b028d51",
+          "createdAt": "2025-06-24T16:33:29.233389",
+          "finishedAt": "2025-06-24T16:42:30.917701",
+          "importance": 1,
+          "state": true,
+          "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+          "message": "Проблема была решена",
+          "server": null
+        },
+        {
+          "id": "d48cb149-c45a-4c27-b9ff-d254190ff699",
+          "createdAt": "2025-06-24T14:28:15.259555",
+          "finishedAt": "2025-06-24T14:51:55.553475",
+          "importance": 1,
+          "state": true,
+          "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+          "message": "Проблема была решена",
+          "server": null
+        },
+        {
+          "id": "aea2e35d-c458-4cb7-ab18-e2e92220c564",
+          "createdAt": "2025-06-25T14:41:57.769768",
+          "finishedAt": "2025-06-25T14:43:07.771924",
+          "importance": 2,
+          "state": true,
+          "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+          "message": "Проблема с нагрузкой центрального процессора была решена",
+          "server": null
+        },
+        {
+          "id": "a6f11825-1fdf-45c9-bab3-ac2d29ab8fc3",
+          "createdAt": "2025-06-25T13:58:57.51434",
+          "finishedAt": "2025-06-25T14:00:05.256198",
+          "importance": 2,
+          "state": true,
+          "serverId": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+          "message": "Проблема с нагрузкой центрального процессора была решена",
+          "server": null
+        }
+      ],
+      "metrics": [],
+      "serverParameters": []
+    }
+  ],
+  "server_parameter": [
+    {
+      "id": "06ee6f54-cacb-4dc5-8db8-09cf2f8c5d14",
+      "name": "sc",
+      "servers": [
+        {
+          "id": "bc354209-388f-43d7-bd76-22b2b755daa0",
+          "hostName": "nn-lsed-sc.nnov.ru",
+          "ipAddres": "10.10.130.6",
+          "blockId": "06ee6f54-cacb-4dc5-8db8-09cf2f8c5d14",
+          "state": true,
+          "block": null,
+          "errors": [],
+          "metrics": [],
+          "serverParameters": []
+        }
+      ]
+    },
+    {
+      "id": "0eb42069-4b1e-4b54-9bbb-a8103c3f9f19",
+      "name": "vikaSasha",
+      "servers": []
+    },
+    {
+      "id": "3777bef9-f81c-465c-882c-c31a965710ae",
+      "name": "web",
+      "servers": [
+        {
+          "id": "612098c6-399d-433a-bc1c-4a877a1314f7",
+          "hostName": "nn-lsed-web01.nnov.ru",
+          "ipAddres": "10.10.130.172",
+          "blockId": "3777bef9-f81c-465c-882c-c31a965710ae",
+          "state": true,
+          "block": null,
+          "errors": [],
+          "metrics": [],
+          "serverParameters": []
+        },
+        {
+          "id": "62ebb691-154c-4a88-9b01-a943993c454c",
+          "hostName": "nn-lsed-web15.nnov.ru",
+          "ipAddres": "10.10.130.254",
+          "blockId": "3777bef9-f81c-465c-882c-c31a965710ae",
+          "state": true,
+          "block": null,
+          "errors": [],
+          "metrics": [],
+          "serverParameters": []
+        }
+      ]
+    },
+    {
+      "id": "7fc12c7b-bdcc-425a-bb0e-6f24842fb863",
+      "name": "app",
+      "servers": [
+        {
+          "id": "efbc6f6e-ef1f-4646-8db3-d7a04bbc0fd9",
+          "hostName": "nn-lsed-app10.nnov.ru",
+          "ipAddres": "10.10.130.177",
+          "blockId": "7fc12c7b-bdcc-425a-bb0e-6f24842fb863",
+          "state": true,
+          "block": null,
+          "errors": [],
+          "metrics": [],
+          "serverParameters": []
+        },
+        {
+          "id": "f2fac3d8-6cc9-4303-b8b9-ed458395a160",
+          "hostName": "nn-lsed-app09.nnov.ru",
+          "ipAddres": "10.10.130.238",
+          "blockId": "7fc12c7b-bdcc-425a-bb0e-6f24842fb863",
+          "state": true,
+          "block": null,
+          "errors": [],
+          "metrics": [],
+          "serverParameters": []
+        }
+      ]
+    },
+    {
+      "id": "c0148ec3-3e7c-415b-8201-11445f960045",
+      "name": "sstu",
+      "servers": [
+        {
+          "id": "bc694321-5254-495c-ba1a-f33d8f6fb0f9",
+          "hostName": "nn-lsed-sstu.nnov.ru",
+          "ipAddres": "10.10.130.22",
+          "blockId": "c0148ec3-3e7c-415b-8201-11445f960045",
+          "state": true,
+          "block": null,
+          "errors": [],
+          "metrics": [],
+          "serverParameters": []
+        }
+      ]
+    }
+  ]
+}

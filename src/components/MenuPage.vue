@@ -1,36 +1,143 @@
 <script>
-
 export default {
-  props : {
-    openMonitor :{
-      type:Boolean,
+  data() {
+    return {
+      showButton: false,
+      isHovered: true,
+    };
+  },
+  props: {
+    openMonitor: {
+      type: Boolean,
       default: false
+    },
+    openInteraction: {
+      type: Boolean,
+      default: false
+    },
+    openMistakes: {
+      type: Boolean,
+      default: false
+    },
+    themeStatus: {
+      type: Boolean,
+      default: true
+    },
+    themeLight: {
+      type: Object,
+      required: true
+    },
+    themeDark: {
+      type: Object,
+      required: true
+    },
+    checkButton: {
+      type: Number,
+      required: true
+    }
+  },
+  mounted() {
+    window.addEventListener("scroll", this.handleScroll);
+  },
+  beforeUnmount() {
+    window.removeEventListener("scroll", this.handleScroll);
+  },
+  methods: {
+    handleScroll() {
+      this.showButton = window.scrollY > 300;
+    },
+    scrollToTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    },
+    handleButtonClick(buttonId) {
+      this.$emit('button-clicked', buttonId);
+    }
+  },
+  computed: {
+    themeStatusE() {
+      if (this.isHovered) {
+        return this.themeStatus ? this.themeDark.backgroundFilter : this.themeLight.backgroundFilter;
+      } else {
+        return this.themeStatus ? this.themeLight.backgroundFilter : this.themeDark.backgroundFilter;
+      }
+    },
+    checkMistakes() {
+      return this.checkButton === 1
+          ? (this.themeStatus ? this.themeLight.background : this.themeDark.background) : 'none';
+    },
+    checkInteraction() {
+      return this.checkButton === 2
+          ? (this.themeStatus ? this.themeLight.background : this.themeDark.background) : 'none';
+    },
+    checkMonitor() {
+      return this.checkButton === 3
+          ? (this.themeStatus ? this.themeLight.background : this.themeDark.background) : 'none';
     }
   }
 }
 </script>
 
 <template>
-  <div class="container-menu-page bg-white h-[100vh] text-neutral-500 py-5" >
-    <div class="container-list flex flex-col items-center">
-      <div class="elem-list hover:bg-neutral-100 w-20 flex items-center justify-center p-4 mb-1 hover:border-r-4 active:border-r-4 duration-100">
-        <i class="fa-solid fa-database text-2xl"></i>
-      </div>
-      <div class="elem-list hover:bg-neutral-100 w-20 flex items-center justify-center p-4 mb-1 hover:border-r-4 active:border-r-4 duration-100" @click="$emit('open-monitor')" :class="{'border-r-4 bg-neutral-100' : openMonitor}">
-        <i class="fa-solid fa-desktop text-2xl" ></i>
-      </div>
-      <div class="elem-list hover:bg-neutral-100 w-20 flex items-center justify-center p-4 mb-1 hover:border-r-4 active:border-r-4 duration-100">
-        <i class="fa-solid fa-user-tie text-2xl"></i>
-      </div>
+  <div class="panel" :style="themeStatus ? {background: themeLight.backgroundComponent}: {background: themeDark.backgroundComponent}">
+    <div class="buttons">
+      <button class="button" @click="handleButtonClick(1)" :style="{background: checkMistakes, borderColor: themeDark.borderColor}">
+        <i class="fa-solid fa-bug" style="font-size: 18px;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"></i>
+      </button>
+
+      <button class="button" @click="handleButtonClick(2)" :style="{background: checkInteraction, borderColor: themeDark.borderColor}">
+        <i class="fa-solid fa-server" style="font-size: 18px;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"></i>
+      </button>
+
+      <button class="button" @click="handleButtonClick(3)" :style="{background: checkMonitor, borderColor: themeDark.borderColor}">
+        <i class="fa-solid fa-chart-line" style="font-size: 18px;" :style="themeStatus ? {color: themeLight.textColor}: {color: themeDark.textColor}"></i>
+      </button>
     </div>
-<!--переключатель тем-->
-<!--    <div class="change-theme flex flex-col items-center">-->
-<!--      <i class="fa-regular fa-sun"></i>-->
-<!--      <i class="fa-solid fa-moon"></i>-->
-<!--    </div>-->
+
+    <div v-if="showButton" @click="scrollToTop" class="scroll-to-top"><img src="../assets/svg/up-square-svgrepo-com.svg" class="img"></div>
   </div>
 </template>
 
 <style scoped>
 
+.panel {
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+  z-index: 111;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 20px;
+}
+.button {
+  width: 80px;
+  height: 44px;
+  background: none;
+  cursor: pointer;
+}
+
+.scroll-to-top {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+.img {
+  width: 34px;
+  height: 34px;
+  stroke: #212121;
+}
 </style>
