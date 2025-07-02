@@ -117,8 +117,8 @@ export default {
     },
     async fetchServers(){
 
-      // const resServersGroup = await fetch('/src/server_metric (5).json');
-      const resServersGroup = await fetch('/api/Blocks/server_metric');
+      const resServersGroup = await fetch('/src/api.json');
+      // const resServersGroup = await fetch('/api/Blocks/server_metric');
       this.serversGroups = await resServersGroup.json();
 
 
