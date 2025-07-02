@@ -125,7 +125,6 @@ export default {
       }
     },
     initializeEditFields() {
-      console.log('Initializing fields with server:', this.server);
       this.newServerIp = this.server.ipAddres || '';
       this.newServerDns = this.server.hostName || '';
 

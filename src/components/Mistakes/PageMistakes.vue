@@ -412,7 +412,7 @@ export default {
               :themeStatus="themeStatus"
               :themeLight="themeLight"
               :themeDark="themeDark"
-           @change="validateDates">
+              @change="validateDates">
           </ui-input>
 
           <ui-input
@@ -423,7 +423,7 @@ export default {
               :themeStatus="themeStatus"
               :themeLight="themeLight"
               :themeDark="themeDark"
-           @change="validateDates">
+              @change="validateDates">
           </ui-input>
 
           <main-button

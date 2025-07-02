@@ -261,7 +261,8 @@ export default {
       :themeDark="themeDark"
       @changeTheme="changeToTheme"></page-monitor>
   <page-mistakes
-      v-bind:problems="errorBlocks"
+      class="height"
+      :problems="errorBlocks"
       v-if="openMistakes"
       :themeStatus="themeStatusLight"
       :themeLight="themeLight"
