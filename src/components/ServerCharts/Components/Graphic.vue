@@ -27,7 +27,40 @@ export default {
   components: {
     Line,
   },
+
+  props: {
+    serversGroups: {
+      type: Array,
+      required: true,
+    },
+    themeLight: {
+      type: Object,
+      required: true
+    },
+    themeDark: {
+      type: Object,
+      required: true
+    },
+    themeStatus: {
+      type: Boolean,
+      default: true
+    }
+  },
   computed: {
+    colorGrid() {
+      if (this.themeStatus) {
+        return this.themeLight.grid
+      } else {
+        return this.themeDark.grid
+      }
+    },
+    colorGraphic() {
+      if (this.themeStatus) {
+        return this.themeLight.textColor
+      } else {
+        return this.themeDark.textColor
+      }
+    },
     chartData() {
       // Генерируем подробные метки для всех точек
       const labels = [];
@@ -73,7 +106,7 @@ export default {
         scales: {
           x: {
             ticks: {
-              color: "#212121",
+              color: this.colorGraphic,
               callback: function(value, index) {
                 if (index % 3 === 0) {
                   return this.chart.data.labels[index];
@@ -84,11 +117,13 @@ export default {
             },
             grid: {
               display: true,
+              color: this.colorGrid,
             },
+
           },
           y: {
             ticks: {
-              color: "#212121",
+              color: this.colorGraphic,
               callback: function(value) {
                 return value + ' %';
               }
@@ -96,6 +131,10 @@ export default {
             beginAtZero: true,
             min: 0,
             max: 100,
+            grid: {
+              display: true,
+              color: this.colorGrid,
+            },
           },
         },
         plugins: {
@@ -103,7 +142,7 @@ export default {
             position: "bottom",
             align: "start",
             labels: {
-              color: "#212121",
+              color: this.colorGraphic,
               usePointStyle: false,
               generateLabels: (chart) => {
                 const datasets = chart.data.datasets;
@@ -118,7 +157,7 @@ export default {
                   index: i,
                   datasetIndex: i,
                   // Размер маркера через padding и boxWidth
-                  fontColor: "#212121",
+                  fontColor: this.colorGraphic,
                 }));
               },
               boxWidth: 18,
