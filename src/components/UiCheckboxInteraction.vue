@@ -52,9 +52,7 @@ export default {
     <label class="errorBlock" v-for="item in errorsData" :key="item.value">
       <input type="checkbox" :checked="modelValue.includes(item.value)" @change="toggleError(item.value)" :id="`error-${item.value}`">
       <span
-          :style="themeStatus ? {color: themeLight.textCheckbox}:{color: themeDark.textCheckbox}">{{
-          item.label
-        }}</span>
+          :style="themeStatus ? {color: themeLight.textCheckbox}:{color: themeDark.textCheckbox}">{{item.label }}</span>
     </label>
   </div>
 </template>

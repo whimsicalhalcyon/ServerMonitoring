@@ -83,31 +83,52 @@ export default {
     exportToExcel() {
       const wb = XLSX.utils.book_new();
 
-      const excelData = this.problems.map(problem => {
-        const server = this.findServerById(problem.idServer) || {};
+      const filteredData = this.errorFinal.length > 0 ? this.errorFinal : this.problems;
 
-        const createdAt = problem.createdAt ? this.formatDate(problem.createdAt) : '-';
-        const finishedAt = problem.finishedAt && problem.finishedAt !== '-'
-            ? this.formatDate(problem.finishedAt)
-            : '-';
-        const duration = this.calculateDuration(problem.createdAt, problem.finishedAt);
-        const durationFormatted = this.formatDuration(duration);
+      const selectedServers = filteredData.filter(server => {
+        if (this.checkedGroups.length > 0) {
+          return server.errors && server.errors.length > 0 && server.errors.some(error =>
+              this.checkedGroups.includes(Number(error.importance))
+          );
+        }
+        return true;
+      });
 
-        return {
-          'Имя сервера': server.hostName || '-',
-          'Сообщение ошибки': problem.message || '-',
-          'Важность': this.importanceOptions.find(opt => opt.value === problem.importance)?.label || problem.importance || '-',
-          'Время возникновения': createdAt,
-          'Время решения': finishedAt,
-          'Статус': problem.state ? 'Решено' : 'Ошибка',
-          'Продолжительность': durationFormatted,
+      const excelData = selectedServers.flatMap(server => {
 
-        };
+        if (server.errors && server.errors.length > 0) {
+          return server.errors.map(error => {
+            const createdAt = error.createdAt ? this.formatDate(error.createdAt) : '-';
+            const finishedAt = error.finishedAt && error.finishedAt !== '-'
+                ? this.formatDate(error.finishedAt)
+                : '-';
+            const duration = this.calculateDuration(error.createdAt, error.finishedAt);
+            const durationFormatted = this.formatDuration(duration);
+
+            return {
+              'Имя сервера': server.hostName || '-',
+              'Сообщение ошибки': error.message || '-',
+              'Важность': this.importanceOptions.find(opt => opt.value === error.importance)?.label || error.importance || '-',
+              'Время возникновения': createdAt,
+              'Время решения': finishedAt,
+              'Статус': error.state ? 'Решено' : 'Ошибка',
+              'Продолжительность': durationFormatted,
+            };
+          });
+        } else {
+          return [{
+            'Имя сервера': server.hostName || '-',
+            'Сообщение ошибки': '-',
+            'Важность': '-',
+            'Время возникновения': '-',
+            'Время решения': '-',
+            'Статус': '-',
+            'Продолжительность': '-',
+          }];
+        }
       });
 
       const ws = XLSX.utils.json_to_sheet(excelData);
-
-
       XLSX.utils.book_append_sheet(wb, ws, "Ошибки серверов");
 
       const fileName = `server_errors_${new Date().toISOString().slice(0, 10)}.xlsx`;
@@ -213,15 +234,23 @@ export default {
       }
       const searchTerm = this.currentSearch.toLowerCase();
 
-      return filtered.filter(item => {
-        if (item.hostName && item.hostName.toLowerCase().includes(searchTerm)) {
-          return true;
+      const filteredServers = filtered.filter(server => {
+        const matchesHostName = server.hostName && server.hostName.toLowerCase().includes(searchTerm);
+        const matchesIp = server.ipAddres && server.ipAddres.toLowerCase().includes(searchTerm);
+        if (server.errors && server.errors.length > 0) {
+          const hasMatchingErrors = server.errors.some(error => {
+            return error.message && error.message.toLowerCase().includes(searchTerm);
+          });
+          return matchesHostName || matchesIp || hasMatchingErrors;
         }
-        if(item.ipAddres && item.ipAddres.toLowerCase().includes(searchTerm)) {
-          return true
-        }
-        return false;
+        return matchesHostName || matchesIp;
       });
+
+      if (filteredServers.length === 0) {
+        alert(`Сервер или IP-адрес "${this.currentSearch}" не найден`);
+      }
+
+      return filteredServers;
     },
     applyGroupFilter(filtered) {
       if (!this.filters.group || this.filters.group === "Все") {
@@ -404,33 +433,34 @@ export default {
               {{option.value }}
             </option>
           </ui-select>
-          <ui-input
-              id="inputStartDate"
-              v-model="filters.startDate"
-              placeholder="Начальная дата"
-              type="datetime-local"
-              :themeStatus="themeStatus"
-              :themeLight="themeLight"
-              :themeDark="themeDark"
-           @change="validateDates">
-          </ui-input>
+<!--          <ui-input-->
+<!--              id="inputStartDate"-->
+<!--              v-model="filters.startDate"-->
+<!--              placeholder="Начальная дата"-->
+<!--              type="datetime-local"-->
+<!--              :themeStatus="themeStatus"-->
+<!--              :themeLight="themeLight"-->
+<!--              :themeDark="themeDark"-->
+<!--           @change="validateDates">-->
+<!--          </ui-input>-->
 
-          <ui-input
-              id="inputEndDate"
-              v-model="filters.endDate"
-              placeholder="Конечная дата"
-              type="datetime-local"
-              :themeStatus="themeStatus"
-              :themeLight="themeLight"
-              :themeDark="themeDark"
-           @change="validateDates">
-          </ui-input>
+<!--          <ui-input-->
+<!--              id="inputEndDate"-->
+<!--              v-model="filters.endDate"-->
+<!--              placeholder="Конечная дата"-->
+<!--              type="datetime-local"-->
+<!--              :themeStatus="themeStatus"-->
+<!--              :themeLight="themeLight"-->
+<!--              :themeDark="themeDark"-->
+<!--           @change="validateDates">-->
+<!--          </ui-input>-->
 
           <main-button
               @click="filterByDateTime"
               :themeStatus="themeStatus"
               :themeLight="themeLight"
-              :themeDark="themeDark">
+              :themeDark="themeDark"
+          class="btn">
             Найти
           </main-button>
 
@@ -439,7 +469,7 @@ export default {
               :themeStatus="themeStatus"
               :themeLight="themeLight"
               :themeDark="themeDark"
-              class="btn-close">
+              class="btn btn-close">
             Сбросить
           </main-button>
         </div>
@@ -449,10 +479,9 @@ export default {
             <p :style="themeStatus ? {color: themeLight.textCheckbox} : {color: themeDark.textCheckbox}">
               Тип ошибки:
             </p>
-          </div>
-
-          <div class="checkbox-group">
-            <ui-checkbox-interaction class="check" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" v-model="checkedGroups"></ui-checkbox-interaction>
+            <div class="checkbox-group">
+              <ui-checkbox-interaction class="check" :themeStatus="themeStatus" :themeLight="themeLight" :themeDark="themeDark" v-model="checkedGroups"></ui-checkbox-interaction>
+            </div>
           </div>
         </div>
       </div>
@@ -475,7 +504,7 @@ export default {
 
 .main {
   width: 100%;
-  height: 100%;
+  height: 100vh;
 }
 
 .main .main-top {
@@ -558,6 +587,10 @@ export default {
   width: 10%;
 }
 
+.btn {
+  width: 10%;
+}
+
 .btn-close {
   background: #757575 !important;
 }
@@ -573,5 +606,8 @@ export default {
   font-size: 28px;
 }
 
+.checkbox-group {
+  margin-top: 0.8%;
+}
 
 </style>
