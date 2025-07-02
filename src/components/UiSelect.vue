@@ -1,15 +1,45 @@
 <script>
 export default {
+  props: {
+    themeLight: {
+      type: Object,
+      required: true
+    },
+    themeDark: {
+      type: Object,
+      required: true
+    },
+    themeStatus: {
+      type: Boolean,
+      default: true
+    },
+    modelValue: {
+      type: String
+    },
 
+  },
+  methods: {
+    changeModelValue(event) {
+      this.$emit('update:modelValue', event.target.value);
+    }
+  }
 }
 </script>
 
 <template>
-  <select class="border rounded-lg border-neutral-400 px-3 py-1 h-10">
-    <option disabled>Выберите из списка</option>
+  <select :value="modelValue" @change="changeModelValue"
+      :style="themeStatus ? {background: themeLight.backgroundFilter, color: themeLight.textColor}: {background: themeDark.backgroundFilter, color: themeDark.textColor}">
+      <slot></slot>
   </select>
 </template>
 
 <style scoped>
+  select {
+    border-radius: 8px;
+    width: 21.9%;
+    height: 40px;
+    padding: 0 0 0 13px;
+    cursor: pointer;
+  }
 
 </style>
